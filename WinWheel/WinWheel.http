@@ -1,0 +1,6 @@
+@WinWheel_HostAddress = http://localhost:5182
+
+GET {{WinWheel_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

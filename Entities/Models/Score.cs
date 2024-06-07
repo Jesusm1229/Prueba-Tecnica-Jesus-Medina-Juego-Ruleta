@@ -10,14 +10,14 @@ namespace Entities.Models
 {
 	public class Score
 	{
-		[Column("ScoreId")]
-		public int Id { get; set; }
+		[ForeignKey("ScoreId")]
+		public Guid Id { get; set; }
 
 		[Required(ErrorMessage = "Points is a required field.")]
 		public int Points { get; set; } = 0;
 
-		[ForeignKey(nameof(Player))]
-		public int PlayerId { get; set; }
-		public Player Player { get; set; }
+		//Dependent entity
+		public Guid PlayerId { get; set; }
+		public required Player Player { get; set; }
 	}
 }

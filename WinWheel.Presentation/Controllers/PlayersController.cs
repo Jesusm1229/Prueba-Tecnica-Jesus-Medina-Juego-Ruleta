@@ -24,16 +24,11 @@ namespace WinWheel.Presentation.Controllers
 		[HttpGet]
 		public IActionResult GetPlayers()
 		{
-			try
-			{
+			
 				var players = _serviceManager.PlayerService.GetAllPlayers(trackChanges: false);
 
 				return Ok(players);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, "Internal server error");
-			}
+			
 		}
 
 

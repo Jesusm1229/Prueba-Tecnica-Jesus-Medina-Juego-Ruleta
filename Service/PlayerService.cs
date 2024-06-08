@@ -28,21 +28,13 @@ namespace Service
 
 		public IEnumerable<PlayerDto> GetAllPlayers(bool trackChanges)
 		{
-			try
-			{
 				var players = _repository.Player.GetAllPlayers(trackChanges);
 
 				//Mapper
 				var playersDto = _mapper.Map<IEnumerable<PlayerDto>>(players);
 
 				return playersDto;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError($"Something went wrong in the {nameof(GetAllPlayers)}: {ex.Message}");
-
-				throw;
-			}
+			
 
 		}
 	}

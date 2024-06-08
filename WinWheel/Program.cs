@@ -20,7 +20,8 @@ namespace WinWheel
 
 			builder.Services.ConfigureLoggerService();
 
-
+			builder.Services.ConfigureRepositoryManager();
+			builder.Services.ConfigureServiceManager();
 
 			// Add services to the container.
 

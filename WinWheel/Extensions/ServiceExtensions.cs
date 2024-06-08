@@ -1,5 +1,8 @@
 ﻿using Contracts;
 using LoggerService;
+using Repository;
+using Service.Contracts;
+using Service;
 
 namespace WinWheel.Extensions
 {
@@ -21,6 +24,14 @@ namespace WinWheel.Extensions
 
 		public static void ConfigureLoggerService(this IServiceCollection services) =>
 			services.AddSingleton<ILoggerManager, LoggerManager>();
+
+		//Repository Manager
+		public static void ConfigureRepositoryManager(this IServiceCollection services) =>
+			services.AddScoped<IRepositoryManager, RepositoryManager>();
+
+		public static void ConfigureServiceManager(this IServiceCollection services) =>
+			services.AddScoped<IServiceManager, ServiceManager>();
+
 
 
 	}

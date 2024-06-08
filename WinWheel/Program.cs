@@ -25,6 +25,7 @@ namespace WinWheel
 
 			builder.Services.ConfigureSqlContext(builder.Configuration);
 
+			builder.Services.AddAutoMapper(typeof(Program));
 			// Add services to the container.
 
 			builder.Services.AddControllers()

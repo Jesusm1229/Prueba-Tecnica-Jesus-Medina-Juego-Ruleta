@@ -1,6 +1,8 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using Entities.Models;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +17,25 @@ namespace Service
 
 		private readonly ILoggerManager _logger;
 
-		public PlayerService(IRepositoryManager repository, ILoggerManager logger)
+		private readonly IMapper _mapper;
+
+		public PlayerService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
 		{
 			_repository = repository;
 			_logger = logger;
+			_mapper = mapper;
 		}
 
-		public IEnumerable<Player> GetAllPlayers(bool trackChanges)
+		public IEnumerable<PlayerDto> GetAllPlayers(bool trackChanges)
 		{
 			try
 			{
 				var players = _repository.Player.GetAllPlayers(trackChanges);
 
-				return players;
+				//Mapper
+				var playersDto = _mapper.Map<IEnumerable<PlayerDto>>(players);
+
+				return playersDto;
 			}
 			catch (Exception ex)
 			{

@@ -14,6 +14,12 @@ namespace Repository
 		: base(repositoryContext)
 		{
 		}
+
+		public IEnumerable<Player> GetAllPlayers(bool trackChanges) =>
+			FindAll(trackChanges)
+			.OrderBy(p => p.Name)
+			.ToList();
+
 	}
 	
 }

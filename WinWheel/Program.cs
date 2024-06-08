@@ -23,9 +23,12 @@ namespace WinWheel
 			builder.Services.ConfigureRepositoryManager();
 			builder.Services.ConfigureServiceManager();
 
+			builder.Services.ConfigureSqlContext(builder.Configuration);
+
 			// Add services to the container.
 
-			builder.Services.AddControllers();
+			builder.Services.AddControllers()
+				.AddApplicationPart(typeof(WinWheel.Presentation.AssemblyReference).Assembly);
 
 			var app = builder.Build();
 

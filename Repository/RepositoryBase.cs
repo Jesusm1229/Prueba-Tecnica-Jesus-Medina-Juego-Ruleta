@@ -1,6 +1,4 @@
 ﻿using Contracts;
-using 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;

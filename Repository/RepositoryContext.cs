@@ -14,8 +14,8 @@ namespace Repository
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{	
+			modelBuilder.ApplyConfiguration(new PlayerConfiguration());
 			//modelBuilder.ApplyConfiguration(new ScoreConfiguration());
-			//modelBuilder.ApplyConfiguration(new PlayerConfiguration());
 		}
 
 		public DbSet<Player> Players { get; set; }

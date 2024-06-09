@@ -20,6 +20,10 @@ namespace Repository
 			.OrderBy(p => p.Name)
 			.ToList();
 
+		public Player GetPlayer(Guid playerId, bool trackChanges) =>
+			FindByCondition(p => p.Id.Equals(playerId), trackChanges)
+			.SingleOrDefault();
+
 	}
 	
 }

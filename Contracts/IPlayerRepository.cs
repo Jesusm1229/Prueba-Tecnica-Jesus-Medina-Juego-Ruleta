@@ -10,5 +10,7 @@ namespace Contracts
 	public interface IPlayerRepository
 	{
 		IEnumerable<Player> GetAllPlayers(bool trackChanges);
+
+		Player GetPlayer(Guid playerId, bool trackChanges);
 	}
 }

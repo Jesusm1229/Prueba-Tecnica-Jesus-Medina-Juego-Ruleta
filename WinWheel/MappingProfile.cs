@@ -9,6 +9,8 @@ namespace WinWheel
 		public MappingProfile()
 		{
 			CreateMap<Player, PlayerDto>();
+
+			CreateMap<Score, ScoreDto>();
 			
 		}
 	}

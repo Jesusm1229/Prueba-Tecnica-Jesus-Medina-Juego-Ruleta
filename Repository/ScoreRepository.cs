@@ -14,5 +14,13 @@ namespace Repository
 		: base(repositoryContext)
 		{
 		}
+
+		public IEnumerable<Score> GetScores(Guid playerId, bool trackChanges) =>
+			FindByCondition(s => s.PlayerId.Equals(playerId), trackChanges)
+			.ToList();
+
+		public Score GetScore(Guid playerId, Guid Id, bool trackChanges) =>
+			FindByCondition(s => s.PlayerId.Equals(playerId) && s.Id.Equals(Id), trackChanges)
+			.SingleOrDefault();
 	}	
 }

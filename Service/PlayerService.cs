@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Exceptions;
 
 namespace Service
 {
@@ -36,6 +37,22 @@ namespace Service
 				return playersDto;
 			
 
+		}
+
+		public PlayerDto GetPlayer(Guid playerId, bool trackChanges)
+		{
+			var player = _repository.Player.GetPlayer(playerId, trackChanges);
+
+			//Check if null
+			if (player == null)
+			{
+				throw new PlayerNotFoundException(playerId);
+			}
+
+			//Mapper
+			var playerDto = _mapper.Map<PlayerDto>(player);
+
+			return playerDto;
 		}
 	}
 }

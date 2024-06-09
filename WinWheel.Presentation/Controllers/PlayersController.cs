@@ -31,6 +31,17 @@ namespace WinWheel.Presentation.Controllers
 			
 		}
 
+		//Getting a player by id
+		[HttpGet("{id:guid}")]
+		public IActionResult GetPlayer(Guid playerId)
+		{
+			
+				var player = _serviceManager.PlayerService.GetPlayer(playerId, trackChanges: false);
+
+				return Ok(player);
+			
+		}
+
 
 	}
 }

@@ -10,5 +10,7 @@ namespace Service.Contracts
 	public interface IPlayerService
 	{
 		IEnumerable<PlayerDto> GetAllPlayers(bool trackChanges);
+
+		PlayerDto GetPlayer(Guid playerId, bool trackChanges);
 	}
 }

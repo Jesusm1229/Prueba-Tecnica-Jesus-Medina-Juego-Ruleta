@@ -39,14 +39,14 @@ namespace Service
 
 		}
 
-		public PlayerDto GetPlayer(Guid playerId, bool trackChanges)
+		public PlayerDto GetPlayer(Guid id, bool trackChanges)
 		{
-			var player = _repository.Player.GetPlayer(playerId, trackChanges);
+			var player = _repository.Player.GetPlayer(id, trackChanges);
 
 			//Check if null
 			if (player == null)
 			{
-				throw new PlayerNotFoundException(playerId);
+				throw new PlayerNotFoundException(id);
 			}
 
 			//Mapper

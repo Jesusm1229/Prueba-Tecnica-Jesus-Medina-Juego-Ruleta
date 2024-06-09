@@ -33,10 +33,10 @@ namespace WinWheel.Presentation.Controllers
 
 		//Getting a player by id
 		[HttpGet("{id:guid}")]
-		public IActionResult GetPlayer(Guid playerId)
+		public IActionResult GetPlayer(Guid id)
 		{
 			
-				var player = _serviceManager.PlayerService.GetPlayer(playerId, trackChanges: false);
+				var player = _serviceManager.PlayerService.GetPlayer(id, trackChanges: false);
 
 				return Ok(player);
 			

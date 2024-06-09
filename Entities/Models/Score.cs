@@ -18,6 +18,6 @@ namespace Entities.Models
 
 		//Dependent entity
 		public Guid PlayerId { get; set; }
-		public required Player Player { get; set; }
+		public Player Player { get; set; }
 	}
 }

@@ -24,6 +24,7 @@ namespace Repository
 			FindByCondition(p => p.Id.Equals(playerId), trackChanges)
 			.SingleOrDefault();
 
+		public void CreatePlayer(Player player) => Create(player);
 	}
 	
 }

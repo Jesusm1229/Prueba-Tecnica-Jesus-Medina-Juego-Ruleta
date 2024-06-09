@@ -54,5 +54,21 @@ namespace Service
 
 			return playerDto;
 		}
+
+
+		public PlayerDto CreatePlayer(PlayerForCreationDto player)
+		{
+			//Mapper
+			var playerEntity = _mapper.Map<Player>(player);
+
+			_repository.Player.CreatePlayer(playerEntity);
+
+			_repository.Save(); //Save to database
+
+			//Now we map the player entity to a player dto to return it to controller
+			var playerToReturn = _mapper.Map<PlayerDto>(playerEntity);
+
+			return playerToReturn;
+		}
 	}
 }

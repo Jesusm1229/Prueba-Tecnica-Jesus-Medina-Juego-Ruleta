@@ -11,6 +11,8 @@ namespace WinWheel
 			CreateMap<Player, PlayerDto>();
 
 			CreateMap<Score, ScoreDto>();
+
+			CreateMap<PlayerForCreationDto, Player>();//create player
 			
 		}
 	}

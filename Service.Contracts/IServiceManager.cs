@@ -10,5 +10,8 @@ namespace Service.Contracts
 	{
 		IPlayerService PlayerService { get; }
 		IScoreService ScoreService { get; }
+
+
+
 	}
 }

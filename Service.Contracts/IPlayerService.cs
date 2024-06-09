@@ -12,5 +12,7 @@ namespace Service.Contracts
 		IEnumerable<PlayerDto> GetAllPlayers(bool trackChanges);
 
 		PlayerDto GetPlayer(Guid playerId, bool trackChanges);
+
+		PlayerDto CreatePlayer(PlayerForCreationDto player);
 	}
 }

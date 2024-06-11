@@ -29,6 +29,7 @@ namespace WinWheel
 
 			builder.Services.ConfigureSqlContext(builder.Configuration);
 
+
 			builder.Services.AddAutoMapper(typeof(Program));
 			// Add services to the container.
 
@@ -38,13 +39,22 @@ namespace WinWheel
 				options.SuppressModelStateInvalidFilter = true;
 			});
 
+			builder.Services.ConfigureResponseCaching();
+
 
 			builder.Services.AddControllers(config => {
 				config.RespectBrowserAcceptHeader = true;
 				config.ReturnHttpNotAcceptable = true;
 				config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+				//Caché Profile
+				config.CacheProfiles.Add("120SecondsDuration", new CacheProfile
+				{
+					Duration = 120
+				});
+
 			}).AddXmlDataContractSerializerFormatters()
 				.AddApplicationPart(typeof(WinWheel.Presentation.AssemblyReference).Assembly);
+
 
 			var app = builder.Build();
 
@@ -66,6 +76,8 @@ namespace WinWheel
 				ForwardedHeaders = ForwardedHeaders.All
 			});
 			app.UseCors("CorsPolicy");
+
+			app.UseResponseCaching();
 
 
 			app.UseAuthorization();

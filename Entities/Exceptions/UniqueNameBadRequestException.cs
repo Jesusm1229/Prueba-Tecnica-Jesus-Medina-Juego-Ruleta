@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Entities.Exceptions
 {
-	public class PlayerNotFoundException: NotFoundException
+	public sealed class UniqueNameBadRequestException: BadRequestException
 	{
-		
-		public PlayerNotFoundException(Guid playerId)
-			: base($"Player with id {playerId} not found")
+		public UniqueNameBadRequestException(string name)
+			: base($"Name {name} alredy taken")
 		{ }
 	}
-	
 }

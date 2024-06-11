@@ -8,8 +8,8 @@ namespace Entities.Exceptions
 {
 	public class ScoreNotFoundException: NotFoundException
 	{
-		public ScoreNotFoundException(Guid employeeId)
-			: base($"Score with id: {employeeId} doesn't exist in the database.")
+		public ScoreNotFoundException(Guid scoreId)
+			: base($"Score with id: {scoreId} doesn't exist in the database.")
 		{
 		}
 

@@ -58,6 +58,10 @@ namespace Service
 
 		public async Task<PlayerDto> CreatePlayer(PlayerForCreationDto player)
 		{
+			//Find player by name
+			//CheckIfPlayerExists TO DO
+
+
 			//Mapper
 			var playerEntity =  _mapper.Map<Player>(player);
 

@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,12 @@ namespace Repository
 		}
 
 		public async Task<IEnumerable<Score>> GetScores(Guid playerId, bool trackChanges) =>
-			FindByCondition(s => s.PlayerId.Equals(playerId), trackChanges)
-			.ToList();
+			await FindByCondition(s => s.PlayerId.Equals(playerId), trackChanges)
+			.ToListAsync();
 
 		public async Task<Score> GetScore(Guid playerId, Guid Id, bool trackChanges) =>
-			FindByCondition(s => s.PlayerId.Equals(playerId) && s.Id.Equals(Id), trackChanges)
-			.SingleOrDefault(); 
+			await FindByCondition(s => s.PlayerId.Equals(playerId) && s.Id.Equals(Id), trackChanges)
+			.SingleOrDefaultAsync(); 
 
 		public void CreateScoreForPlayer(Guid playerId, Score score)
 		{

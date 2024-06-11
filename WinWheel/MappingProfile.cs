@@ -13,6 +13,12 @@ namespace WinWheel
 			CreateMap<Score, ScoreDto>();
 
 			CreateMap<PlayerForCreationDto, Player>();//create player
+
+			CreateMap<ScoreForCreationDto, Score>();//create score
+
+			CreateMap<ScoreForUpdateDto, Score>();
+
+			CreateMap<ScoreForUpdateDto, Score>().ReverseMap();//PATCH METHOD
 			
 		}
 	}

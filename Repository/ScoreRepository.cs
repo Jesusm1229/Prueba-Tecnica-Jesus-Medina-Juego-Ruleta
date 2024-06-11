@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-	public class ScoreRepository: RepositoryBase<Score>, IScoreRepository
+	public class ScoreRepository : RepositoryBase<Score>, IScoreRepository
 	{
 		public ScoreRepository(RepositoryContext repositoryContext)
 		: base(repositoryContext)
@@ -21,6 +21,12 @@ namespace Repository
 
 		public Score GetScore(Guid playerId, Guid Id, bool trackChanges) =>
 			FindByCondition(s => s.PlayerId.Equals(playerId) && s.Id.Equals(Id), trackChanges)
-			.SingleOrDefault();
+			.SingleOrDefault(); 
+
+		public void CreateScoreForPlayer(Guid playerId, Score score)
+		{
+			score.PlayerId = playerId;
+			Create(score);
+		}
 	}	
 }

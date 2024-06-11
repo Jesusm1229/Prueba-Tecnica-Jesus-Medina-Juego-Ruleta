@@ -1,6 +1,9 @@
 
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
 using WinWheel.Extensions;
 
@@ -29,7 +32,18 @@ namespace WinWheel
 			builder.Services.AddAutoMapper(typeof(Program));
 			// Add services to the container.
 
-			builder.Services.AddControllers()
+			//Own exception handling middleware
+			builder.Services.Configure<ApiBehaviorOptions>(options =>
+			{
+				options.SuppressModelStateInvalidFilter = true;
+			});
+
+
+			builder.Services.AddControllers(config => {
+				config.RespectBrowserAcceptHeader = true;
+				config.ReturnHttpNotAcceptable = true;
+				config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+			}).AddXmlDataContractSerializerFormatters()
 				.AddApplicationPart(typeof(WinWheel.Presentation.AssemblyReference).Assembly);
 
 			var app = builder.Build();
@@ -60,6 +74,13 @@ namespace WinWheel
 			app.MapControllers();
 
 			app.Run();
+
+			//Method to create a JsonPatchInputFormatter
+			NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
+				new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+				.Services.BuildServiceProvider()
+				.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+				.OfType<NewtonsoftJsonPatchInputFormatter>().First();
 		}
 	}
 }

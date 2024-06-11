@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
+	[Index(nameof(Name), IsUnique = true)]
 	public class Player
 	{
 		[Column("PlayerId")]

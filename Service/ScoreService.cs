@@ -93,7 +93,7 @@ namespace Service
 			if (player is null)
 			{
 				throw new PlayerNotFoundException(playerId);
-			}
+			}			
 
 			var scoreEntity = _repository.Score.GetScore(playerId, id, scoreTrackChanges);
 
@@ -110,7 +110,7 @@ namespace Service
 
 
 		//GetScoreForPlayerPatch method
-		public (ScoreForUpdateDto scoreToPatch, Score scoreEntity) GetScoreForPatch(Guid playerId, Guid id, bool playerTrackChanges, bool scoreTrackChanges)
+		public (ScoreForUpdateDto scoreToPatch, Score scoreEntity) GetScoreForPlayerPatch(Guid playerId, Guid id, bool playerTrackChanges, bool scoreTrackChanges)
 		{
 			var player = _repository.Player.GetPlayer(playerId, playerTrackChanges);
 

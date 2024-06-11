@@ -7,5 +7,10 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects
 {
-	public record ScoreForUpdateDto: ScoreForManipulationDto;
+	public abstract record ScoreForManipulationDto
+	{
+		[Required(ErrorMessage = "Points is a required field.")]
+		public int Points { get; init; }
+	}
+	
 }

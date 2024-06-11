@@ -51,7 +51,10 @@ namespace WinWheel.Presentation.Controllers
 			if(player == null)
 				return BadRequest("PlayerForCreationDto object is null");
 
-				var createdPlayer = _serviceManager.PlayerService.CreatePlayer(player);
+			if(!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
+
+			var createdPlayer = _serviceManager.PlayerService.CreatePlayer(player);
 
 			//Created at route will return the created player and the route to get it.
 			//201 status code means is created.

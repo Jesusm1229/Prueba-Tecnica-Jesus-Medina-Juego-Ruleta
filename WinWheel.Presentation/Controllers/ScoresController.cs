@@ -44,6 +44,9 @@ namespace WinWheel.Presentation.Controllers
 			if(score == null)
 				return BadRequest("ScoreForCreationDto object is null");
 
+			if(!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
+
 			var scoreToReturn = _service.ScoreService.CreateScoreForPlayer(playerId, score, trackChanges: false);
 
 			return CreatedAtRoute("GetScoreForPlayer", new { playerId, id = scoreToReturn.Id }, scoreToReturn);
@@ -55,6 +58,9 @@ namespace WinWheel.Presentation.Controllers
 		{
 			if(score == null)
 				return BadRequest("ScoreForUpdateDto object is null");
+
+			if(!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
 
 			_service.ScoreService.UpdateScoreForPlayer(playerId, id, score, playerTrackChanges: false, scoreTrackChanges: true);
 
@@ -70,7 +76,12 @@ namespace WinWheel.Presentation.Controllers
 
 			var result = _service.ScoreService.GetScoreForPlayerPatch(playerId, id, playerTrackChanges: false, scoreTrackChanges: true);
 
-			patchDoc.ApplyTo(result.scoreToPatch);
+			patchDoc.ApplyTo(result.scoreToPatch, ModelState);
+
+			TryValidateModel(result.scoreToPatch);
+
+			if(!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
 
 			_service.ScoreService.SaveChangesForPatch(result.scoreToPatch, result.scoreEntity);
 

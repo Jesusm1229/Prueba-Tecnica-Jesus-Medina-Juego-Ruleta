@@ -27,7 +27,7 @@ namespace Repository
 		public IScoreRepository Score => _scoreRepository.Value;
 
 		//The repository manager class also exposes a Save method that saves all changes made to the database.
-		public void Save() => _repositoryContext.SaveChanges();
+		public async Task SaveAsync() => await _repositoryContext.SaveChangesAsync();
 
 	}
 }

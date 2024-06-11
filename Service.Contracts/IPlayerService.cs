@@ -9,10 +9,10 @@ namespace Service.Contracts
 {
 	public interface IPlayerService
 	{
-		IEnumerable<PlayerDto> GetAllPlayers(bool trackChanges);
+		Task<IEnumerable<PlayerDto>> GetAllPlayers(bool trackChanges);
 
-		PlayerDto GetPlayer(Guid playerId, bool trackChanges);
+		Task <PlayerDto> GetPlayer(Guid playerId, bool trackChanges);
 
-		PlayerDto CreatePlayer(PlayerForCreationDto player);
+		Task<PlayerDto> CreatePlayer(PlayerForCreationDto player);
 	}
 }

@@ -21,25 +21,25 @@ namespace WinWheel.Presentation.Controllers
 		//Get player scores.
 		//Like the playerId is in the route, is not needed to be passed in the HttpGet attribute.
 		[HttpGet]
-		public IActionResult GetScoresForPlayer(Guid playerId)
+		public async Task<IActionResult> GetScoresForPlayer(Guid playerId)
 		{
-			var scores = _service.ScoreService.GetScores(playerId, trackChanges: false);
+			var scores = await _service.ScoreService.GetScores(playerId, trackChanges: false);
 
 			return Ok(scores);
 		}
 
 		//Get a player score.
 		[HttpGet("{id:guid}", Name = "GetScoreForPlayer")]
-		public IActionResult GetScoreForPlayer(Guid playerId, Guid id)
+		public async Task<IActionResult> GetScoreForPlayer(Guid playerId, Guid id)
 		{
-			var score = _service.ScoreService.GetScore(playerId, id, trackChanges: false);
+			var score = await _service.ScoreService.GetScore(playerId, id, trackChanges: false);
 
 			return Ok(score);
 		}
 
 		//Create a score for a player.
 		[HttpPost]
-		public IActionResult CreateScoreForPlayer(Guid playerId, [FromBody] ScoreForCreationDto score)
+		public async Task<IActionResult> CreateScoreForPlayer(Guid playerId, [FromBody] ScoreForCreationDto score)
 		{
 			if(score == null)
 				return BadRequest("ScoreForCreationDto object is null");
@@ -47,14 +47,14 @@ namespace WinWheel.Presentation.Controllers
 			if(!ModelState.IsValid)
 				return UnprocessableEntity(ModelState);
 
-			var scoreToReturn = _service.ScoreService.CreateScoreForPlayer(playerId, score, trackChanges: false);
+			var scoreToReturn = await _service.ScoreService.CreateScoreForPlayer(playerId, score, trackChanges: false);
 
 			return CreatedAtRoute("GetScoreForPlayer", new { playerId, id = scoreToReturn.Id }, scoreToReturn);
 		}
 
 		//Update a score for a player.
 		[HttpPut("{id:guid}")] //api/players/{playerId}/scores/{id}
-		public IActionResult UpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] ScoreForUpdateDto score)
+		public async Task<IActionResult> UpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] ScoreForUpdateDto score)
 		{
 			if(score == null)
 				return BadRequest("ScoreForUpdateDto object is null");
@@ -62,19 +62,19 @@ namespace WinWheel.Presentation.Controllers
 			if(!ModelState.IsValid)
 				return UnprocessableEntity(ModelState);
 
-			_service.ScoreService.UpdateScoreForPlayer(playerId, id, score, playerTrackChanges: false, scoreTrackChanges: true);
+			await _service.ScoreService.UpdateScoreForPlayer(playerId, id, score, playerTrackChanges: false, scoreTrackChanges: true);
 
 			return NoContent();
 		}
 
 		//Partially update a score for a player.
 		[HttpPatch("{id:guid}")] //api/players/{playerId}/scores/{id}
-		public IActionResult PartiallyUpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] JsonPatchDocument<ScoreForUpdateDto> patchDoc)
+		public async Task<IActionResult> PartiallyUpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] JsonPatchDocument<ScoreForUpdateDto> patchDoc)
 		{
 			if(patchDoc == null)
 				return BadRequest("patchDoc object is null");
 
-			var result = _service.ScoreService.GetScoreForPlayerPatch(playerId, id, playerTrackChanges: false, scoreTrackChanges: true);
+			var result = await _service.ScoreService.GetScoreForPlayerPatch(playerId, id, playerTrackChanges: false, scoreTrackChanges: true);
 
 			patchDoc.ApplyTo(result.scoreToPatch, ModelState);
 
@@ -83,7 +83,7 @@ namespace WinWheel.Presentation.Controllers
 			if(!ModelState.IsValid)
 				return UnprocessableEntity(ModelState);
 
-			_service.ScoreService.SaveChangesForPatch(result.scoreToPatch, result.scoreEntity);
+			await _service.ScoreService.SaveChangesForPatch(result.scoreToPatch, result.scoreEntity);
 
 			return NoContent();
 		}

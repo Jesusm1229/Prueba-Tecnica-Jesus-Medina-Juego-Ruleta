@@ -12,7 +12,7 @@ namespace Contracts
 		IScoreRepository Score { get; }
 
 		// Add the Save method to the IRepositoryManager interface. Only save when all changes are made.
-		void Save();
+		Task SaveAsync();
 		
 	}
 }

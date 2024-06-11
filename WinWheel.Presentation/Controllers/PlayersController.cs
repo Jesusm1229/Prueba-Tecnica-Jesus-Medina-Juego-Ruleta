@@ -23,10 +23,10 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult GetPlayers()
+		public async Task<IActionResult> GetPlayers()
 		{
 			
-				var players = _serviceManager.PlayerService.GetAllPlayers(trackChanges: false);
+				var players = await _serviceManager.PlayerService.GetAllPlayers(trackChanges: false);
 
 				return Ok(players);
 			
@@ -34,10 +34,10 @@ namespace WinWheel.Presentation.Controllers
 
 		//Getting a player by id
 		[HttpGet("{id:guid}", Name = "PlayerById")]
-		public IActionResult GetPlayer(Guid id)
+		public async Task<IActionResult> GetPlayer(Guid id)
 		{
 			
-				var player = _serviceManager.PlayerService.GetPlayer(id, trackChanges: false);
+				var player = await _serviceManager.PlayerService.GetPlayer(id, trackChanges: false);
 
 				return Ok(player);
 			
@@ -46,7 +46,7 @@ namespace WinWheel.Presentation.Controllers
 		//Create a player
 		//We take fromboy the player object. On the contrary will create 
 		[HttpPost]
-		public IActionResult CreatePlayer([FromBody] PlayerForCreationDto player)
+		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
 			if(player == null)
 				return BadRequest("PlayerForCreationDto object is null");
@@ -54,7 +54,7 @@ namespace WinWheel.Presentation.Controllers
 			if(!ModelState.IsValid)
 				return UnprocessableEntity(ModelState);
 
-			var createdPlayer = _serviceManager.PlayerService.CreatePlayer(player);
+			var createdPlayer = await _serviceManager.PlayerService.CreatePlayer(player);
 
 			//Created at route will return the created player and the route to get it.
 			//201 status code means is created.

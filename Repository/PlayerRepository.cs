@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +16,14 @@ namespace Repository
 		{
 		}
 
-		public IEnumerable<Player> GetAllPlayers(bool trackChanges) =>
-			FindAll(trackChanges)
+		public async Task<IEnumerable<Player>> GetAllPlayers(bool trackChanges) =>
+			await FindAll(trackChanges)
 			.OrderBy(p => p.Name)
-			.ToList();
+			.ToListAsync();
 
-		public Player GetPlayer(Guid playerId, bool trackChanges) =>
-			FindByCondition(p => p.Id.Equals(playerId), trackChanges)
-			.SingleOrDefault();
+		public async Task <Player> GetPlayer(Guid playerId, bool trackChanges) =>
+			await FindByCondition(p => p.Id.Equals(playerId), trackChanges)
+			.SingleOrDefaultAsync();
 
 		public void CreatePlayer(Player player) => Create(player);
 	}

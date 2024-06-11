@@ -10,9 +10,9 @@ namespace Contracts
 	public interface IPlayerRepository
 	{
 		//Get all player
-		IEnumerable<Player> GetAllPlayers(bool trackChanges);
+		Task <IEnumerable<Player>> GetAllPlayers(bool trackChanges);
 		//GEt specific player
-		Player GetPlayer(Guid playerId, bool trackChanges);
+		Task<Player> GetPlayer(Guid playerId, bool trackChanges);
 		//Create player
 		void CreatePlayer(Player player);
 	}

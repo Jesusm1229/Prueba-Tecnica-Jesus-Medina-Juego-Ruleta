@@ -10,16 +10,15 @@ namespace Service.Contracts
 {
 	public interface IScoreService
 	{
-		IEnumerable<ScoreDto> GetScores(Guid playerId, bool trackChanges);
+		Task<IEnumerable<ScoreDto>> GetScores(Guid playerId, bool trackChanges);
 
-		ScoreDto GetScore(Guid playerId, Guid Id, bool trackChanges);
+		Task<ScoreDto> GetScore(Guid playerId, Guid Id, bool trackChanges);
 
-		ScoreDto CreateScoreForPlayer(Guid playerId, ScoreForCreationDto scoreForCreationDto, bool trackChanges);
+		Task<ScoreDto> CreateScoreForPlayer(Guid playerId, ScoreForCreationDto scoreForCreationDto, bool trackChanges);
 	
-		void UpdateScoreForPlayer(Guid playerId, Guid Id, ScoreForUpdateDto scoreForUpdateDto, bool playerTrackChanges, bool scoreTrackChanges);
+		Task UpdateScoreForPlayer(Guid playerId, Guid Id, ScoreForUpdateDto scoreForUpdateDto, bool playerTrackChanges, bool scoreTrackChanges);
 	
-		(ScoreForUpdateDto scoreToPatch, Score scoreEntity) GetScoreForPlayerPatch(Guid playerId, Guid id, bool playerTrackChanges, bool scoreTrackChanges);
-	
-		void SaveChangesForPatch(ScoreForUpdateDto scoreToPatch, Score scoreEntity);
+		Task<(ScoreForUpdateDto scoreToPatch, Score scoreEntity)> GetScoreForPlayerPatch(Guid playerId, Guid id, bool playerTrackChanges, bool scoreTrackChanges);
+		Task SaveChangesForPatch(ScoreForUpdateDto scoreToPatch, Score scoreEntity);
 	}
 }

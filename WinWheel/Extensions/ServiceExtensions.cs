@@ -38,5 +38,9 @@ namespace WinWheel.Extensions
 			services.AddDbContext<RepositoryContext>(opts =>
 			opts.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
 
+		//Caching services
+		public static void ConfigureResponseCaching(this IServiceCollection services) =>
+			services.AddResponseCaching();
+
 	}
 }

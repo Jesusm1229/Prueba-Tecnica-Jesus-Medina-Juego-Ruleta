@@ -12,6 +12,7 @@ namespace WinWheel.Presentation.Controllers
 {
 	[Route("api/players")]
 	[ApiController]
+	[ResponseCache(CacheProfileName = "120SecondsDuration")]
 	public class PlayersController: ControllerBase
 	{
 		//Injecting the service manager
@@ -34,6 +35,7 @@ namespace WinWheel.Presentation.Controllers
 
 		//Getting a player by id
 		[HttpGet("{id:guid}", Name = "PlayerById")]
+		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
 		public async Task<IActionResult> GetPlayer(Guid id)
 		{
 			

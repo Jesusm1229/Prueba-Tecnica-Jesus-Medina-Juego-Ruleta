@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,17 +10,18 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-	[Index(nameof(Name), IsUnique = true)]
-	public class Player
-	{
+	[Index(nameof(UserName), IsUnique = true)]
+	public class Player: IdentityUser<Guid> 
+	{//We modify the Id property from Identity to be a Guid type and use it in the Player entity
 		[Column("PlayerId")]
-		public Guid Id { get; set; }
+		public override Guid Id { get; set; }
 		
 		[Required(ErrorMessage = "Player's name is a required field.")]
 		[MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-		public string? Name { get; set; }
+		public override string? UserName { get; set; }
 	
 		//Principal entity
 		public  Score? Score { get; set; }
+		
 	}
 }

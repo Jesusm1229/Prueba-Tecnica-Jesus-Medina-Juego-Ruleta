@@ -10,7 +10,7 @@ namespace Shared.DataTransferObjects
 	public record PlayerForCreationDto(
 
 		[Required(ErrorMessage = "Player's name is a required field.")]
-		string Name, //Only Name is required to create a player
+		string? UserName, //Only Name is required to create a player
 
 		ScoreForCreationDto Score//Score is optional to create a player
 		); 

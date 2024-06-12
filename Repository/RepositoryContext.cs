@@ -1,11 +1,13 @@
 ﻿using Entities.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repository.Configuration;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Repository
 {
-	public class RepositoryContext : DbContext
+	public class RepositoryContext : IdentityDbContext<Player, IdentityRole<Guid>, Guid>
 	{
 		public RepositoryContext(DbContextOptions options)
 		: base(options)
@@ -14,6 +16,8 @@ namespace Repository
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{	
+			base.OnModelCreating(modelBuilder);
+
 			modelBuilder.ApplyConfiguration(new PlayerConfiguration());
 			modelBuilder.ApplyConfiguration(new ScoreConfiguration());
 		}

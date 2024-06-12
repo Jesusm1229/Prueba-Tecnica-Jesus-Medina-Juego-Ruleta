@@ -4,11 +4,28 @@ using Repository;
 using Service.Contracts;
 using Service;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Entities.Models;
 
 namespace WinWheel.Extensions
 {
 	public static class ServiceExtensions
 	{
+		public static void ConfigureIdentity(this IServiceCollection services)
+		{
+			services.AddIdentityCore<Player>(options =>
+			{				
+				options.Password.RequireDigit = false;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequiredLength = 0;			
+
+			})
+			.AddEntityFrameworkStores<RepositoryContext>()
+			.AddDefaultTokenProviders()			
+			.AddEntityFrameworkStores<RepositoryContext>();
+		}
 		public static void ConfigureCors(this IServiceCollection services) =>
 			services.AddCors(options =>
 			{

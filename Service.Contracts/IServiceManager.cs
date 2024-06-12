@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Service.Contracts
 		IPlayerService PlayerService { get; }
 		IScoreService ScoreService { get; }
 
-
+		IAuthenticationService AuthenticationService { get; }
 
 	}
 }

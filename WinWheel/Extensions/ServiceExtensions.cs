@@ -6,6 +6,9 @@ using Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Entities.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace WinWheel.Extensions
 {
@@ -19,7 +22,8 @@ namespace WinWheel.Extensions
 				options.Password.RequireLowercase = false;
 				options.Password.RequireNonAlphanumeric = false;
 				options.Password.RequireUppercase = false;
-				options.Password.RequiredLength = 0;			
+				options.Password.RequiredLength = 0;
+			
 
 			})
 			.AddEntityFrameworkStores<RepositoryContext>()
@@ -58,6 +62,32 @@ namespace WinWheel.Extensions
 		//Caching services
 		public static void ConfigureResponseCaching(this IServiceCollection services) =>
 			services.AddResponseCaching();
+
+		public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+		{
+			var jwtSettings = configuration.GetSection("JwtSettings");
+			var secretKey = Environment.GetEnvironmentVariable("SECRET");
+
+			services.AddAuthentication(opt =>
+			{
+				opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			})
+			.AddJwtBearer(options =>
+			{
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+
+					ValidIssuer = jwtSettings["validIssuer"],
+					ValidAudience = jwtSettings["validAudience"],
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+				};
+			});
+		}
 
 	}
 }

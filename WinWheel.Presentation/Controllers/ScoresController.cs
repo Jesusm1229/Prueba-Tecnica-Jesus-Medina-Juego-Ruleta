@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -30,6 +31,7 @@ namespace WinWheel.Presentation.Controllers
 
 		//Get a player score.
 		[HttpGet("{id:guid}", Name = "GetScoreForPlayer")]
+		[Authorize]
 		public async Task<IActionResult> GetScoreForPlayer(Guid playerId, Guid id)
 		{
 			var score = await _service.ScoreService.GetScore(playerId, id, trackChanges: false);

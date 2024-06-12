@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using System;
@@ -23,7 +24,7 @@ namespace WinWheel.Presentation.Controllers
 			_serviceManager = serviceManager;
 		}
 
-		[HttpGet]
+		[HttpGet(Name = "GetPlayers")]		
 		public async Task<IActionResult> GetPlayers()
 		{
 			
@@ -47,7 +48,7 @@ namespace WinWheel.Presentation.Controllers
 
 		//Create a player
 		//We take fromboy the player object. On the contrary will create 
-		[HttpPost]
+		[HttpPost (Name = "CreatePlayer")]
 		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
 			if(player == null)

@@ -41,6 +41,23 @@ namespace WinWheel.Presentation.Controllers
 			return StatusCode(201);
 
 		}
+
+		[HttpPost("login")]
+		public async Task<IActionResult> Authenticate([FromBody] PlayerForAuthenticationDto player)
+		{
+			if (player == null)
+				return BadRequest("player object is null");
+
+			if (!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
+
+			if(!await _service.AuthenticationService.ValidateUser(player))
+			{
+				return Unauthorized();
+			}			
+
+			return Ok(new	{ Token = await _service.AuthenticationService.CreateToken()});
+		}
 	}
 
 

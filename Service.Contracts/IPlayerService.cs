@@ -14,5 +14,6 @@ namespace Service.Contracts
 		Task <PlayerDto> GetPlayer(Guid playerId, bool trackChanges);
 
 		Task<PlayerDto> CreatePlayer(PlayerForCreationDto player);
+
 	}
 }

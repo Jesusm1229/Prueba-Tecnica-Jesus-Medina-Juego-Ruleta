@@ -1,10 +1,12 @@
 
 using Contracts;
+using Entities.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
+using Repository;
 using WinWheel.Extensions;
 
 namespace WinWheel
@@ -29,7 +31,6 @@ namespace WinWheel
 
 			builder.Services.ConfigureSqlContext(builder.Configuration);
 
-
 			builder.Services.AddAutoMapper(typeof(Program));
 			// Add services to the container.
 
@@ -40,6 +41,11 @@ namespace WinWheel
 			});
 
 			builder.Services.ConfigureResponseCaching();
+
+			builder.Services.AddAuthentication();
+			builder.Services.ConfigureIdentity();		
+
+
 
 
 			builder.Services.AddControllers(config => {
@@ -79,9 +85,9 @@ namespace WinWheel
 
 			app.UseResponseCaching();
 
+			app.UseAuthentication();
 
 			app.UseAuthorization();
-
 
 			app.MapControllers();
 

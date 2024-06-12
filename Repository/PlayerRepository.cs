@@ -18,7 +18,7 @@ namespace Repository
 
 		public async Task<IEnumerable<Player>> GetAllPlayers(bool trackChanges) =>
 			await FindAll(trackChanges)
-			.OrderBy(p => p.Name)
+			.OrderBy(p => p.UserName)
 			.ToListAsync();
 
 		public async Task <Player> GetPlayer(Guid playerId, bool trackChanges) =>

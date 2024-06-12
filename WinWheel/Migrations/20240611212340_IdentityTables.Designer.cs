@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace WinWheel.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240611212340_IdentityTables")]
+    partial class IdentityTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,6 +52,11 @@ namespace WinWheel.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -73,11 +81,13 @@ namespace WinWheel.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -87,9 +97,6 @@ namespace WinWheel.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("UserName")
-                        .IsUnique();
-
                     b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
@@ -97,23 +104,23 @@ namespace WinWheel.Migrations
                         {
                             Id = new Guid("b7e9e3a1-3e29-4e6f-8e1a-2f3b6e0b6e1f"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bcb3104b-34b8-4776-8560-4e81110327bb",
+                            ConcurrencyStamp = "c217c443-07b8-44a1-abd4-823403f66266",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
+                            Name = "Keanu Reeves",
                             PhoneNumberConfirmed = false,
-                            TwoFactorEnabled = false,
-                            UserName = "Keanu Reeves"
+                            TwoFactorEnabled = false
                         },
                         new
                         {
                             Id = new Guid("3d490a70-94ce-4d15-9494-5248280c2ce3"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b2fcf741-4583-43cf-b2a2-e1e57b85ac49",
+                            ConcurrencyStamp = "7577b37d-2bd3-4966-9edf-49c5bc57655a",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
+                            Name = "Tom Cruise",
                             PhoneNumberConfirmed = false,
-                            TwoFactorEnabled = false,
-                            UserName = "Tom Cruise"
+                            TwoFactorEnabled = false
                         });
                 });
 

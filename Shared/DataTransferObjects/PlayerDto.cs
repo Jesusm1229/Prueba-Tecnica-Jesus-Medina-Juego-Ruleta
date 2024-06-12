@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects
 {
-	public record PlayerDto(Guid Id, string Name);
+	public record PlayerDto(Guid Id, string UserName);
 	
 }

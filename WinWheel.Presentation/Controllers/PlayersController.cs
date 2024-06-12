@@ -14,6 +14,8 @@ namespace WinWheel.Presentation.Controllers
 	[Route("api/players")]
 	[ApiController]
 	[ResponseCache(CacheProfileName = "120SecondsDuration")]
+	[ApiExplorerSettings(GroupName = "v1")]
+
 	public class PlayersController: ControllerBase
 	{
 		//Injecting the service manager
@@ -24,6 +26,10 @@ namespace WinWheel.Presentation.Controllers
 			_serviceManager = serviceManager;
 		}
 
+		/// <summary>
+		/// Gets the list of all players
+		/// </summary>
+		/// <returns>The players list</returns>
 		[HttpGet(Name = "GetPlayers")]		
 		public async Task<IActionResult> GetPlayers()
 		{
@@ -48,7 +54,20 @@ namespace WinWheel.Presentation.Controllers
 
 		//Create a player
 		//We take fromboy the player object. On the contrary will create 
+
+		/// <summary>
+		/// Creates a new player
+		/// </summary>
+		/// <param name="player"></param>
+		/// <returns>A newly created player</returns>
+		/// <response code="201">Returns the newly created item</response>
+		/// <response code="400">If the item is null</response>
+		/// <response code="422">If the model is invalid</response>
 		[HttpPost (Name = "CreatePlayer")]
+		[ProducesResponseType(201)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(422)]
+
 		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
 			if(player == null)

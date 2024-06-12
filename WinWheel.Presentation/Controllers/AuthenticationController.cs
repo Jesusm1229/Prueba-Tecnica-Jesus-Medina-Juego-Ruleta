@@ -54,9 +54,12 @@ namespace WinWheel.Presentation.Controllers
 			if(!await _service.AuthenticationService.ValidateUser(player))
 			{
 				return Unauthorized();
-			}			
+			}
+			//Token Refresh generation
+			var tokenDto = await _service.AuthenticationService.CreateToken(populateExp: true);
 
-			return Ok(new	{ Token = await _service.AuthenticationService.CreateToken()});
+			return Ok(tokenDto);
+
 		}
 	}
 

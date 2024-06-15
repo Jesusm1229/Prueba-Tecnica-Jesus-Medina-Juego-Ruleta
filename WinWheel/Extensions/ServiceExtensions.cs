@@ -23,8 +23,7 @@ namespace WinWheel.Extensions
 				options.Password.RequireLowercase = false;
 				options.Password.RequireNonAlphanumeric = false;
 				options.Password.RequireUppercase = false;
-				options.Password.RequiredLength = 0;
-			
+				options.Password.RequiredLength = 0;			
 
 			})
 			.AddEntityFrameworkStores<RepositoryContext>()

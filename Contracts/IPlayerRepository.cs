@@ -14,6 +14,6 @@ namespace Contracts
 		//GEt specific player
 		Task<Player> GetPlayer(Guid playerId, bool trackChanges);
 		//Create player
-		void CreatePlayer(Player player);
+		void CreatePlayer(Player player);		
 	}
 }

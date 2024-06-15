@@ -26,6 +26,8 @@ namespace Repository
 			.SingleOrDefaultAsync();
 
 		public void CreatePlayer(Player player) => Create(player);
+
+
 	}
 	
 }

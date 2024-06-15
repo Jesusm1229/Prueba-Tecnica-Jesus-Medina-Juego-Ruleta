@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinWheel.Presentation.ActionFilters;
 
 namespace WinWheel.Presentation.Controllers
 {
@@ -41,13 +42,14 @@ namespace WinWheel.Presentation.Controllers
 
 		//Create a score for a player.
 		[HttpPost]
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> CreateScoreForPlayer(Guid playerId, [FromBody] ScoreForCreationDto score)
 		{
-			if(score == null)
-				return BadRequest("ScoreForCreationDto object is null");
+			//if(score == null)
+			//	return BadRequest("ScoreForCreationDto object is null");
 
-			if(!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
+			//if(!ModelState.IsValid)
+			//	return UnprocessableEntity(ModelState);
 
 			var scoreToReturn = await _service.ScoreService.CreateScoreForPlayer(playerId, score, trackChanges: false);
 
@@ -56,13 +58,14 @@ namespace WinWheel.Presentation.Controllers
 
 		//Update a score for a player.
 		[HttpPut("{id:guid}")] //api/players/{playerId}/scores/{id}
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> UpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] ScoreForUpdateDto score)
 		{
-			if(score == null)
-				return BadRequest("ScoreForUpdateDto object is null");
+			//if(score == null)
+			//	return BadRequest("ScoreForUpdateDto object is null");
 
-			if(!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
+			//if(!ModelState.IsValid)
+			//	return UnprocessableEntity(ModelState);
 
 			await _service.ScoreService.UpdateScoreForPlayer(playerId, id, score, playerTrackChanges: false, scoreTrackChanges: true);
 
@@ -70,7 +73,7 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Partially update a score for a player.
-		[HttpPatch("{id:guid}")] //api/players/{playerId}/scores/{id}
+		[HttpPatch("{id:guid}")] //api/players/{playerId}/scores/{id}		
 		public async Task<IActionResult> PartiallyUpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] JsonPatchDocument<ScoreForUpdateDto> patchDoc)
 		{
 			if(patchDoc == null)

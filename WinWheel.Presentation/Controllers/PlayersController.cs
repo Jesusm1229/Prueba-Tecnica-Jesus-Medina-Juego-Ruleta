@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinWheel.Presentation.ActionFilters;
 
 
 namespace WinWheel.Presentation.Controllers
@@ -64,17 +65,18 @@ namespace WinWheel.Presentation.Controllers
 		/// <response code="400">If the item is null</response>
 		/// <response code="422">If the model is invalid</response>
 		[HttpPost (Name = "CreatePlayer")]
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		[ProducesResponseType(201)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(422)]
 
 		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
-			if(player == null)
-				return BadRequest("PlayerForCreationDto object is null");
+			//if(player == null)
+			//	return BadRequest("PlayerForCreationDto object is null");
 
-			if(!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
+			//if(!ModelState.IsValid)
+			//	return UnprocessableEntity(ModelState);
 
 			var createdPlayer = await _serviceManager.PlayerService.CreatePlayer(player);
 

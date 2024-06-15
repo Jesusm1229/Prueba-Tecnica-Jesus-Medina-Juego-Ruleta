@@ -11,8 +11,10 @@ namespace Service.Contracts
 	{
 		IPlayerService PlayerService { get; }
 		IScoreService ScoreService { get; }
-
 		IAuthenticationService AuthenticationService { get; }
+		IBetService BetService { get; }
+
+		IWheelService WheelService { get; }
 
 	}
 }

@@ -19,7 +19,10 @@ namespace WinWheel.Presentation.Controllers
 		private readonly IServiceManager _service;
 		public ScoresController(IServiceManager service) => _service = service;
 
-
+		/// <summary>
+		/// Gets the list of all scores for a player. The requerirements stablish a one to one relationship between player and score. So it will always return one score.
+		/// </summary>
+		/// <returns>The companies list</returns>
 		//Get player scores.
 		//Like the playerId is in the route, is not needed to be passed in the HttpGet attribute.
 		[HttpGet]
@@ -31,6 +34,10 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Get a player score.
+		/// <summary>
+		/// Gets the speficic score for a player
+		/// </summary>
+		/// <returns>The companies list</returns>
 		[HttpGet("{id:guid}", Name = "GetScoreForPlayer")]
 		[Authorize]
 		public async Task<IActionResult> GetScoreForPlayer(Guid playerId, Guid id)
@@ -41,7 +48,17 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Create a score for a player.
+		/// <summary>
+		/// Creates a new score for player
+		/// </summary>
+		/// <param name="playerId"></param>
+		/// <param name="score"></param>
+		/// <returns>A newly created score</returns>
+		/// <response code="201">Returns the newly created item</response>
+		/// <response code="400">If the item is null</response>
+		/// <response code="422">If the model is invalid</response>
 		[HttpPost]
+		[Authorize]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> CreateScoreForPlayer(Guid playerId, [FromBody] ScoreForCreationDto score)
 		{
@@ -57,7 +74,19 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Update a score for a player.
+		/// <summary>
+		/// Updates a score for player
+		/// </summary>
+		/// <param name="playerId"></param>
+		/// <param name="id"></param>
+		/// <param name="score"></param>
+		/// <returns>A newly updated score</returns>
+		/// <response code="201">Returns the newly created item</response>
+		/// <response code="400">If the item is null</response>
+		/// <response code="422">If the model is invalid</response>
+
 		[HttpPut("{id:guid}")] //api/players/{playerId}/scores/{id}
+		[Authorize]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> UpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] ScoreForUpdateDto score)
 		{
@@ -73,7 +102,18 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Partially update a score for a player.
-		[HttpPatch("{id:guid}")] //api/players/{playerId}/scores/{id}		
+		/// <summary>
+		/// Patch update a score for player
+		/// </summary>
+		/// <param name="playerId"></param>
+		/// <param name="id"></param>
+		/// <param name="patchDoc"></param>
+		/// <returns>A newly updated score</returns>
+		/// <response code="201">Returns the newly created item</response>
+		/// <response code="400">If the item is null</response>
+		/// <response code="422">If the model is invalid</response>
+		[HttpPatch("{id:guid}")] //api/players/{playerId}/scores/{id}
+		[Authorize]
 		public async Task<IActionResult> PartiallyUpdateScoreForPlayer(Guid playerId, Guid id, [FromBody] JsonPatchDocument<ScoreForUpdateDto> patchDoc)
 		{
 			if(patchDoc == null)

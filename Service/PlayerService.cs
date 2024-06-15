@@ -69,6 +69,22 @@ namespace Service
 			return playerDto;
 		}
 
+		public async Task<PlayerDto> GetPlayerByUsername(string username, bool trackChanges)
+		{
+			var player = await _repository.Player.GetPlayerByUsername(username, trackChanges);
+
+			//Check if null
+			if (player == null)
+			{
+				throw new PlayerNotFoundException(username);
+			}
+
+			//Mapper
+			var playerDto = _mapper.Map<PlayerDto>(player);
+
+			return playerDto;
+		}
+
 
 		public async Task<PlayerDto> CreatePlayer(PlayerForCreationDto player)
 		{

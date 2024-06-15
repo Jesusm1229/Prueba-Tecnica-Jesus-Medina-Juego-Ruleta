@@ -25,6 +25,10 @@ namespace Repository
 			await FindByCondition(p => p.Id.Equals(playerId), trackChanges)
 			.SingleOrDefaultAsync();
 
+		public async Task<Player> GetPlayerByUsername(string username, bool trackChanges) =>
+			await FindByCondition(p => p.UserName.Equals(username), trackChanges)
+			.SingleOrDefaultAsync();
+
 		public void CreatePlayer(Player player) => Create(player);
 
 

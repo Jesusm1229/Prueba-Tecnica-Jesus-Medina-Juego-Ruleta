@@ -53,6 +53,17 @@ namespace WinWheel.Presentation.Controllers
 			
 		}
 
+		//Getting a player by username
+		[HttpGet("{username}", Name = "PlayerByUsername")]
+		public async Task<IActionResult> GetPlayer(string username)
+		{
+			
+				var player = await _serviceManager.PlayerService.GetPlayerByUsername(username, trackChanges: false);
+
+				return Ok(player);
+			
+		}
+
 		//Create a player
 		//We take fromboy the player object. On the contrary will create 
 
@@ -65,11 +76,10 @@ namespace WinWheel.Presentation.Controllers
 		/// <response code="400">If the item is null</response>
 		/// <response code="422">If the model is invalid</response>
 		[HttpPost (Name = "CreatePlayer")]
-		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		[ProducesResponseType(201)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(422)]
-
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
 			//if(player == null)

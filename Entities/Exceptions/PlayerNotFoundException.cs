@@ -12,6 +12,10 @@ namespace Entities.Exceptions
 		public PlayerNotFoundException(Guid playerId)
 			: base($"Player with id {playerId} not found")
 		{ }
+
+		public PlayerNotFoundException(string username)
+			: base($"Player with username {username} not found")
+		{ }
 	}
 	
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinWheel.Presentation.ActionFilters;
 
 namespace WinWheel.Presentation.Controllers
 {
@@ -18,16 +19,11 @@ namespace WinWheel.Presentation.Controllers
 		public AuthenticationController(IServiceManager service) => _service = service;
 
 
-		[HttpPost]		
+		[HttpPost]
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> RegisterUser(PlayerForCreationDto playerForCreation)
 		{
 			var result = await _service.AuthenticationService.RegisterUser(playerForCreation);
-
-			if (playerForCreation == null)
-				return BadRequest("PlayerForCreationDto object is null");
-
-			if (!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
 
 			if (!result.Succeeded)
 			{
@@ -43,14 +39,10 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		[HttpPost("login")]
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> Authenticate([FromBody] PlayerForAuthenticationDto player)
 		{
-			if (player == null)
-				return BadRequest("player object is null");
-
-			if (!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
-
+			
 			if(!await _service.AuthenticationService.ValidateUser(player))
 			{
 				return Unauthorized();

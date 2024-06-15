@@ -11,5 +11,12 @@ namespace Contracts
 	public interface IAuthenticationService
 	{
 		Task<IdentityResult> RegisterUser(PlayerForCreationDto playerForCreation);
+
+		Task<bool> ValidateUser(PlayerForAuthenticationDto playerForAuthentication);		
+
+		Task<TokenDto> CreateToken(bool populateExp);
+
+		Task<TokenDto> RefreshToken(TokenDto tokenDto);
+
 	}
 }

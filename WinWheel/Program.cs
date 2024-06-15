@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using NLog;
 using Repository;
 using WinWheel.Extensions;
+using WinWheel.Presentation.ActionFilters;
 
 namespace WinWheel
 {
@@ -43,10 +44,13 @@ namespace WinWheel
 			builder.Services.ConfigureResponseCaching();
 
 			builder.Services.AddAuthentication();
-			builder.Services.ConfigureIdentity();		
+			builder.Services.ConfigureIdentity();
+			builder.Services.ConfigureJWT(builder.Configuration);
 
+			builder.Services.ConfigureSwagger();
 
-
+			builder.Services.AddScoped<ValidationFilterAttribute>();
+			builder.Services.AddScoped<ValidationBetAttribute>();
 
 			builder.Services.AddControllers(config => {
 				config.RespectBrowserAcceptHeader = true;
@@ -88,6 +92,12 @@ namespace WinWheel
 			app.UseAuthentication();
 
 			app.UseAuthorization();
+
+			app.UseSwagger();
+			app.UseSwaggerUI(s =>
+			{
+				s.SwaggerEndpoint("/swagger/v1/swagger.json", "Win Wheel API v1");			
+			});
 
 			app.MapControllers();
 

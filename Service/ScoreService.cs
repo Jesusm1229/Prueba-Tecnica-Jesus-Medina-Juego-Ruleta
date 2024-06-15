@@ -6,6 +6,7 @@ using Service.Contracts;
 using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,14 +25,37 @@ namespace Service
 			_mapper = mapper;
 		}
 
+		//Reusable Method to get player and check if it exists
+		private async Task CheckIfPlayerExists(Guid id, bool trackChanges)
+		{
+			var player = await _repository.Player.GetPlayer(id, trackChanges);
+
+			if (player is null)
+				throw new PlayerNotFoundException(id);
+			
+		}
+		//Reusabke Method to get score for player and check if it exists
+		private async Task<Score> GetScoreForPlayerAndCheckIfExists(Guid playerId, Guid id, bool trackChanges)
+		{
+			var scoreDb = await _repository.Score.GetScore(playerId, id, trackChanges);
+
+			if (scoreDb is null)
+				throw new PlayerNotFoundException(playerId);			
+
+			return scoreDb;
+		}
+
+		//Get Scores from players
 		public async Task <IEnumerable<ScoreDto>> GetScores(Guid playerId, bool trackChanges)
 		{
-			var player = await _repository.Player.GetPlayer(playerId, trackChanges);
+			//var player = await _repository.Player.GetPlayer(playerId, trackChanges);
 
-			if(player is null)
-			{
-				throw new PlayerNotFoundException(playerId);
-			}
+			//if(player is null)
+			//{
+			//	throw new PlayerNotFoundException(playerId);
+			//}
+
+			await CheckIfPlayerExists(playerId, trackChanges);
 
 			var scoresFromDb = _repository.Score.GetScores(playerId, trackChanges);
 
@@ -43,19 +67,9 @@ namespace Service
 
 		public async Task<ScoreDto> GetScore(Guid playerId, Guid Id, bool trackChanges)
 		{
-			var player = await _repository.Player.GetPlayer(playerId, trackChanges);
+			await CheckIfPlayerExists(playerId, trackChanges);
 
-			if(player is null)
-			{
-				throw new PlayerNotFoundException(playerId);
-			}
-
-			var scoreFromDb = await _repository.Score.GetScore(playerId, Id, trackChanges);
-
-			if(scoreFromDb is null)
-			{
-				throw new ScoreNotFoundException(Id);
-			}
+			var scoreFromDb = await GetScoreForPlayerAndCheckIfExists(playerId, Id, trackChanges);
 
 			var scoreDto = _mapper.Map<ScoreDto>(scoreFromDb);
 
@@ -67,12 +81,7 @@ namespace Service
 		public async Task<ScoreDto> CreateScoreForPlayer(Guid playerId, ScoreForCreationDto scoreForCreationDto, bool trackChanges)
 		{
 			// Get the player
-			var player = await _repository.Player.GetPlayer(playerId, trackChanges);
-
-			if(player is null)
-			{
-				throw new PlayerNotFoundException(playerId);
-			}
+			await CheckIfPlayerExists(playerId, trackChanges);
 
 			var scoreEntity = _mapper.Map<Score>(scoreForCreationDto);
 
@@ -88,20 +97,9 @@ namespace Service
 		//UpdateScoreForPlayer method
 		public async Task UpdateScoreForPlayer(Guid playerId, Guid id, ScoreForUpdateDto scoreForUpdate, bool playerTrackChanges, bool scoreTrackChanges)
 		{
-			var player = await _repository.Player.GetPlayer(playerId, playerTrackChanges);
+			await CheckIfPlayerExists(playerId, playerTrackChanges);			
 
-			if (player is null)
-			{
-				throw new PlayerNotFoundException(playerId);
-			}			
-
-			var scoreEntity = await _repository.Score.GetScore(playerId, id, scoreTrackChanges);
-
-
-			if (scoreEntity is null)
-			{
-				throw new ScoreNotFoundException(id);
-			}
+			var scoreEntity = await GetScoreForPlayerAndCheckIfExists(playerId, id, scoreTrackChanges);
 
 			_mapper.Map(scoreForUpdate, scoreEntity);
 
@@ -112,19 +110,9 @@ namespace Service
 		//GetScoreForPlayerPatch method
 		public async Task<(ScoreForUpdateDto scoreToPatch, Score scoreEntity)> GetScoreForPlayerPatch(Guid playerId, Guid id, bool playerTrackChanges, bool scoreTrackChanges)
 		{
-			var player = await _repository.Player.GetPlayer(playerId, playerTrackChanges);
+			await CheckIfPlayerExists(playerId, playerTrackChanges);
 
-			if (player is null)
-			{
-				throw new PlayerNotFoundException(playerId);
-			}
-
-			var scoreEntity = await _repository.Score.GetScore(playerId, id, scoreTrackChanges);
-
-			if (scoreEntity is null)
-			{
-				throw new ScoreNotFoundException(id);
-			}
+			var scoreEntity = await GetScoreForPlayerAndCheckIfExists(playerId, id, scoreTrackChanges);
 
 			var scoreToPatch = _mapper.Map<ScoreForUpdateDto>(scoreEntity);
 

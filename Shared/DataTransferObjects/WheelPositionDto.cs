@@ -6,5 +6,6 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects
 {
-	public record ScoreDto(Guid Id, int Points);
+	public record WheelPositionDto(int number, string color);
+	
 }

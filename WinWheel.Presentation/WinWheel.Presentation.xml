@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WinWheel.Presentation</name>
+    </assembly>
+    <members>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetPlayers">
+            <summary>
+            Gets the list of all players
+            </summary>
+            <returns>The players list</returns>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.CreatePlayer(Shared.DataTransferObjects.PlayerForCreationDto)">
+            <summary>
+            Creates a new player
+            </summary>
+            <param name="player"></param>
+            <returns>A newly created player</returns>
+            <response code="201">Returns the newly created item</response>
+            <response code="400">If the item is null</response>
+            <response code="422">If the model is invalid</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.ScoresController.GetScoresForPlayer(System.Guid)">
+            <summary>
+            Gets the list of all scores for a player. The requerirements stablish a one to one relationship between player and score. So it will always return one score.
+            </summary>
+            <returns>The companies list</returns>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.ScoresController.GetScoreForPlayer(System.Guid,System.Guid)">
+            <summary>
+            Gets the speficic score for a player
+            </summary>
+            <returns>The companies list</returns>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.ScoresController.CreateScoreForPlayer(System.Guid,Shared.DataTransferObjects.ScoreForCreationDto)">
+            <summary>
+            Creates a new score for player
+            </summary>
+            <param name="playerId"></param>
+            <param name="score"></param>
+            <returns>A newly created score</returns>
+            <response code="201">Returns the newly created item</response>
+            <response code="400">If the item is null</response>
+            <response code="422">If the model is invalid</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.ScoresController.UpdateScoreForPlayer(System.Guid,System.Guid,Shared.DataTransferObjects.ScoreForUpdateDto)">
+            <summary>
+            Updates a score for player
+            </summary>
+            <param name="playerId"></param>
+            <param name="id"></param>
+            <param name="score"></param>
+            <returns>A newly updated score</returns>
+            <response code="201">Returns the newly created item</response>
+            <response code="400">If the item is null</response>
+            <response code="422">If the model is invalid</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.ScoresController.PartiallyUpdateScoreForPlayer(System.Guid,System.Guid,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Shared.DataTransferObjects.ScoreForUpdateDto})">
+            <summary>
+            Patch update a score for player
+            </summary>
+            <param name="playerId"></param>
+            <param name="id"></param>
+            <param name="patchDoc"></param>
+            <returns>A newly updated score</returns>
+            <response code="201">Returns the newly created item</response>
+            <response code="400">If the item is null</response>
+            <response code="422">If the model is invalid</response>
+        </member>
+    </members>
+</doc>

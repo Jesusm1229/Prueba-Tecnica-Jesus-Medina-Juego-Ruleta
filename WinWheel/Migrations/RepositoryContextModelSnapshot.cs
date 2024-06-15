@@ -22,6 +22,34 @@ namespace WinWheel.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Entities.Models.Color", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ColorId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Color");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Name = "red"
+                        },
+                        new
+                        {
+                            Id = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Name = "black"
+                        });
+                });
+
             modelBuilder.Entity("Entities.Models.Player", b =>
                 {
                     b.Property<Guid>("Id")
@@ -66,6 +94,12 @@ namespace WinWheel.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -97,23 +131,329 @@ namespace WinWheel.Migrations
                         {
                             Id = new Guid("b7e9e3a1-3e29-4e6f-8e1a-2f3b6e0b6e1f"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bcb3104b-34b8-4776-8560-4e81110327bb",
+                            ConcurrencyStamp = "9af72340-17e5-4edf-a06f-28fc8bd936b8",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
+                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             TwoFactorEnabled = false,
-                            UserName = "Keanu Reeves"
+                            UserName = "KeanuReeves"
                         },
                         new
                         {
                             Id = new Guid("3d490a70-94ce-4d15-9494-5248280c2ce3"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b2fcf741-4583-43cf-b2a2-e1e57b85ac49",
+                            ConcurrencyStamp = "c799eb44-cb3b-4d8e-a6f2-16796b00ad7a",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
+                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             TwoFactorEnabled = false,
-                            UserName = "Tom Cruise"
+                            UserName = "TomCruise"
+                        });
+                });
+
+            modelBuilder.Entity("Entities.Models.Position", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("PositionId");
+
+                    b.Property<Guid?>("ColorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RouletteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("RouletteId");
+
+                    b.ToTable("Position");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("4c82aeb5-fe97-4e42-b5d3-08974c02f8c7"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 0,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("b6d4270e-a2d9-4410-a5ff-3df3aa07dafa"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 1,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("de6d5485-f489-41bc-9f7e-b401ad3f0e08"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 2,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("e62b6ce4-abdf-4c44-a169-1f52aabb1bba"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 3,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("5c1e913c-4a4b-4b7b-9985-20314444859a"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 4,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("3bc68cb9-1698-4057-be3d-09d49f126738"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 5,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("05e67785-80f6-4eef-9ac1-a949fc5545e5"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 6,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("dec761d6-4c1e-495c-baec-0811b2a14883"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 7,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("13ca953f-4f56-4a54-858d-0b691313ac02"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 8,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("37ed1a48-05f1-41e5-be83-5125a679c1f4"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 9,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("d2b66a01-fd00-4d07-82ca-f032c90b8fde"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 10,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("bc5f3292-1c2a-471e-b1ac-6a7c7aaa36b0"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 11,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("a2fa8796-9b32-4f99-8b82-ef1f368044dc"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 12,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("004f4a3a-b791-4113-99a5-e41093609e0f"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 13,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("524fdad5-4c82-458e-8fb0-2c1962eafc77"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 14,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("794e4f00-a4e0-4a5d-a2d8-a04b6ea5a372"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 15,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("264a04a3-9e31-4876-a628-3a584bd3804f"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 16,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("7f1cbb01-de93-41f2-8995-f9e311adb32a"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 17,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("45fd2e34-c84b-4667-b175-5af27f08fd11"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 18,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("f122d0c4-8f6f-495e-997b-08ce0a7ed730"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 19,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("4b8d8e59-783a-4d7a-9d31-cc54186c8551"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 20,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("98326633-e5cf-4a40-a4a1-d7ca2d795a20"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 21,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("91021e3a-a20c-4481-846a-9550ec1b142a"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 22,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("004a0426-352b-424b-bd0f-8367926bcd9c"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 23,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("fdb84c5e-2bd8-4f1e-b7c9-8d7a0f4f416c"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 24,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("50c361dd-bb20-4456-abd3-d9d637167803"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 25,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("51cfba07-6ef4-4d45-b8be-93fd15151ed5"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 26,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("f83b88a5-57e4-4a56-b685-51c03464fc92"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 27,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("39c9ade8-3c67-4083-8f76-4aa6028856ab"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 28,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("7338a90a-b13b-482b-b306-9893b3b1ece1"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 29,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("cc11efa3-82f2-431a-a928-b0288d46d6b9"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 30,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("44b63fbe-f49d-4495-88bc-5e6d221655f8"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 31,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("5be16b2c-1b85-43bc-a30d-c9b8029adc4a"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 32,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("4ed335e7-31af-4201-bae6-1c8946163d03"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 33,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("271c9fdb-c203-40f1-bc89-1b1ca0bc21b8"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 34,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("1145aaa0-61e0-43cf-81b1-aed7e1970eb0"),
+                            ColorId = new Guid("2da7569e-6641-45e1-9d55-44fe86338902"),
+                            Number = 35,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        },
+                        new
+                        {
+                            Id = new Guid("a08d5a0e-b245-4c7a-b51d-975bf4fe9a33"),
+                            ColorId = new Guid("21d029a4-ac35-47b7-b3ac-a380b0ea355e"),
+                            Number = 36,
+                            RouletteId = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
+                        });
+                });
+
+            modelBuilder.Entity("Entities.Models.Roulette", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RouletteId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roulette");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("05b937f4-2625-4061-abcd-094cf6e2e46c")
                         });
                 });
 
@@ -282,6 +622,23 @@ namespace WinWheel.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.Position", b =>
+                {
+                    b.HasOne("Entities.Models.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId");
+
+                    b.HasOne("Entities.Models.Roulette", "Roulette")
+                        .WithMany("Positions")
+                        .HasForeignKey("RouletteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Roulette");
+                });
+
             modelBuilder.Entity("Entities.Models.Score", b =>
                 {
                     b.HasOne("Entities.Models.Player", "Player")
@@ -347,6 +704,11 @@ namespace WinWheel.Migrations
             modelBuilder.Entity("Entities.Models.Player", b =>
                 {
                     b.Navigation("Score");
+                });
+
+            modelBuilder.Entity("Entities.Models.Roulette", b =>
+                {
+                    b.Navigation("Positions");
                 });
 #pragma warning restore 612, 618
         }

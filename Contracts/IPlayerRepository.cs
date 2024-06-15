@@ -13,7 +13,10 @@ namespace Contracts
 		Task <IEnumerable<Player>> GetAllPlayers(bool trackChanges);
 		//GEt specific player
 		Task<Player> GetPlayer(Guid playerId, bool trackChanges);
+
+		Task<Player> GetPlayerByUsername(string username, bool trackChanges);		
+			
 		//Create player
-		void CreatePlayer(Player player);
+		void CreatePlayer(Player player);		
 	}
 }

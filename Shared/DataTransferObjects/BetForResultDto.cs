@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 namespace Shared.DataTransferObjects
 {
-	public record ScoreDto(Guid Id, int Points);
+	public record BetForResultDto (			
+		 int NewScore,
+		 int? WinnerNumber,
+		 string WinnerColor,
+		 bool DidIWin
+		);		
+	
 }

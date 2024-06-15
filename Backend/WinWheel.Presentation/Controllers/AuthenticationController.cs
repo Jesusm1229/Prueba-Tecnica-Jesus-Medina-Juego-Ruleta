@@ -18,7 +18,12 @@ namespace WinWheel.Presentation.Controllers
 		private readonly IServiceManager _service;
 		public AuthenticationController(IServiceManager service) => _service = service;
 
-
+		/// <summary>
+		/// Register Player
+		/// </summary>
+		/// <param name="playerForCreation"></param>
+		/// <returns>A newly created player</returns>
+		/// <response code="201">Returns the newly created item</response>
 		[HttpPost]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> RegisterUser(PlayerForCreationDto playerForCreation)
@@ -37,7 +42,11 @@ namespace WinWheel.Presentation.Controllers
 			return StatusCode(201);
 
 		}
-
+		/// <summary>
+		/// Login Player
+		/// </summary>
+		/// <param name="player"></param>
+		/// <returns></returns>
 		[HttpPost("login")]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> Authenticate([FromBody] PlayerForAuthenticationDto player)

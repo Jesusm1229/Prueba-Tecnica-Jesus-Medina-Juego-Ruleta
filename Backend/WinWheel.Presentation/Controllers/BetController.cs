@@ -20,7 +20,11 @@ namespace WinWheel.Presentation.Controllers
 		public BetController(IServiceManager service) => _service = service;
 
 		
-		//Place Bet
+		/// <summary>
+		/// Place a bet. Categories: * "Straight": specific number (0-36) and color (Black - Red). * "Even": even numbers. * "Odd": odd numbers. * Color: "Black" or "Red"
+		/// </summary>
+		/// <param name="betForCalculationDto"></param>
+		/// <returns>A result Including: Winner Number, Winner Color, a boolean indicating if he won or lose and the  New Score for player </returns>
 		[HttpPost(Name = "PlaceBet")]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		[ServiceFilter(typeof(ValidationBetAttribute))]

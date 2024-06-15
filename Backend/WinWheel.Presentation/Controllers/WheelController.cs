@@ -19,6 +19,10 @@ namespace WinWheel.Presentation.Controllers
 
 		
 		//SpinWheel
+		/// <summary>
+		/// Spin the wheel and get a result
+		/// </summary>
+		/// <returns>A position with a number and color</returns>
 		[HttpGet(Name = "SpinWheel")]
 		[ServiceFilter(typeof(ValidationFilterAttribute))]		
 		public async Task<IActionResult> SpinWheel()

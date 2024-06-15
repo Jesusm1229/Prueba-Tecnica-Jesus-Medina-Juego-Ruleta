@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using NLog;
 using Repository;
 using WinWheel.Extensions;
+using WinWheel.Presentation.ActionFilters;
 
 namespace WinWheel
 {
@@ -47,6 +48,9 @@ namespace WinWheel
 			builder.Services.ConfigureJWT(builder.Configuration);
 
 			builder.Services.ConfigureSwagger();
+
+			builder.Services.AddScoped<ValidationFilterAttribute>();
+			builder.Services.AddScoped<ValidationBetAttribute>();
 
 			builder.Services.AddControllers(config => {
 				config.RespectBrowserAcceptHeader = true;

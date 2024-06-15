@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities.Exceptions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Service
 {
@@ -27,6 +28,19 @@ namespace Service
 			_mapper = mapper;
 		}
 
+		//Method to get player and check if it exists. Reusable
+		private async Task<Player> GetPlayerAndCheckIfItExists(Guid id, bool trackChanges)
+		{
+			var player = await _repository.Player.GetPlayer(id, trackChanges);
+
+			if (player is null)
+				throw new PlayerNotFoundException(id);
+
+			return player;
+		}
+
+
+
 		public async Task<IEnumerable<PlayerDto>> GetAllPlayers(bool trackChanges)
 		{
 				var players = await _repository.Player.GetAllPlayers(trackChanges);
@@ -41,12 +55,28 @@ namespace Service
 
 		public async Task<PlayerDto> GetPlayer(Guid id, bool trackChanges)
 		{
-			var player = await _repository.Player.GetPlayer(id, trackChanges);
+			var player = await GetPlayerAndCheckIfItExists(id, trackChanges);
 
 			//Check if null
 			if (player == null)
 			{
 				throw new PlayerNotFoundException(id);
+			}
+
+			//Mapper
+			var playerDto = _mapper.Map<PlayerDto>(player);
+
+			return playerDto;
+		}
+
+		public async Task<PlayerDto> GetPlayerByUsername(string username, bool trackChanges)
+		{
+			var player = await _repository.Player.GetPlayerByUsername(username, trackChanges);
+
+			//Check if null
+			if (player == null)
+			{
+				throw new PlayerNotFoundException(username);
 			}
 
 			//Mapper

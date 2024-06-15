@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinWheel.Presentation.ActionFilters;
 
 
 namespace WinWheel.Presentation.Controllers
@@ -52,6 +53,17 @@ namespace WinWheel.Presentation.Controllers
 			
 		}
 
+		//Getting a player by username
+		[HttpGet("{username}", Name = "PlayerByUsername")]
+		public async Task<IActionResult> GetPlayer(string username)
+		{
+			
+				var player = await _serviceManager.PlayerService.GetPlayerByUsername(username, trackChanges: false);
+
+				return Ok(player);
+			
+		}
+
 		//Create a player
 		//We take fromboy the player object. On the contrary will create 
 
@@ -67,14 +79,14 @@ namespace WinWheel.Presentation.Controllers
 		[ProducesResponseType(201)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(422)]
-
+		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		public async Task<IActionResult> CreatePlayer([FromBody] PlayerForCreationDto player)
 		{
-			if(player == null)
-				return BadRequest("PlayerForCreationDto object is null");
+			//if(player == null)
+			//	return BadRequest("PlayerForCreationDto object is null");
 
-			if(!ModelState.IsValid)
-				return UnprocessableEntity(ModelState);
+			//if(!ModelState.IsValid)
+			//	return UnprocessableEntity(ModelState);
 
 			var createdPlayer = await _serviceManager.PlayerService.CreatePlayer(player);
 

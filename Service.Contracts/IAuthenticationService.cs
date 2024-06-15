@@ -12,8 +12,7 @@ namespace Contracts
 	{
 		Task<IdentityResult> RegisterUser(PlayerForCreationDto playerForCreation);
 
-		Task<bool> ValidateUser(PlayerForAuthenticationDto playerForAuthentication);
-		
+		Task<bool> ValidateUser(PlayerForAuthenticationDto playerForAuthentication);		
 
 		Task<TokenDto> CreateToken(bool populateExp);
 

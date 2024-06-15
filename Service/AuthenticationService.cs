@@ -32,8 +32,7 @@ namespace Service
 			_configuration = configuration;
 		}
 
-		public async Task<IdentityResult> RegisterUser(PlayerForCreationDto
-			playerForCreation)
+		public async Task<IdentityResult> RegisterUser(PlayerForCreationDto	playerForCreation)
 		{
 			var player = _mapper.Map<Player>(playerForCreation);
 
@@ -46,8 +45,7 @@ namespace Service
 
 		private Player? _player;
 
-		public async Task<bool> ValidateUser(PlayerForAuthenticationDto
-			playerForAuthentication)
+		public async Task<bool> ValidateUser(PlayerForAuthenticationDto	playerForAuthentication)
 		{
 			_player = await _userManager.FindByNameAsync(playerForAuthentication.UserName);
 

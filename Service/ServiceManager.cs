@@ -17,6 +17,8 @@ namespace Service
 		private readonly Lazy<IPlayerService> _playerService;
 		private readonly Lazy<IScoreService> _scoreService;
 		private readonly Lazy<IAuthenticationService>  _authenticationService;
+		private readonly Lazy<IBetService> _betService;
+		private readonly Lazy<IWheelService> _wheelService;
 
 		public ServiceManager(
 			IRepositoryManager repositoryManager, 
@@ -34,13 +36,20 @@ namespace Service
 
 			_authenticationService = new Lazy<IAuthenticationService>(() =>
 			new AuthenticationService(loggerManager, mapper, userManager, configuration));
+
+			_betService = new Lazy<IBetService>(() =>
+			new BetService(loggerManager));
+
+			_wheelService = new Lazy<IWheelService>(() =>
+			new WheelService(loggerManager));
 			
 		}
 
 		public IPlayerService PlayerService => _playerService.Value;
 		public IScoreService ScoreService => _scoreService.Value;
 		public IAuthenticationService AuthenticationService => _authenticationService.Value;
-
-	
+		public IBetService BetService => _betService.Value;
+		public IWheelService WheelService => _wheelService.Value;
+		
 	}
 }

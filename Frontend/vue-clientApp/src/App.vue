@@ -2,30 +2,92 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { Button } from './components/ui/button'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './components/ui/accordion'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './components/ui/dialog'
+import { Input } from './components/ui/input';
+import { Label } from '@/components/ui/label';
+import WheelDashboard from './components/WheelDashboard.vue'
+
+
+import { useToast } from '@/components/ui/toast/use-toast'
+import { Toaster } from '@/components/ui/toast'
+
+const { toast } = useToast()
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
+  <header>
+    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+ -->
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <!-- <HelloWorld msg="You did it!" /> -->
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <!-- <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink> -->
       </nav>
     </div>
   </header>
-  <div class="container py-9">
-    <Button variants="destructive">Click me</Button>
-    <Button variants="outline">Click me</Button>
-    <Button variants="secondary">Click me</Button>
-    <Button variants="destructive">Click me</Button>
+  <Toaster />
 
+  <!--   <section class="container py-9">
+    <Button variant="destructive">Click me</Button>
+    <Button variant="outline">Click me</Button>
+    <Button variant="secondary">Click me</Button>
+    <Button variant="destructive">Click me</Button>
+  </section>
+
+  <div>
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionContent>
+          Yes. It adheres to the WAI-ARIA design pattern.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   </div>
 
-  <RouterView />
+  <div>
+    <Dialog>
+      <DialogTrigger as-child>
+        <Button variant="outline">
+          Edit Profile
+        </Button>
+      </DialogTrigger>
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="grid gap-4 py-4">
+          <div class="grid items-center grid-cols-4 gap-4">
+            <Label for="name" class="text-right">
+              Name
+            </Label>
+            <Input id="name" value="Pedro Duarte" class="col-span-3" />
+          </div>
+          <div class="grid items-center grid-cols-4 gap-4">
+            <Label for="username" class="text-right">
+              Username
+            </Label>
+            <Input id="username" value="@peduarte" class="col-span-3" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit">
+            Save changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div> -->
+  <WheelDashboard />
+
+
 </template>
 
 <style scoped>

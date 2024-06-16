@@ -1,3 +1,6 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
+/* eslint-disable no-undef */
+// eslint-disable-next-line no-undef
 const animate = require("tailwindcss-animate")
 
 /** @type {import('tailwindcss').Config} */

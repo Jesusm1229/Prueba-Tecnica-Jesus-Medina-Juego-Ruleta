@@ -194,7 +194,7 @@ export default {
                             </CardContent>
                         </Card>
                         <div class="col-span-2"></div>
-                        <Card>
+                        <Card class="col-span-2">
                             <CardHeader>
                                 <CardTitle class="text-2xl font-bold">Choose your position</CardTitle>
                             </CardHeader>
@@ -203,7 +203,7 @@ export default {
                                     <FormItem class="space-y-3">
                                         <FormLabel>Color</FormLabel>
                                         <FormControl>
-                                            <RadioGroup v-bind="componentField" class="grid grid-cols-3 gap-4">
+                                            <RadioGroup v-bind="componentField" class="grid grid-cols-4 gap-4">
                                                 <FormItem>
                                                     <FormControl>
                                                         <div>
@@ -241,7 +241,7 @@ export default {
                                     <FormItem class="space-y-3">
                                         <FormLabel>Number</FormLabel>
                                         <FormControl>
-                                            <RadioGroup v-bind="componentField" class="grid grid-cols-4">
+                                            <RadioGroup v-bind="componentField" class="grid grid-cols-6">
                                                 <FormItem v-for="(number, index) in numbers" :key="index">
                                                     <FormControl>
                                                         <div>

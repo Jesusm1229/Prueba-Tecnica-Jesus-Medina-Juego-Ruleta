@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Button } from './ui/button'
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
@@ -9,7 +10,6 @@ import { Input } from '@/components/ui/input'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-
 import {
     FormControl,
     FormDescription,
@@ -18,15 +18,22 @@ import {
     FormLabel,
     FormMessage,
 } from './ui/form'
-
-
-import { h } from 'vue';
-
+import { h, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue';
 import { useToast } from '@/components/ui/toast/use-toast'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-
 import { Separator } from '@/components/ui/separator'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog'
+
+import { Label } from '@/components/ui/label'
 
 const { toast } = useToast()
 
@@ -54,8 +61,6 @@ const formSchema = toTypedSchema(z.object({
     number: z.string({
     }),
 
-}).refine((data) => data.betAmount > data.score, {
-    message: 'Please fix the errors below',
 }))
 
 
@@ -69,23 +74,39 @@ const form = useForm({
     validationSchema: formSchema,
 })
 
+
+
 const onSubmit = form.handleSubmit((values) => {
-    console.log(values);
-    try {
-        toast({
-            title: 'You submitted the following values:',
-            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
+    console.log(values)
+    axios.post('https://localhost:7299/api/bets', values)
+        .then((response) => {
+            console.log(response.data)
             toast({
-                title: 'An error occurred',
-                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, error.message)),
+                title: 'Submission successful',
+                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response.data, null, 2))),
                 duration: 5000,
 
             })
-        }
-    }
+        })
+        .catch((error) => {
+            toast({
+                title: 'An error occurred',
+                description: h('pre', { class: 'mt-2 w-[340px] rounded-md  p-4' }, h('code', { class: 'text-white' }, error.message)),
+                duration: 5000,
+                variant: "destructive"
+
+            })
+            if (error.response && error.response.data instanceof z.ZodError) {
+                error.response.data.issues.forEach((issue: { message: string | number | boolean | VNodeArrayChildren | { [name: string]: unknown; $stable?: boolean; } | VNode<RendererNode, RendererElement, { [key: string]: any; }> | (() => any) | undefined; }) => {
+                    toast({
+                        title: 'An error occurred',
+                        description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, issue.message)),
+                        duration: 5000,
+
+                    })
+                });
+            }
+        });
 })
 
 /* const onSubmit = handleSubmit((values) => {
@@ -109,14 +130,33 @@ const onSubmit = form.handleSubmit((values) => {
 </script>
 
 <script lang="ts">
+import axios from 'axios'
+
 export default {
     data() {
         return {
+            posts: [],
             numbers: Array.from({ length: 37 }, (_, i) => i)
         }
+    },
+    mounted() {
+        axios
+            .get('https://localhost:7299/api/players')
+            .then((response) => {
+                console.log(response.data)
+            })
     }
 }
+
+/* data() {
+        return {
+            numbers: Array.from({ length: 37 }, (_, i) => i)
+        }
+    } */
+
 </script>
+
+
 
 <template>
     <div class="flex-1 p-8 pt-6 mx-4 space-y-4 border">

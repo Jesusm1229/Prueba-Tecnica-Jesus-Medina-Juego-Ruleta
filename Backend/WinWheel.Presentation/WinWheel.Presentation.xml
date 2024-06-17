@@ -4,6 +4,28 @@
         <name>WinWheel.Presentation</name>
     </assembly>
     <members>
+        <member name="M:WinWheel.Presentation.Controllers.AuthenticationController.RegisterUser(Shared.DataTransferObjects.PlayerForCreationDto)">
+            <summary>
+            Register Player
+            </summary>
+            <param name="playerForCreation"></param>
+            <returns>A newly created player</returns>
+            <response code="201">Returns the newly created item</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.AuthenticationController.Authenticate(Shared.DataTransferObjects.PlayerForAuthenticationDto)">
+            <summary>
+            Login Player
+            </summary>
+            <param name="player"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.BetController.PlaceBet(Shared.DataTransferObjects.BetForCalculationDto)">
+            <summary>
+            Place a bet. Categories: * "Straight": specific number (0-36) and color (Black - Red). * "Even": even numbers. * "Odd": odd numbers. * Color: "Black" or "Red"
+            </summary>
+            <param name="betForCalculationDto"></param>
+            <returns>A result Including: Winner Number, Winner Color, a boolean indicating if he won or lose and the  New Score for player </returns>
+        </member>
         <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetPlayers">
             <summary>
             Gets the list of all players
@@ -66,6 +88,12 @@
             <response code="201">Returns the newly created item</response>
             <response code="400">If the item is null</response>
             <response code="422">If the model is invalid</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.WheelController.SpinWheel">
+            <summary>
+            Spin the wheel and get a result
+            </summary>
+            <returns>A position with a number and color</returns>
         </member>
     </members>
 </doc>

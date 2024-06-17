@@ -389,7 +389,7 @@ export default {
                                 <Separator class="my-4" />
                                 <FormField v-slot="{ componentField }" name="number" v-if="true">
                                     <FormItem class="space-y-3">
-                                        <FormLabel>Number</FormLabel>
+                                        <FormLabel class="text-lg font-semibold">Number</FormLabel>
                                         <FormControl>
                                             <RadioGroup v-bind="componentField" class="grid grid-cols-8">
                                                 <FormItem v-for="(number, index) in numbers" :key="index">
@@ -420,7 +420,7 @@ export default {
                             </CardHeader>
                             <CardContent class="grid grid-cols-2">
                                 <div class="flex-col">
-                                    <template v-if="responseData == null">
+                                    <template v-if="responseData">
                                         <p class="py-2">Save your score with an account.
                                             <br>
                                             If you don't you'll lose your
@@ -436,22 +436,24 @@ export default {
                                                 <DialogHeader>
                                                     <DialogTitle>Register Profile</DialogTitle>
                                                     <DialogDescription>
-                                                        Make changes to your profile here. Click save when you're done.
+                                                        We'll save your score for you. The next time you play, you'll be
+                                                        able to see your progress.
                                                     </DialogDescription>
                                                 </DialogHeader>
                                                 <div class="grid gap-4 py-4">
                                                     <div class="grid items-center grid-cols-4 gap-4">
-                                                        <Label for="name" class="text-right">
-                                                            Name
-                                                        </Label>
-                                                        <Input id="name" value="Pedro Duarte" class="col-span-3" />
-                                                    </div>
-                                                    <div class="grid items-center grid-cols-4 gap-4">
                                                         <Label for="username" class="text-right">
                                                             Username
                                                         </Label>
-                                                        <Input id="username" value="@peduarte" class="col-span-3" />
+                                                        <Input id="username" value="peduarte" class="col-span-3" />
                                                     </div>
+                                                    <div class="grid grid-cols-2 gap-4 text-lg font-medium items-left">
+                                                        <p>Your Score: </p>
+                                                        <prev>
+                                                            {{ responseData.newScore }}
+                                                        </prev>
+                                                    </div>
+
                                                 </div>
                                                 <DialogFooter>
                                                     <Button type="submit">

@@ -37,6 +37,13 @@ import { Label } from '@/components/ui/label'
 
 const { toast } = useToast()
 
+interface ResponseData {
+    newScore: number;
+    winnerNumber: number;
+    winnerColor: string;
+    didIWin: boolean;
+}
+
 const formSchema = toTypedSchema(z.object({
     category: z.enum(['Straight', 'Even', 'Odd', 'Red', 'Black'], {
         required_error: 'Category is required',
@@ -74,12 +81,14 @@ const form = useForm({
     validationSchema: formSchema,
 })
 
+const responseData = ref<ResponseData | null>(null);
 
 
 const onSubmit = form.handleSubmit((values) => {
     console.log(values)
     axios.post('https://localhost:7299/api/bets', values)
         .then((response) => {
+            responseData.value = response.data
             console.log(response.data)
             toast({
                 title: 'Submission successful',
@@ -225,7 +234,7 @@ export default {
                                         </Select>
                                         <FormMessage />
                                         <FormDescription>
-                                            <ul>
+                                            <ul class="pt-4">
                                                 <li>
                                                     <p
                                                         class="mb-2 text-sm font-normal leading-none text-muted-foreground">
@@ -404,9 +413,46 @@ export default {
 
                         </Card>
 
-                        <!--  Wheel -->
+                        <!--  Result -->
                         <Card class="col-span-2 col-start-3 row-span-3 row-start-1">
+                            <CardHeader>
+                                <CardTitle class="text-2xl font-bold">Results</CardTitle>
+                            </CardHeader>
+                            <CardContent class="grid grid-cols-2">
+                                <div class="flex">
+                                    <template v-if="responseData">
+                                        <p>Save your score with an account</p>
 
+
+                                    </template>
+                                    <!-- save score  -->
+
+
+                                </div>
+                                <div class="flex justify-end col-span-1">
+                                    <div class="flex-col text-right justify-right">
+                                        <div class="mb-4 text-3xl font-bold tracking-tight ">
+                                            <pre>
+                {{ !responseData ? "Waiting your bet" : responseData?.didIWin == true ? "You Win!" : "You Lose" }}
+            </pre>
+                                        </div>
+                                        <div class="flex text-2xl text-muted-foreground ">
+
+                                            <pre>{{ !responseData ? " " : responseData.newScore + " :New Score" }}</pre>
+                                        </div>
+                                        <div class="flex text-lg text-muted-foreground ">
+
+                                            <pre>{{ !responseData ? " " : responseData.winnerNumber + " :Winning Number" }}</pre>
+                                        </div>
+                                        <div class="flex text-lg text-muted-foreground ">
+                                            <pre>{{ !responseData ? " " : responseData.winnerColor + " :Winning Color" }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator class="my-4 col-span-full" />
+
+                            </CardContent>
                         </Card>
                     </div>
                 </form>

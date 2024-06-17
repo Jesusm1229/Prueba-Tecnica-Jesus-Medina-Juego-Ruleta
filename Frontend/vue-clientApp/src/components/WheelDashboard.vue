@@ -419,9 +419,47 @@ export default {
                                 <CardTitle class="text-2xl font-bold">Results</CardTitle>
                             </CardHeader>
                             <CardContent class="grid grid-cols-2">
-                                <div class="flex">
-                                    <template v-if="responseData">
-                                        <p>Save your score with an account</p>
+                                <div class="flex-col">
+                                    <template v-if="responseData == null">
+                                        <p class="py-2">Save your score with an account.
+                                            <br>
+                                            If you don't you'll lose your
+                                            score once closed
+                                        </p>
+                                        <Dialog>
+                                            <DialogTrigger as-child>
+                                                <Button>
+                                                    Register
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent class="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                    <DialogTitle>Register Profile</DialogTitle>
+                                                    <DialogDescription>
+                                                        Make changes to your profile here. Click save when you're done.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div class="grid gap-4 py-4">
+                                                    <div class="grid items-center grid-cols-4 gap-4">
+                                                        <Label for="name" class="text-right">
+                                                            Name
+                                                        </Label>
+                                                        <Input id="name" value="Pedro Duarte" class="col-span-3" />
+                                                    </div>
+                                                    <div class="grid items-center grid-cols-4 gap-4">
+                                                        <Label for="username" class="text-right">
+                                                            Username
+                                                        </Label>
+                                                        <Input id="username" value="@peduarte" class="col-span-3" />
+                                                    </div>
+                                                </div>
+                                                <DialogFooter>
+                                                    <Button type="submit">
+                                                        Save changes
+                                                    </Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
 
 
                                     </template>
@@ -436,15 +474,15 @@ export default {
                 {{ !responseData ? "Waiting your bet" : responseData?.didIWin == true ? "You Win!" : "You Lose" }}
             </pre>
                                         </div>
-                                        <div class="flex text-2xl text-muted-foreground ">
+                                        <div class="text-2xl flex-end text-muted-foreground ">
 
                                             <pre>{{ !responseData ? " " : responseData.newScore + " :New Score" }}</pre>
                                         </div>
-                                        <div class="flex text-lg text-muted-foreground ">
+                                        <div class="text-lg flex-end text-muted-foreground ">
 
                                             <pre>{{ !responseData ? " " : responseData.winnerNumber + " :Winning Number" }}</pre>
                                         </div>
-                                        <div class="flex text-lg text-muted-foreground ">
+                                        <div class="text-lg flex-end text-muted-foreground ">
                                             <pre>{{ !responseData ? " " : responseData.winnerColor + " :Winning Color" }}</pre>
                                         </div>
                                     </div>

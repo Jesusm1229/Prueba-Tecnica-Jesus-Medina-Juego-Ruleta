@@ -22,50 +22,90 @@ import {
 
 import { h } from 'vue';
 
-import { toast } from '@/components/ui/toast'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 import { Separator } from '@/components/ui/separator'
 
+const { toast } = useToast()
+
 const formSchema = toTypedSchema(z.object({
-    category: z.string({
+    category: z.enum(['Straight', 'Even', 'Odd', 'Red', 'Black'], {
         required_error: 'Category is required',
+        invalid_type_error: 'Category must be a string',
     }),
+
     score: z.number({
         required_error: 'Score is required',
         invalid_type_error: 'Score must be a number',
     }).int().min(1, 'Score must be at least 1'),
+
     betAmount: z.number({
         required_error: 'Bet amount is required',
         invalid_type_error: 'Bet amount must be a number',
     }).int().min(1, 'Bet amount must be at least 1'),
+
     color: z.enum(['Red', 'Black'], {
         required_error: 'Color is required',
         invalid_type_error: 'Color must be a string',
     }),
+
     number: z.string({
-    })
+    }),
+
+}).refine((data) => data.betAmount > data.score, {
+    message: 'Please fix the errors below',
 }))
 
-/* const formSchema = toTypedSchema(z.object({
-    email: z
-        .string({
-            required_error: 'Please select an email to display.',
-        })
-        .email(),
-}))
+
+
+/* const { handleSubmit } = useForm({
+    validationSchema: formSchema,
+})
  */
-const { handleSubmit } = useForm({
+
+const form = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = handleSubmit((values) => {
-    toast({
-        title: 'You submitted the following values:',
-        description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-    })
+const onSubmit = form.handleSubmit((values) => {
+    console.log(values);
+    try {
+        toast({
+            title: 'You submitted the following values:',
+            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
+        })
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            toast({
+                title: 'An error occurred',
+                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, error.message)),
+                duration: 5000,
+
+            })
+        }
+    }
 })
+
+/* const onSubmit = handleSubmit((values) => {
+    try {
+        toast({
+            title: 'You submitted the following values:',
+            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
+        })
+    } catch (error) {
+        if (error instanceof z.ZodError){
+            toast({
+                title: 'An error occurred',
+                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, error.message)),
+                duration: 5000,
+
+            })
+        }
+    }
+}) */
+
 </script>
 
 <script lang="ts">
@@ -101,7 +141,9 @@ export default {
                             <Button type="submit" class="px-10 bg-green-600">Spin Wheel!</Button>
                         </div>
                     </div>
-                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-3">
+
+                        <!-- Category -->
                         <Card>
                             <CardHeader>
                                 <CardTitle class="text-2xl font-bold">Set yout game!</CardTitle>
@@ -143,9 +185,39 @@ export default {
                                         </Select>
                                         <FormMessage />
                                         <FormDescription>
-                                            <p class="mb-2 text-base text-muted-foreground">
-                                                Straight: select a number & color
-                                            </p>
+                                            <ul>
+                                                <li>
+                                                    <p
+                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                        <strong>Straight: </strong>select a specific number & color
+                                                    </p>
+                                                </li>
+                                                <li>
+                                                    <p
+                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                        <strong>Even: </strong>any even number from a color you choose
+                                                    </p>
+                                                </li>
+                                                <li>
+                                                    <p
+                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                        <strong>Odd: </strong>any odd number from a color you choose
+                                                    </p>
+                                                </li>
+                                                <li>
+                                                    <p
+                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                        <strong>Red: </strong>any red number
+                                                    </p>
+                                                </li>
+                                                <li>
+                                                    <p
+                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                        <strong>Black: </strong>any black number
+                                                    </p>
+                                                </li>
+                                            </ul>
+
                                         </FormDescription>
 
                                     </FormItem>
@@ -153,6 +225,9 @@ export default {
 
                             </CardContent>
                         </Card>
+
+
+                        <!-- Bet configuration -->
                         <Card>
                             <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle class="text-2xl font-bold">Place yout Bet</CardTitle>
@@ -166,7 +241,7 @@ export default {
                                 <div class="grid gap-2">
                                     <FormField v-slot="{ componentField }" name="score">
                                         <FormItem v-auto-animate>
-                                            <FormLabel>Score</FormLabel>
+                                            <FormLabel class="text-lg font-semibold">Score</FormLabel>
                                             <FormControl>
                                                 <Input type="number" placeholder="200" v-bind="componentField" />
                                             </FormControl>
@@ -180,7 +255,7 @@ export default {
                                 <div class="grid gap-2">
                                     <FormField v-slot="{ componentField }" name="betAmount">
                                         <FormItem v-auto-animate>
-                                            <FormLabel>Bet Amount</FormLabel>
+                                            <FormLabel class="text-lg font-semibold">Bet Amount</FormLabel>
                                             <FormControl>
                                                 <Input type="number" placeholder="100" v-bind="componentField" />
                                             </FormControl>
@@ -191,17 +266,43 @@ export default {
                                         </FormItem>
                                     </FormField>
                                 </div>
+
+                                <div class="relative col-span-full">
+                                    <div class="absolute inset-0 flex items-center">
+                                        <span class="w-full border-t" />
+                                    </div>
+                                    <div class="relative flex justify-center text-xs uppercase">
+                                        <span class="px-2 bg-background text-muted-foreground">
+                                            Or continue with your account
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="grid gap-2">
+                                    <Label for="username">Username</Label>
+                                    <Input id="username" type="username" placeholder="TomCruise" />
+                                </div>
+
+                                <Button class="self-end w-full">
+                                    Login
+                                </Button>
+
                             </CardContent>
                         </Card>
-                        <div class="col-span-2"></div>
-                        <Card class="col-span-2">
+
+
+
+
+                        <!-- Choose your position -->
+
+                        <Card class="col-span-2 col-start-1 row-span-2 row-start-2">
                             <CardHeader>
                                 <CardTitle class="text-2xl font-bold">Choose your position</CardTitle>
                             </CardHeader>
                             <CardContent class="grid gap-6">
                                 <FormField v-slot="{ componentField }" type="radio" name="color">
                                     <FormItem class="space-y-3">
-                                        <FormLabel>Color</FormLabel>
+                                        <FormLabel class="text-lg font-semibold">Color</FormLabel>
                                         <FormControl>
                                             <RadioGroup v-bind="componentField" class="grid grid-cols-4 gap-4">
                                                 <FormItem>
@@ -237,11 +338,11 @@ export default {
                                     </FormItem>
                                 </FormField>
                                 <Separator class="my-4" />
-                                <FormField v-slot="{ componentField }" name="number">
+                                <FormField v-slot="{ componentField }" name="number" v-if="true">
                                     <FormItem class="space-y-3">
                                         <FormLabel>Number</FormLabel>
                                         <FormControl>
-                                            <RadioGroup v-bind="componentField" class="grid grid-cols-6">
+                                            <RadioGroup v-bind="componentField" class="grid grid-cols-8">
                                                 <FormItem v-for="(number, index) in numbers" :key="index">
                                                     <FormControl>
                                                         <div>
@@ -260,6 +361,11 @@ export default {
                                     </FormItem>
                                 </FormField>
                             </CardContent>
+
+                        </Card>
+
+                        <!--  Wheel -->
+                        <Card class="col-span-2 col-start-3 row-span-3 row-start-1">
 
                         </Card>
                     </div>

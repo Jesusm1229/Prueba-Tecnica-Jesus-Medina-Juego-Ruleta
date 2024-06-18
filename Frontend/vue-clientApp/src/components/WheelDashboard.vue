@@ -270,6 +270,27 @@ export default {
                         <Card>
                             <CardHeader>
                                 <CardTitle class="text-2xl font-bold">Set yout game!</CardTitle>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" version="1" id="casino">
+                                    <g transform="translate(-126.5 -1363.862)">
+                                        <circle style="isolation:auto;mix-blend-mode:normal" cx="142.5" cy="1379.862"
+                                            r="15.5" fill="#f55" stroke="#373748" stroke-linecap="round"
+                                            stroke-linejoin="round" color="#000" overflow="visible"></circle>
+                                        <circle style="isolation:auto;mix-blend-mode:normal" cx="142.5" cy="1379.862"
+                                            r="10.875" fill="#f55" stroke="#373748" stroke-linecap="round"
+                                            stroke-linejoin="round" color="#000" overflow="visible"></circle>
+                                        <g style="line-height:125%">
+                                            <path fill="#373748"
+                                                d="M485.563 507.11c0 1.5 1.612 1.552 1.612 2.632 0 .375-.165.51-.427.51-.263 0-.428-.135-.428-.51v-.412h-.78v.36c0 .712.3 1.17.892 1.29v.382h.675v-.382c.585-.12.893-.578.893-1.29 0-1.5-1.613-1.553-1.613-2.633 0-.375.15-.517.413-.517s.412.142.412.517v.218h.78v-.165c0-.713-.3-1.163-.885-1.283v-.39h-.675v.39c-.577.128-.87.578-.87 1.283z"
+                                                font-family="Bebas Neue" font-size="7.5" font-weight="700"
+                                                letter-spacing="0"
+                                                transform="translate(-1007.675 178.579) scale(2.36287)" word-spacing="0"
+                                                style="-inkscape-font-specification:'Bebas Neue Bold'"></path>
+                                        </g>
+                                        <path fill="#373748" fill-rule="evenodd" stroke="#373748"
+                                            d="M140 1394.962v-4.1h5v4.1zm0-26.1v-4.1h5v4.1zM127.4 1377.362h4.1v5h-4.1zm26.1 0h4.1v5h-4.1zM130.055 1388.772l2.899-2.9 3.535 3.536-2.899 2.9zm18.455-18.456 2.9-2.899 3.535 3.536-2.9 2.899zM154.945 1388.772l-2.9-2.9-3.535 3.536 2.9 2.9zm-18.456-18.456-2.899-2.899-3.535 3.536 2.899 2.899z">
+                                        </path>
+                                    </g>
+                                </svg>
                             </CardHeader>
                             <CardContent>
                                 <!-- <div class="text-lg font-semibold">

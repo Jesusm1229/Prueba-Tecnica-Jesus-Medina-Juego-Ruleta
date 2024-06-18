@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Button } from './ui/button'
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
@@ -7,7 +7,7 @@ import { Card } from './ui/card'
 import { CardTitle, CardHeader } from './ui/card';
 import CardContent from './ui/card/CardContent.vue';
 import { Input } from '@/components/ui/input'
-import { useForm } from 'vee-validate'
+import { useForm, defineRule } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import {
@@ -37,6 +37,25 @@ import { Label } from '@/components/ui/label'
 
 const { toast } = useToast()
 
+interface betData {
+    category: 'Straight' | 'Even' | 'Odd' | 'Color' | null;
+    score: number;
+    betAmount: number;
+    color: 'Red' | 'Black' | null;
+    number: string;
+}
+
+
+const betDataObj = ref<betData>({
+    category: null,
+    score: 0,
+    betAmount: 0,
+    color: null,
+    number: '0',
+})
+
+
+
 interface ResponseData {
     newScore: number;
     winnerNumber: number;
@@ -44,10 +63,32 @@ interface ResponseData {
     didIWin: boolean;
 }
 
+
+
 const formSchema = toTypedSchema(z.object({
-    category: z.enum(['Straight', 'Even', 'Odd', 'Red', 'Black'], {
+
+    category: z.enum(['Straight', 'Even', 'Odd', 'Color'], {
         required_error: 'Category is required',
         invalid_type_error: 'Category must be a string',
+    }).refine((value) => {
+        if (value === 'Straight') {
+            return z.object({
+                number: z.string({
+                    required_error: 'Number is required',
+                    invalid_type_error: 'Number must be a string',
+                }).refine((value) => {
+                    if (value === '') {
+                        return 'Number is required'
+                    }
+                    return true
+                }),
+                color: z.enum(['Red', 'Black'], {
+                    required_error: 'Color is required',
+                    invalid_type_error: 'Color must be a string',
+                }),
+            })
+        }
+        return true
     }),
 
     score: z.number({
@@ -65,26 +106,53 @@ const formSchema = toTypedSchema(z.object({
         invalid_type_error: 'Color must be a string',
     }),
 
-    number: z.string({
-    }),
+    number: z.string().refine(value => value !== '', {
+        message: 'Number is required',
+        path: ['number'],
+    }).optional(),
 
+}).refine(data => (data.category !== 'Straight' || data.number !== undefined), {
+    message: 'Number is required when category is Straight',
+    path: ['number'],
 }))
 
 
 
-/* const { handleSubmit } = useForm({
+const { errors, handleSubmit } = useForm({
     validationSchema: formSchema,
 })
- */
 
-const form = useForm({
-    validationSchema: formSchema,
+watch(errors, (newErrors) => {
+    console.log(newErrors.number, "error")
+
+    if (newErrors.number) {
+        toast({
+            title: 'An error occurredaaaaa',
+            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, newErrors.number)),
+            duration: 5000,
+            variant: "destructive"
+
+        })
+    }
 })
+
+
+
+/* watch(betAmount, (newBetAmount) => {
+    if (newBetAmount > score.value) {
+        betAmountError.value = 'Bet amount cannot be greater than score'
+    } else {
+        betAmountError.value = ''
+    }
+}) */
+/* const form = useForm({
+    validationSchema: formSchema,
+}) */
 
 const responseData = ref<ResponseData | null>(null);
 
 
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = handleSubmit((values) => {
     console.log(values)
     axios.post('https://localhost:7299/api/bets', values)
         .then((response) => {
@@ -99,9 +167,9 @@ const onSubmit = form.handleSubmit((values) => {
         })
         .catch((error) => {
             toast({
-                title: 'An error occurred',
-                description: h('pre', { class: 'mt-2 w-[340px] rounded-md  p-4' }, h('code', { class: 'text-white' }, error.message)),
-                duration: 5000,
+                title: "An error occurred",
+                description: h('div', { class: ' text-wrap' }, error.response.status + ": " + error.response.data),
+                duration: 6000,
                 variant: "destructive"
 
             })
@@ -109,7 +177,7 @@ const onSubmit = form.handleSubmit((values) => {
                 error.response.data.issues.forEach((issue: { message: string | number | boolean | VNodeArrayChildren | { [name: string]: unknown; $stable?: boolean; } | VNode<RendererNode, RendererElement, { [key: string]: any; }> | (() => any) | undefined; }) => {
                     toast({
                         title: 'An error occurred',
-                        description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, issue.message)),
+                        description: h('div', { class: '' }, h('text', { class: 'text-white' }, issue.message)),
                         duration: 5000,
 
                     })
@@ -136,6 +204,10 @@ const onSubmit = form.handleSubmit((values) => {
     }
 }) */
 
+
+
+
+
 </script>
 
 <script lang="ts">
@@ -155,7 +227,9 @@ export default {
                 console.log(response.data)
             })
     }
+
 }
+
 
 /* data() {
         return {
@@ -204,7 +278,7 @@ export default {
                                 <FormField v-slot="{ componentField }" name="category">
                                     <FormItem v-auto-animate>
                                         <FormLabel class="text-lg font-semibold">Category</FormLabel>
-                                        <Select v-bind="componentField">
+                                        <Select v-bind="componentField" v-model="betDataObj.category">
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a category" />
@@ -222,13 +296,11 @@ export default {
                                                     <SelectItem value="Odd">
                                                         Odd
                                                     </SelectItem>
-                                                    <SelectLabel>Colors</SelectLabel>
-                                                    <SelectItem value="Red">
-                                                        Red
+                                                    <SelectLabel>Full color</SelectLabel>
+                                                    <SelectItem value="Color">
+                                                        Color
                                                     </SelectItem>
-                                                    <SelectItem value="Black">
-                                                        Black
-                                                    </SelectItem>
+
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -256,15 +328,10 @@ export default {
                                                 <li>
                                                     <p
                                                         class="mb-2 text-sm font-normal leading-none text-muted-foreground">
-                                                        <strong>Red: </strong>any red number
+                                                        <strong>Color: </strong>choose between red or black
                                                     </p>
                                                 </li>
-                                                <li>
-                                                    <p
-                                                        class="mb-2 text-sm font-normal leading-none text-muted-foreground">
-                                                        <strong>Black: </strong>any black number
-                                                    </p>
-                                                </li>
+
                                             </ul>
 
                                         </FormDescription>
@@ -292,7 +359,8 @@ export default {
                                         <FormItem v-auto-animate>
                                             <FormLabel class="text-lg font-semibold">Score</FormLabel>
                                             <FormControl>
-                                                <Input type="number" placeholder="200" v-bind="componentField" />
+                                                <Input type="number" placeholder="200" v-bind="componentField"
+                                                    v-model="betDataObj.score" />
                                             </FormControl>
                                             <FormDescription>
                                                 This is your score in the game.
@@ -306,7 +374,8 @@ export default {
                                         <FormItem v-auto-animate>
                                             <FormLabel class="text-lg font-semibold">Bet Amount</FormLabel>
                                             <FormControl>
-                                                <Input type="number" placeholder="100" v-bind="componentField" />
+                                                <Input type="number" placeholder="100" v-model="betDataObj.betAmount"
+                                                    v-bind="componentField" />
                                             </FormControl>
                                             <FormDescription>
                                                 The amount you want to bet.
@@ -387,7 +456,7 @@ export default {
                                     </FormItem>
                                 </FormField>
                                 <Separator class="my-4" />
-                                <FormField v-slot="{ componentField }" name="number" v-if="true">
+                                <FormField v-slot="{ componentField }" name="number">
                                     <FormItem class="space-y-3">
                                         <FormLabel class="text-lg font-semibold">Number</FormLabel>
                                         <FormControl>
@@ -396,7 +465,8 @@ export default {
                                                     <FormControl>
                                                         <div>
                                                             <RadioGroupItem :id="number.toString()"
-                                                                :value="number.toString()" class="sr-only peer" />
+                                                                :value="number.toString()" class="sr-only peer"
+                                                                :disabled="betDataObj.category !== 'Straight'" />
                                                             <Label :for="number.toString()"
                                                                 class="flex flex-row items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
                                                                 {{ number }}
@@ -405,7 +475,7 @@ export default {
                                                     </FormControl>
                                                 </FormItem>
                                             </RadioGroup>
-                                            <FormMessage />
+                                            <FormMessage v-show="betDataObj.category === 'Straight'" />
                                         </FormControl>
                                     </FormItem>
                                 </FormField>
@@ -457,7 +527,7 @@ export default {
                                                 </div>
                                                 <DialogFooter>
                                                     <Button type="submit">
-                                                        Save changes
+                                                        Register
                                                     </Button>
                                                 </DialogFooter>
                                             </DialogContent>

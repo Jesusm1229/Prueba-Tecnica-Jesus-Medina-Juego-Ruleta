@@ -28,8 +28,8 @@ namespace WinWheel.Presentation.ActionFilters
 				if (betForCalculationDto.Color != "Red" && betForCalculationDto.Color != "Black")
 					errors.Add("Color must be Red or Black.");
 
-				if (betForCalculationDto.Category != "Straight" && betForCalculationDto.Category != "Even" && betForCalculationDto.Category != "Odd" && betForCalculationDto.Category != "Red" && betForCalculationDto.Category != "Black")
-					errors.Add("Category must be Straight, Even, Odd, Red, or Black.");
+				if (betForCalculationDto.Category != "Straight" && betForCalculationDto.Category != "Even" && betForCalculationDto.Category != "Odd" && betForCalculationDto.Category != "Color" )
+					errors.Add("Category must be Straight, Even, Odd, or Color.");
 
 				if (betForCalculationDto.Category == "Straight" && betForCalculationDto.Number == null)
 					errors.Add("Number is required for Straight category.");

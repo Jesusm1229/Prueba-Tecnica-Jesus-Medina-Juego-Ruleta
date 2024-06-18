@@ -18,7 +18,7 @@ namespace Shared.DataTransferObjects
 		//[Required(ErrorMessage = "Required to place at least one bet")]
 		//ICollection<BetDto> Bets);
 
-		[Required(ErrorMessage = "Category is a required field - Straight, Even, Odd, Red or Black.")]
+		[Required(ErrorMessage = "Category is a required field - Straight, Even, Odd, Color.")]
 		string Category,
 
 		[Required(ErrorMessage = "BetAmount is a required field.")]

@@ -38,21 +38,22 @@ namespace Service
 					}
 				case "Even":
 					{
-						if (wheelSpinned.number % 2 == 0)
+						//Even number and color
+						if (wheelSpinned.number % 2 == 0 && betForCalculationDto.Color == wheelSpinned.color)
 						{
 							return	new BetForResultDto(
-									betForCalculationDto.Score + betForCalculationDto.BetAmount,
+									betForCalculationDto.Score + betForCalculationDto.BetAmount * 2,
 									wheelSpinned.number,
 									wheelSpinned.color,
 									true							
 								);							
-						}
+						}				
 
 						break;
 					}
 				case "Odd":
 					{
-						if (wheelSpinned.number % 2 != 0)
+						if (wheelSpinned.number % 2 != 0 && betForCalculationDto.Color == wheelSpinned.color)
 						{
 							return	new BetForResultDto(
 									betForCalculationDto.Score + betForCalculationDto.BetAmount,
@@ -64,9 +65,10 @@ namespace Service
 
 						break;
 					}
-				case "Red":
+				case "Color":
 					{
-						if (wheelSpinned.color == "Red")
+						//If the color is the same as the color of the wheel, the player wins half of the bet amount
+						if (betForCalculationDto.Color == wheelSpinned.color)
 						{
 							return	new BetForResultDto(
 									betForCalculationDto.Score + (betForCalculationDto.BetAmount / 2),
@@ -74,24 +76,9 @@ namespace Service
 									wheelSpinned.color,
 									true							
 								);							
-						}
-
+						}						
 						break;
-					}
-				case "Black":
-					{
-						if (wheelSpinned.color == "Black")
-						{
-							return	new BetForResultDto(
-									betForCalculationDto.Score + (betForCalculationDto.BetAmount / 2),
-									wheelSpinned.number,
-									wheelSpinned.color,
-									true							
-								);							
-						}
-
-						break;
-					}
+					}				
 					
 			}
 

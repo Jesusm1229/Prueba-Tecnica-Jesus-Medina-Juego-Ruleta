@@ -62,6 +62,14 @@ namespace WinWheel.Presentation.Controllers
 			return Ok(tokenDto);
 
 		}
+
+		//Log out Player
+		[HttpPost("logout")]
+		public async Task<IActionResult> Logout()
+		{
+			await _service.AuthenticationService.LogOut();
+			return Ok();
+		}
 	}
 
 

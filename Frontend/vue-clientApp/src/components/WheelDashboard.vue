@@ -67,6 +67,8 @@ const userDataObj = ref<UserData>({
     username: '',
 });
 
+let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
+
 const userFormSchema = toTypedSchema(z.object({
     username: z.string({
         required_error: 'Username is required',
@@ -104,7 +106,9 @@ const formSchema = toTypedSchema(z.object({
         return true
     }),
 
-    score: z.number({
+    score: state.isUserLoggedIn ? z.number({
+        invalid_type_error: 'Score must be a number',
+    }).int().min(1, 'Score must be at least 1') : z.number({
         required_error: 'Score is required',
         invalid_type_error: 'Score must be a number',
     }).int().min(1, 'Score must be at least 1'),
@@ -132,7 +136,7 @@ const formSchema = toTypedSchema(z.object({
 
 
 
-const betForm = useForm({
+const form = useForm({
     validationSchema: formSchema,
 })
 
@@ -140,7 +144,12 @@ const userForm = useForm({
     validationSchema: userFormSchema,
 })
 
-const onSubmit = betForm.handleSubmit((values) => {
+const onSubmit = form.handleSubmit((values) => {
+
+    console.log(values, "values")
+    if (state.isUserLoggedIn) {
+        values.score = userObject.score;
+    }
 
     axios.post('https://localhost:7299/api/bets', values)
         .then((response) => {
@@ -235,7 +244,9 @@ const userFormSubmit = userForm.handleSubmit((values) => {
     console.log(userData)
 
 
+
 })
+
 
 
 
@@ -278,7 +289,6 @@ export default {
             </TabsList>
 
             <TabsContent value="play" class="space-y-4">
-
                 <form @submit.prevent="onSubmit">
                     <div class="flex items-center justify-end mb-4 space-y-2">
                         <div class="flex space-x-4 flex-end">
@@ -396,21 +406,33 @@ export default {
                                 </svg>
                             </CardHeader>
                             <CardContent class="grid grid-cols-2 gap-6">
-                                <div class="grid gap-2">
-                                    <FormField v-slot="{ componentField }" name="score">
-                                        <FormItem v-auto-animate>
-                                            <FormLabel class="text-lg font-semibold">Score</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" placeholder="200" v-bind="componentField"
-                                                    v-model="betDataObj.score" />
-                                            </FormControl>
-                                            <FormDescription>
-                                                This is your score in the game.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    </FormField>
-                                </div>
+                                <template v-if="state.isUserLoggedIn">
+                                    <div class="flex-col">
+                                        <div class="text-lg font-semibold">
+                                            Your Score
+                                        </div>
+                                        <div class="text-2xl font-bold">
+                                            {{ userObject.score }}
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="grid gap-2">
+                                        <FormField v-slot="{ componentField }" name="score">
+                                            <FormItem v-auto-animate>
+                                                <FormLabel class="text-lg font-semibold">Score</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="200" v-bind="componentField"
+                                                        v-model="betDataObj.score" />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    This is your score in the game.
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        </FormField>
+                                    </div>
+                                </template>
                                 <div class="grid gap-2">
                                     <FormField v-slot="{ componentField }" name="betAmount">
                                         <FormItem v-auto-animate>
@@ -427,18 +449,19 @@ export default {
                                     </FormField>
                                 </div>
 
-                                <div class="relative col-span-full">
-                                    <div class="absolute inset-0 flex items-center">
-                                        <span class="w-full border-t" />
+                                <template v-if="!state.isUserLoggedIn">
+                                    <div class="relative col-span-full">
+                                        <div class="absolute inset-0 flex items-center">
+                                            <span class="w-full border-t"></span>
+                                        </div>
+                                        <div class="relative flex justify-center text-xs uppercase">
+                                            <span class="px-2 bg-background text-muted-foreground">
+                                                Or continue with your account
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="relative flex justify-center text-xs uppercase">
-                                        <span class="px-2 bg-background text-muted-foreground">
-                                            Or continue with your account
-                                        </span>
-                                    </div>
-                                </div>
 
-                                <template v-if="true">
+
                                     <!-- <div class="grid gap-2">
                                         <Label for="username">Username</Label>
                                         <Input id="username" type="username" placeholder="TomCruise" />
@@ -465,7 +488,7 @@ export default {
                                                             <FormLabel class="text-lg font-semibold">Username
                                                             </FormLabel>
                                                             <FormControl>
-                                                                <Input type="text" placeholder="TomCruise"
+                                                                <Input type="text" placeholder=""
                                                                     v-bind="componentField"
                                                                     v-model="userDataObj.username" />
                                                             </FormControl>
@@ -488,6 +511,14 @@ export default {
                                     <!-- <Button class="self-end w-full">
                                         Login
                                     </Button> -->
+                                </template>
+                                <template v-else>
+                                    <div
+                                        class="relative flex flex-row justify-center gap-2 text-base text-center text-muted-foreground col-span-full">
+                                        <p>Enjoy your game, <strong class="font-semibold">
+                                                {{ userObject.username }}</strong></p>
+
+                                    </div>
                                 </template>
 
 

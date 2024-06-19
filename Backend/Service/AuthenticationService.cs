@@ -175,6 +175,16 @@ namespace Service
 			return await CreateToken(populateExp: false);
 		}
 
+		public async Task<bool> LogOut()
+		{
+			_player.RefreshToken = null;
+			_player.RefreshTokenExpiryTime = DateTime.Now;
+
+			await _userManager.UpdateAsync(_player);
+
+			return true;
+		}
+
 
 	}
 }

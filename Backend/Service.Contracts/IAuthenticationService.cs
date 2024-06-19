@@ -18,5 +18,8 @@ namespace Contracts
 
 		Task<TokenDto> RefreshToken(TokenDto tokenDto);
 
+		//log out
+		Task<bool> LogOut();
+
 	}
 }

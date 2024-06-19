@@ -16,9 +16,9 @@ namespace Repository
 		{
 		}
 
-		public async Task<IEnumerable<Score>> GetScores(Guid playerId, bool trackChanges) =>
+		public async Task<Score> GetScores(Guid playerId, bool trackChanges) =>
 			await FindByCondition(s => s.PlayerId.Equals(playerId), trackChanges)
-			.ToListAsync();
+			.SingleOrDefaultAsync();
 
 		public async Task<Score> GetScore(Guid playerId, Guid Id, bool trackChanges) =>
 			await FindByCondition(s => s.PlayerId.Equals(playerId) && s.Id.Equals(Id), trackChanges)

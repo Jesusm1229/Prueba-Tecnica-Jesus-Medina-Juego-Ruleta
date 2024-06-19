@@ -69,6 +69,7 @@ namespace WinWheel.Presentation.Controllers
 
 		//Getting a player by username
 		[HttpGet("{username}", Name = "PlayerByUsername")]
+		[Authorize]
 		public async Task<IActionResult> GetPlayer(string username)
 		{
 			

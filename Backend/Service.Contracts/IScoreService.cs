@@ -10,7 +10,7 @@ namespace Service.Contracts
 {
 	public interface IScoreService
 	{
-		Task<IEnumerable<ScoreDto>> GetScores(Guid playerId, bool trackChanges);
+		Task<ScoreDto> GetScores(Guid playerId, bool trackChanges);
 
 		Task<ScoreDto> GetScore(Guid playerId, Guid Id, bool trackChanges);
 

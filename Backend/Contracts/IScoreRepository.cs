@@ -9,7 +9,7 @@ namespace Contracts
 {
 	public interface IScoreRepository
 	{
-		Task<IEnumerable<Score>> GetScores(Guid playerId, bool trackChanges);
+		Task<Score> GetScores(Guid playerId, bool trackChanges);
 
 		Task<Score> GetScore(Guid playerId, Guid Id, bool trackChanges);
 

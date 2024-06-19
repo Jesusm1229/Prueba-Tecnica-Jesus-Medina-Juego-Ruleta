@@ -46,7 +46,7 @@ namespace Service
 		}
 
 		//Get Scores from players
-		public async Task <IEnumerable<ScoreDto>> GetScores(Guid playerId, bool trackChanges)
+		public async Task <ScoreDto> GetScores(Guid playerId, bool trackChanges)
 		{
 			//var player = await _repository.Player.GetPlayer(playerId, trackChanges);
 
@@ -57,9 +57,9 @@ namespace Service
 
 			await CheckIfPlayerExists(playerId, trackChanges);
 
-			var scoresFromDb = _repository.Score.GetScores(playerId, trackChanges);
+			var scoresFromDb = await _repository.Score.GetScores(playerId, trackChanges);
 
-			var scoresDto = _mapper.Map<IEnumerable<ScoreDto>>(scoresFromDb);
+			var scoresDto = _mapper.Map<ScoreDto>(scoresFromDb);
 			
 
 			return scoresDto;

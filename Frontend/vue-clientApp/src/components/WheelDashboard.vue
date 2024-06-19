@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, reactive } from 'vue'
 import { Button } from './ui/button'
 import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
@@ -38,6 +38,16 @@ interface ResponseData {
     didIWin: boolean;
 }
 
+interface UserData {
+    username: string;
+    score?: number;
+}
+
+const state = reactive({
+    isUserLoggedIn: false,
+});
+
+const userData = ref<UserData | null>(null);
 
 const responseData = ref<ResponseData | null>(null);
 
@@ -52,6 +62,22 @@ const initialBetData = {
 const betDataObj = ref<betData>({
     ...initialBetData,
 });
+
+const userDataObj = ref<UserData>({
+    username: '',
+});
+
+const userFormSchema = toTypedSchema(z.object({
+    username: z.string({
+        required_error: 'Username is required',
+        invalid_type_error: 'Username must be a string',
+    }).refine(value => {
+        if (value.includes(' ')) {
+            return 'Username cannot contain spaces';
+        }
+        return true;
+    }),
+}));
 
 const formSchema = toTypedSchema(z.object({
     category: z.enum(['Straight', 'Even', 'Odd', 'Color'], {
@@ -104,10 +130,15 @@ const formSchema = toTypedSchema(z.object({
 }))
 
 
+
+
 const betForm = useForm({
     validationSchema: formSchema,
 })
 
+const userForm = useForm({
+    validationSchema: userFormSchema,
+})
 
 const onSubmit = betForm.handleSubmit((values) => {
 
@@ -142,7 +173,69 @@ const onSubmit = betForm.handleSubmit((values) => {
         });
 })
 
+const userFormSubmit = userForm.handleSubmit((values) => {
 
+    const userObject = {
+        accessToken: '',
+        refreshToken: '',
+        idUsername: '',
+        username: values.username,
+        idScore: '',
+        score: 0
+    }
+
+    axios.post('https://localhost:7299/api/authentication/login', values)
+        .then((response) => {
+            toast({
+                title: 'Login successful',
+                duration: 5000,
+            })
+            userObject.accessToken = response.data.accessToken;
+            userObject.refreshToken = response.data.refreshToken;
+
+            return axios.get('https://localhost:7299/api/players/' + values.username, {
+                headers: {
+                    'Authorization': `Bearer ${userObject.accessToken}`
+                }
+            });
+        })
+        .then((response) => {
+            userObject.idUsername = response.data.id;
+
+            return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {
+                headers: {
+                    'Authorization': `Bearer ${userObject.accessToken}`
+                }
+            });
+        })
+        .then((response) => {
+            userObject.idScore = response.data.id;
+            userObject.score = response.data.points;
+
+            localStorage.setItem('UserObject', JSON.stringify(userObject));
+        })
+        .then((response) => {
+            state.isUserLoggedIn = true;
+        })
+        .catch((error) => {
+            toast({
+                title: "An error occurred",
+                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
+                duration: 6000,
+                variant: "destructive"
+            });
+            state.isUserLoggedIn = false;
+        });
+
+
+
+    console.log(localStorage.getItem('UserObject'), "user Object")
+
+    userData.value = values
+    console.log(userData)
+
+
+})
 
 
 
@@ -185,6 +278,7 @@ export default {
             </TabsList>
 
             <TabsContent value="play" class="space-y-4">
+
                 <form @submit.prevent="onSubmit">
                     <div class="flex items-center justify-end mb-4 space-y-2">
                         <div class="flex space-x-4 flex-end">
@@ -344,14 +438,58 @@ export default {
                                     </div>
                                 </div>
 
-                                <div class="grid gap-2">
-                                    <Label for="username">Username</Label>
-                                    <Input id="username" type="username" placeholder="TomCruise" />
-                                </div>
+                                <template v-if="true">
+                                    <!-- <div class="grid gap-2">
+                                        <Label for="username">Username</Label>
+                                        <Input id="username" type="username" placeholder="TomCruise" />
+                                    </div> -->
 
-                                <Button class="self-end w-full">
-                                    Login
-                                </Button>
+                                    <Dialog>
+                                        <DialogTrigger as-child>
+                                            <Button>
+                                                Login
+                                            </Button>
+                                        </DialogTrigger>
+
+                                        <DialogContent class="sm:max-w-[425px]">
+                                            <form @submit.prevent="userFormSubmit">
+                                                <DialogHeader>
+                                                    <DialogTitle>Login</DialogTitle>
+                                                    <DialogDescription>
+                                                        You'll use your stored score
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div class="grid gap-4 py-4">
+                                                    <FormField v-slot="{ componentField }" name="username">
+                                                        <FormItem v-auto-animate>
+                                                            <FormLabel class="text-lg font-semibold">Username
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="TomCruise"
+                                                                    v-bind="componentField"
+                                                                    v-model="userDataObj.username" />
+                                                            </FormControl>
+                                                            <FormDescription>
+                                                                This is your score in the game.
+                                                            </FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    </FormField>
+                                                </div>
+                                                <DialogFooter>
+                                                    <Button type="submit">
+                                                        Login
+                                                    </Button>
+                                                </DialogFooter>
+                                            </form>
+                                        </DialogContent>
+                                    </Dialog>
+
+                                    <!-- <Button class="self-end w-full">
+                                        Login
+                                    </Button> -->
+                                </template>
+
 
                             </CardContent>
                         </Card>
@@ -491,8 +629,10 @@ export default {
                                     <div class="flex-col text-right justify-right">
                                         <div class="mb-4 text-3xl font-bold tracking-tight ">
                                             <pre>
-                {{ !responseData ? "Waiting your bet" : responseData?.didIWin == true ? "You Win!" : "You Lose" }}
-            </pre>
+                        {{ !responseData ? "Waiting your bet" : responseData?.didIWin == true ? "You Win!" :
+                            "You Lose"
+                        }}
+                    </pre>
                                         </div>
                                         <div class="text-2xl flex-end text-muted-foreground ">
 
@@ -515,8 +655,8 @@ export default {
                     </div>
                 </form>
             </TabsContent>
-            <TabsContent value="password">
-                Change your password here.
+            <TabsContent value="top Winners">
+                Top Winners
             </TabsContent>
 
         </Tabs>

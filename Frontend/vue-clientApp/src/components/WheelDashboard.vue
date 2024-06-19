@@ -19,24 +19,14 @@ import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
 import axios from 'axios'
 import { Label } from '@/components/ui/label'
+import LoginForm from './LoginForm.vue'
+import { usePlayerStore } from '@/stores/player'
+import { CategoryTypes, type Bet, type BetResponse } from '@/lib/types'
 
 
 const { toast } = useToast()
 
-interface betData {
-    category: 'Straight' | 'Even' | 'Odd' | 'Color' | null;
-    score: number;
-    betAmount: number | null;
-    color: 'Red' | 'Black' | null;
-    number: string;
-}
-
-interface ResponseData {
-    newScore: number;
-    winnerNumber: number;
-    winnerColor: string;
-    didIWin: boolean;
-}
+const store = usePlayerStore();
 
 interface UserData {
     username: string;
@@ -45,31 +35,39 @@ interface UserData {
 
 const state = reactive({
     isUserLoggedIn: false,
+    isLoginDialogOpen: false,
+    showDialog: false,
 });
 
-const userData = ref<UserData | null>(null);
 
-const responseData = ref<ResponseData | null>(null);
+
+const responseData = ref<BetResponse | null>(null);
 
 const initialBetData = {
     category: null,
-    score: 0,
+    score: store.player.score ? store.player.score : 0,
     betAmount: 0,
     color: null,
     number: '0',
 };
 
-const betDataObj = ref<betData>({
-    ...initialBetData,
+const betDataObj = ref<Bet>({
+    ...initialBetData
 });
 
 const userDataObj = ref<UserData>({
     username: '',
 });
 
+
+
+console.log(store.player.username, "store")
+
+console.log(betDataObj.value, "betDataObj")
+
 let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
 
-const userFormSchema = toTypedSchema(z.object({
+/* let userFormSchema = toTypedSchema(z.object({
     username: z.string({
         required_error: 'Username is required',
         invalid_type_error: 'Username must be a string',
@@ -79,39 +77,17 @@ const userFormSchema = toTypedSchema(z.object({
         }
         return true;
     }),
-}));
+})); */
 
 const formSchema = toTypedSchema(z.object({
-    category: z.enum(['Straight', 'Even', 'Odd', 'Color'], {
+    category: z.enum(Object.keys(CategoryTypes) as [string, ...string[]], {
         required_error: 'Category is required',
         invalid_type_error: 'Category must be a string',
-    }).refine((value) => {
-        if (value === 'Straight') {
-            return z.object({
-                number: z.string({
-                    required_error: 'Number is required',
-                    invalid_type_error: 'Number must be a string',
-                }).refine((value) => {
-                    if (value === '') {
-                        return 'Number is required'
-                    }
-                    return true
-                }),
-                color: z.enum(['Red', 'Black'], {
-                    required_error: 'Color is required',
-                    invalid_type_error: 'Color must be a string',
-                }),
-            })
-        }
-        return true
     }),
 
-    score: state.isUserLoggedIn ? z.number({
+    score: store.player.score ? z.number({
         invalid_type_error: 'Score must be a number',
-    }).int().min(1, 'Score must be at least 1') : z.number({
-        required_error: 'Score is required',
-        invalid_type_error: 'Score must be a number',
-    }).int().min(1, 'Score must be at least 1'),
+    }).int().min(1, 'Score must be at least 1').optional() : z.number(),
 
     betAmount: z.number({
         required_error: 'Bet amount is required',
@@ -128,61 +104,71 @@ const formSchema = toTypedSchema(z.object({
         path: ['number'],
     }).optional(),
 
-}).refine(data => (data.category !== 'Straight' || data.number !== undefined), {
+}).refine(data => (data.category !== CategoryTypes.Straight || data.number !== undefined), {
     message: 'Number is required when category is Straight',
     path: ['number'],
 }))
 
 
-
+console.log(betDataObj.value, "betDataObj")
 
 const form = useForm({
     validationSchema: formSchema,
 })
-
+/* 
 const userForm = useForm({
     validationSchema: userFormSchema,
-})
+}) */
+
+const postBet = async (values: { category: string; betAmount: number; color: "Red" | "Black"; number?: string | undefined; score?: number | undefined }) => {
+    try {
+        const response = await axios.post('https://localhost:7299/api/bets', values)
+        responseData.value = response.data
+        console.log(response.data)
+        toast({
+            title: 'Submission successful',
+            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response.data, null, 2))),
+            duration: 5000,
+        })
+        store.player.score = response.data.newScore;
+    } catch (error) {
+        handleError(error)
+    }
+}
+
+const handleError = (error: any) => {
+    toast({
+        title: "An error occurredaaaa",
+        description: h('div', { class: ' text-wrap' }, error.response.status + ": " + error.response.data),
+        duration: 6000,
+        variant: "destructive"
+    })
+    if (error.response && error.response.data instanceof z.ZodError) {
+        error.response.data.issues.forEach((issue: { message: string | number | boolean | VNodeArrayChildren | { [name: string]: unknown; $stable?: boolean } | VNode<RendererNode, RendererElement, { [key: string]: any }> | (() => any) | undefined }) => {
+            toast({
+                title: 'An erroreeeee occurred',
+                description: h('div', { class: '' }, h('text', { class: 'text-white' }, issue.message)),
+                duration: 5000,
+            })
+        });
+    }
+}
 
 const onSubmit = form.handleSubmit((values) => {
-
     console.log(values, "values")
+
     if (state.isUserLoggedIn) {
         values.score = userObject.score;
     }
 
-    axios.post('https://localhost:7299/api/bets', values)
-        .then((response) => {
-            responseData.value = response.data
-            console.log(response.data)
-            toast({
-                title: 'Submission successful',
-                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response.data, null, 2))),
-                duration: 5000,
-            })
-        })
-        .catch((error) => {
-            toast({
-                title: "An error occurred",
-                description: h('div', { class: ' text-wrap' }, error.response.status + ": " + error.response.data),
-                duration: 6000,
-                variant: "destructive"
+    if (store.player.score) {
+        values.score = store.player.score;
+    }
 
-            })
-            if (error.response && error.response.data instanceof z.ZodError) {
-                error.response.data.issues.forEach((issue: { message: string | number | boolean | VNodeArrayChildren | { [name: string]: unknown; $stable?: boolean; } | VNode<RendererNode, RendererElement, { [key: string]: any; }> | (() => any) | undefined; }) => {
-                    toast({
-                        title: 'An error occurred',
-                        description: h('div', { class: '' }, h('text', { class: 'text-white' }, issue.message)),
-                        duration: 5000,
-
-                    })
-                });
-            }
-        });
+    postBet(values)
 })
 
-const userFormSubmit = userForm.handleSubmit((values) => {
+/* const userFormSubmit = userForm.handleSubmit((values) => {
 
     const userObject = {
         accessToken: '',
@@ -238,15 +224,8 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
 
 
-    console.log(localStorage.getItem('UserObject'), "user Object")
-
-    userData.value = values
-    console.log(userData)
-
-
-
-})
-
+    console.log(localStorage.getItem('UserObject'), "user Object")})
+ */
 
 
 
@@ -256,18 +235,34 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
 export default {
     data() {
+
+
         return {
-            numbers: Array.from({ length: 37 }, (_, i) => i)
+            numbers: Array.from({ length: 37 }, (_, i) => i),
+            players: [],
+
         }
     },
-    mounted() {
-        axios
-            .get('https://localhost:7299/api/players')
-            .then((response) => {
-                console.log(response.data)
-            })
-    }
+    methods: {
+        async fetchPlayers() {
+            try {
+                const response = await axios.get('https://localhost:7299/api/players')
+                this.players = response.data
+                console.log(this.players)
+            } catch (error) {
+                console.error(error)
+            }
+        },
 
+        closeDialog() {
+            state.showDialog = false
+        }
+
+
+    },
+    mounted() {
+        this.fetchPlayers()
+    },
 }
 
 </script>
@@ -289,6 +284,7 @@ export default {
             </TabsList>
 
             <TabsContent value="play" class="space-y-4">
+                {{ store.player.username }}
                 <form @submit.prevent="onSubmit">
                     <div class="flex items-center justify-end mb-4 space-y-2">
                         <div class="flex space-x-4 flex-end">
@@ -406,13 +402,13 @@ export default {
                                 </svg>
                             </CardHeader>
                             <CardContent class="grid grid-cols-2 gap-6">
-                                <template v-if="state.isUserLoggedIn">
+                                <template v-if="store.player.score">
                                     <div class="flex-col">
                                         <div class="text-lg font-semibold">
                                             Your Score
                                         </div>
                                         <div class="text-2xl font-bold">
-                                            {{ userObject.score }}
+                                            {{ store.player.score }}
                                         </div>
                                     </div>
                                 </template>
@@ -449,7 +445,15 @@ export default {
                                     </FormField>
                                 </div>
 
-                                <template v-if="!state.isUserLoggedIn">
+                                <template v-if="store.player.accessToken">
+                                    <div
+                                        class="relative flex flex-row justify-center gap-2 text-base text-center text-muted-foreground col-span-full">
+                                        <p>Enjoy your game, <strong class="font-semibold">
+                                                {{ userObject.username }}</strong></p>
+
+                                    </div>
+                                </template>
+                                <template v-else>
                                     <div class="relative col-span-full">
                                         <div class="absolute inset-0 flex items-center">
                                             <span class="w-full border-t"></span>
@@ -461,65 +465,20 @@ export default {
                                         </div>
                                     </div>
 
+                                    <LoginForm @close-dialog="closeDialog" />
 
                                     <!-- <div class="grid gap-2">
                                         <Label for="username">Username</Label>
                                         <Input id="username" type="username" placeholder="TomCruise" />
                                     </div> -->
 
-                                    <Dialog>
-                                        <DialogTrigger as-child>
-                                            <Button>
-                                                Login
-                                            </Button>
-                                        </DialogTrigger>
 
-                                        <DialogContent class="sm:max-w-[425px]">
-                                            <form @submit.prevent="userFormSubmit">
-                                                <DialogHeader>
-                                                    <DialogTitle>Login</DialogTitle>
-                                                    <DialogDescription>
-                                                        You'll use your stored score
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div class="grid gap-4 py-4">
-                                                    <FormField v-slot="{ componentField }" name="username">
-                                                        <FormItem v-auto-animate>
-                                                            <FormLabel class="text-lg font-semibold">Username
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input type="text" placeholder=""
-                                                                    v-bind="componentField"
-                                                                    v-model="userDataObj.username" />
-                                                            </FormControl>
-                                                            <FormDescription>
-                                                                This is your score in the game.
-                                                            </FormDescription>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    </FormField>
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button type="submit">
-                                                        Login
-                                                    </Button>
-                                                </DialogFooter>
-                                            </form>
-                                        </DialogContent>
-                                    </Dialog>
 
                                     <!-- <Button class="self-end w-full">
                                         Login
                                     </Button> -->
                                 </template>
-                                <template v-else>
-                                    <div
-                                        class="relative flex flex-row justify-center gap-2 text-base text-center text-muted-foreground col-span-full">
-                                        <p>Enjoy your game, <strong class="font-semibold">
-                                                {{ userObject.username }}</strong></p>
 
-                                    </div>
-                                </template>
 
 
                             </CardContent>
@@ -583,7 +542,7 @@ export default {
                                                         <div>
                                                             <RadioGroupItem :id="number.toString()"
                                                                 :value="number.toString()" class="sr-only peer"
-                                                                :disabled="betDataObj.category !== 'Straight'" />
+                                                                :disabled="betDataObj.category !== CategoryTypes.Straight" />
                                                             <Label :for="number.toString()"
                                                                 class="flex flex-row items-center justify-center rounded-md border-2 border-muted bg-popover p-2 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
                                                                 {{ number }}
@@ -592,7 +551,7 @@ export default {
                                                     </FormControl>
                                                 </FormItem>
                                             </RadioGroup>
-                                            <FormMessage v-show="betDataObj.category === 'Straight'" />
+                                            <FormMessage v-show="betDataObj.category === CategoryTypes.Straight" />
                                         </FormControl>
                                     </FormItem>
                                 </FormField>

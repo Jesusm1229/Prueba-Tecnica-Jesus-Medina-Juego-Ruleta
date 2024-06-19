@@ -1,13 +1,22 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import type { Player } from '@/lib/types'
 
 export const usePlayerStore = defineStore('player', () => {
-    const player = ref({
-        userName: '',
+
+    const player = ref<Player>({
+        accessToken: null,
+        refreshToken: null,
+        idUsername: null,
+        username: '',
+        idScore: null,
+        score: null
     })
-    function setUserName(userName: string) {
-        player.value.userName = userName
+
+    function setPlayer(newPlayer: Player) {
+        player.value = newPlayer
     }
-    return { player, setUserName }
+
+    return { player, setPlayer }
 }
 )

@@ -256,7 +256,9 @@ export default {
 
         closeDialog() {
             state.showDialog = false
-        }
+        },
+
+
 
 
     },
@@ -569,8 +571,8 @@ export default {
                                     <template v-if="responseData">
                                         <p class="py-2">Save your score with an account.
                                             <br>
-                                            If you don't you'll lose your
-                                            score once closed
+                                            If you don't, you'll lose your
+                                            score once window close
                                         </p>
                                         <Dialog>
                                             <DialogTrigger as-child>

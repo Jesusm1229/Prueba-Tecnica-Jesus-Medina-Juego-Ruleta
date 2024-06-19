@@ -21,7 +21,6 @@ import axios from 'axios'
 import { Label } from '@/components/ui/label'
 
 
-
 const { toast } = useToast()
 
 interface betData {
@@ -144,45 +143,12 @@ const onSubmit = betForm.handleSubmit((values) => {
 })
 
 
-/*  const clearForm = () => {
-     betDataObj.value = { ...initialBetData };
- }; */
-
-/*  methods: {
-     async submitForm() {
-         try {
-             const response = await axios.post('https://localhost:7299/api/bets', this.betDataObj)
-             this.responseData = response.data
-             console.log(response.data)
-         } catch (error) {
-             console.error(error)
-         }
-     }
- } */
-/*  mounted() {
-     axios
-         .get('https://localhost:7299/api/players')
-         .then((response) => {
-             console.log(response.data)
-         })
- },
- methods: {
-     async getPosts() {
-         try {
-             const response = await axios.get('https://localhost:7299/api/players')
-             this.posts = response.data
-         } catch (error) {
-             console.error(error)
-         }
-     }
- }, */
 
 
 
 </script>
 
 <script lang="ts">
-
 
 export default {
     data() {

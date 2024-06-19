@@ -22,8 +22,8 @@ namespace WinWheel.Presentation.ActionFilters
 			{
 				var errors = new List<string>();
 
-				if (betForCalculationDto.BetAmount > betForCalculationDto.Score)
-					errors.Add("Bet amount must be less than or equal to score.");
+				if (betForCalculationDto.BetAmount >= betForCalculationDto.Score)
+					errors.Add("Bet amount must be less than your score.");
 
 				if (betForCalculationDto.Color != "Red" && betForCalculationDto.Color != "Black")
 					errors.Add("Color must be Red or Black.");

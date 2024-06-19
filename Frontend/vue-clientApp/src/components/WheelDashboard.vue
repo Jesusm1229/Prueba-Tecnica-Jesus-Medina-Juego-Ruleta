@@ -591,10 +591,13 @@ export default {
                                                         <Label for="username" class="text-right">
                                                             Username
                                                         </Label>
-                                                        <Input id="username" value="peduarte" class="col-span-3" />
+                                                        <Input id="username" value="" class="col-span-3" />
                                                     </div>
-                                                    <div class="grid grid-cols-2 gap-4 text-lg font-medium items-left">
-                                                        <p>Your Score: </p>
+                                                    <div
+                                                        class="grid justify-center grid-cols-4 gap-4 text-base font-medium items-left">
+                                                        <Label for="username" class="my-auto text-right">
+                                                            Your Score
+                                                        </Label>
                                                         <prev>
                                                             {{ responseData.newScore }}
                                                         </prev>
@@ -615,14 +618,13 @@ export default {
 
 
                                 </div>
-                                <div class="flex justify-end col-span-1">
+                                <div class="flex-col justify-end col-span-1">
                                     <div class="flex-col text-right justify-right">
                                         <div class="mb-4 text-3xl font-bold tracking-tight ">
-                                            <pre>
-                        {{ !responseData ? "Waiting your bet" : responseData?.didIWin == true ? "You Win!" :
-                            "You Lose"
-                        }}
-                    </pre>
+                                            <div>
+                                                {{ !responseData ? "Waiting your bet" :
+                                                    responseData?.didIWin == true ? "You Win!" : "You Lose" }}
+                                            </div>
                                         </div>
                                         <div class="text-2xl flex-end text-muted-foreground ">
 

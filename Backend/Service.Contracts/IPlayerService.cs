@@ -11,7 +11,10 @@ namespace Service.Contracts
 	{
 		Task<IEnumerable<PlayerDto>> GetAllPlayers(bool trackChanges);
 
+		Task<IEnumerable<PlayerDto>> GetTopPlayers(bool trackChanges);
+
 		Task <PlayerDto> GetPlayer(Guid playerId, bool trackChanges);
+
 		Task<PlayerDto> GetPlayerByUsername(string username, bool trackChanges);
 
 		Task<PlayerDto> CreatePlayer(PlayerForCreationDto player);

@@ -21,6 +21,14 @@ namespace Repository
 			.OrderBy(p => p.UserName)
 			.ToListAsync();
 
+		public async Task<IEnumerable<Player>> GetTopPlayers(bool trackChanges) =>
+			await FindAll(trackChanges)
+			.OrderBy(p => p.Score.Points)
+			.Take(10)
+			.ToListAsync();
+
+
+
 		public async Task <Player> GetPlayer(Guid playerId, bool trackChanges) =>
 			await FindByCondition(p => p.Id.Equals(playerId), trackChanges)
 			.SingleOrDefaultAsync();

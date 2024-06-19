@@ -32,6 +32,12 @@
             </summary>
             <returns>The players list</returns>
         </member>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetTopPlayers">
+            <summary>
+            Gets the list of top players
+            </summary>
+            <returns>The top players list</returns>
+        </member>
         <member name="M:WinWheel.Presentation.Controllers.PlayersController.CreatePlayer(Shared.DataTransferObjects.PlayerForCreationDto)">
             <summary>
             Creates a new player

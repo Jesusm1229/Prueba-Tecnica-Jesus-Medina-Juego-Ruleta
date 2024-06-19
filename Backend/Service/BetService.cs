@@ -42,7 +42,7 @@ namespace Service
 						if (wheelSpinned.number % 2 == 0 && betForCalculationDto.Color == wheelSpinned.color)
 						{
 							return	new BetForResultDto(
-									betForCalculationDto.Score + betForCalculationDto.BetAmount * 2,
+									betForCalculationDto.Score + betForCalculationDto.BetAmount,
 									wheelSpinned.number,
 									wheelSpinned.color,
 									true							

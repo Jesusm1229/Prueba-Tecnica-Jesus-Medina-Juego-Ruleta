@@ -53,6 +53,16 @@ namespace Service
 
 		}
 
+		public async Task<IEnumerable<PlayerDto>> GetTopPlayers(bool trackChanges)
+		{
+			var players = await _repository.Player.GetTopPlayers(trackChanges);
+
+			//Mapper
+			var playersDto = _mapper.Map<IEnumerable<PlayerDto>>(players);
+
+			return playersDto;
+		}
+
 		public async Task<PlayerDto> GetPlayer(Guid id, bool trackChanges)
 		{
 			var player = await GetPlayerAndCheckIfItExists(id, trackChanges);

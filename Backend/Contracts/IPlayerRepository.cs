@@ -11,6 +11,10 @@ namespace Contracts
 	{
 		//Get all player
 		Task <IEnumerable<Player>> GetAllPlayers(bool trackChanges);
+
+		//Get top players
+		Task<IEnumerable<Player>> GetTopPlayers(bool trackChanges);
+
 		//GEt specific player
 		Task<Player> GetPlayer(Guid playerId, bool trackChanges);
 

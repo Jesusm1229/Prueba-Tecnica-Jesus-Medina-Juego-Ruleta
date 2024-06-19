@@ -10,51 +10,27 @@ import { Input } from '@/components/ui/input'
 import { useForm, defineRule } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from './ui/form'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { h, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue';
 import { useToast } from '@/components/ui/toast/use-toast'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog'
-
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
+import axios from 'axios'
 import { Label } from '@/components/ui/label'
+
+
 
 const { toast } = useToast()
 
 interface betData {
     category: 'Straight' | 'Even' | 'Odd' | 'Color' | null;
     score: number;
-    betAmount: number;
+    betAmount: number | null;
     color: 'Red' | 'Black' | null;
     number: string;
 }
-
-
-const betDataObj = ref<betData>({
-    category: null,
-    score: 0,
-    betAmount: 0,
-    color: null,
-    number: '0',
-})
-
-
 
 interface ResponseData {
     newScore: number;
@@ -64,9 +40,21 @@ interface ResponseData {
 }
 
 
+const responseData = ref<ResponseData | null>(null);
+
+const initialBetData = {
+    category: null,
+    score: 0,
+    betAmount: 0,
+    color: null,
+    number: '0',
+};
+
+const betDataObj = ref<betData>({
+    ...initialBetData,
+});
 
 const formSchema = toTypedSchema(z.object({
-
     category: z.enum(['Straight', 'Even', 'Odd', 'Color'], {
         required_error: 'Category is required',
         invalid_type_error: 'Category must be a string',
@@ -117,43 +105,13 @@ const formSchema = toTypedSchema(z.object({
 }))
 
 
-
-const { errors, handleSubmit } = useForm({
+const betForm = useForm({
     validationSchema: formSchema,
 })
 
-watch(errors, (newErrors) => {
-    console.log(newErrors.number, "error")
 
-    if (newErrors.number) {
-        toast({
-            title: 'An error occurredaaaaa',
-            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, newErrors.number)),
-            duration: 5000,
-            variant: "destructive"
+const onSubmit = betForm.handleSubmit((values) => {
 
-        })
-    }
-})
-
-
-
-/* watch(betAmount, (newBetAmount) => {
-    if (newBetAmount > score.value) {
-        betAmountError.value = 'Bet amount cannot be greater than score'
-    } else {
-        betAmountError.value = ''
-    }
-}) */
-/* const form = useForm({
-    validationSchema: formSchema,
-}) */
-
-const responseData = ref<ResponseData | null>(null);
-
-
-const onSubmit = handleSubmit((values) => {
-    console.log(values)
     axios.post('https://localhost:7299/api/bets', values)
         .then((response) => {
             responseData.value = response.data
@@ -162,7 +120,6 @@ const onSubmit = handleSubmit((values) => {
                 title: 'Submission successful',
                 description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response.data, null, 2))),
                 duration: 5000,
-
             })
         })
         .catch((error) => {
@@ -186,37 +143,50 @@ const onSubmit = handleSubmit((values) => {
         });
 })
 
-/* const onSubmit = handleSubmit((values) => {
-    try {
-        toast({
-            title: 'You submitted the following values:',
-            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(values, null, 2))),
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError){
-            toast({
-                title: 'An error occurred',
-                description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, error.message)),
-                duration: 5000,
 
-            })
-        }
-    }
-}) */
+/*  const clearForm = () => {
+     betDataObj.value = { ...initialBetData };
+ }; */
 
-
+/*  methods: {
+     async submitForm() {
+         try {
+             const response = await axios.post('https://localhost:7299/api/bets', this.betDataObj)
+             this.responseData = response.data
+             console.log(response.data)
+         } catch (error) {
+             console.error(error)
+         }
+     }
+ } */
+/*  mounted() {
+     axios
+         .get('https://localhost:7299/api/players')
+         .then((response) => {
+             console.log(response.data)
+         })
+ },
+ methods: {
+     async getPosts() {
+         try {
+             const response = await axios.get('https://localhost:7299/api/players')
+             this.posts = response.data
+         } catch (error) {
+             console.error(error)
+         }
+     }
+ }, */
 
 
 
 </script>
 
 <script lang="ts">
-import axios from 'axios'
+
 
 export default {
     data() {
         return {
-            posts: [],
             numbers: Array.from({ length: 37 }, (_, i) => i)
         }
     },
@@ -230,16 +200,7 @@ export default {
 
 }
 
-
-/* data() {
-        return {
-            numbers: Array.from({ length: 37 }, (_, i) => i)
-        }
-    } */
-
 </script>
-
-
 
 <template>
     <div class="flex-1 p-8 pt-6 mx-4 space-y-4 border">
@@ -258,7 +219,7 @@ export default {
             </TabsList>
 
             <TabsContent value="play" class="space-y-4">
-                <form @submit="onSubmit">
+                <form @submit.prevent="onSubmit">
                     <div class="flex items-center justify-end mb-4 space-y-2">
                         <div class="flex space-x-4 flex-end">
                             <Button type="submit" class="px-10 bg-green-600">Spin Wheel!</Button>
@@ -268,7 +229,7 @@ export default {
 
                         <!-- Category -->
                         <Card>
-                            <CardHeader>
+                            <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle class="text-2xl font-bold">Set yout game!</CardTitle>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" version="1" id="casino">
                                     <g transform="translate(-126.5 -1363.862)">
@@ -596,5 +557,9 @@ export default {
     </div>
 
 </template>
+
+
+
+
 
 <style></style>

@@ -41,6 +41,20 @@ namespace WinWheel.Presentation.Controllers
 			
 		}
 
+		/// <summary>
+		/// Gets the list of top players
+		/// </summary>
+		/// <returns>The top players list</returns>
+		[HttpGet("top", Name = "GetTopPlayers")]
+		public async Task<IActionResult> GetTopPlayers()
+		{
+			
+				var players = await _serviceManager.PlayerService.GetTopPlayers(trackChanges: false);
+
+				return Ok(players);
+			
+		}
+
 		//Getting a player by id
 		[HttpGet("{id:guid}", Name = "PlayerById")]
 		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.

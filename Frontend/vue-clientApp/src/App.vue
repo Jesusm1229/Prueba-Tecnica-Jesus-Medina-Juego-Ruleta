@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LoginForm from './components/LoginForm.vue';
 import WheelDashboard from './components/WheelDashboard.vue'
 
 import { Toaster } from '@/components/ui/toast'
@@ -7,7 +8,7 @@ import { Toaster } from '@/components/ui/toast'
 <template>
   <Toaster />
   <WheelDashboard />
-  
+
 </template>
 
 <style scoped></style>

@@ -13198,3 +13198,12 @@
 2024-06-19 13:27:48.1702 Trace FileTarget(Name=logfile) has 2 layouts
 2024-06-19 13:27:48.1702 Trace FileTarget(Name=logfile): Using appenderFactory: NLog.Internal.FileAppenders.SingleProcessFileAppender+Factory
 2024-06-19 13:27:48.1702 Info Configuration initialized.
+2024-06-19 15:39:44.1496 Debug Targets configured when LogLevel >= Debug for Logger: LoggerService.LoggerManager
+2024-06-19 15:39:44.1758 Debug Logger LoggerService.LoggerManager [Debug] => logfile
+2024-06-19 15:39:44.1758 Debug Logger LoggerService.LoggerManager [Info] => logfile
+2024-06-19 15:39:44.1758 Debug Logger LoggerService.LoggerManager [Warn] => logfile
+2024-06-19 15:39:44.1758 Debug Logger LoggerService.LoggerManager [Error] => logfile
+2024-06-19 15:39:44.1758 Debug Logger LoggerService.LoggerManager [Fatal] => logfile
+2024-06-19 15:39:44.2306 Debug FileTarget(Name=logfile): Preparing for new file: 'C:\Users\chuo1\source\repos\WinWheel\Backend\WinWheel\bin\Debug\net8.0\.\logs\2024-06-19_logfile.txt'
+2024-06-19 15:39:44.2306 Debug FileTarget(Name=logfile): Creating file appender: 'C:\Users\chuo1\source\repos\WinWheel\Backend\WinWheel\bin\Debug\net8.0\.\logs\2024-06-19_logfile.txt'
+2024-06-19 15:39:44.2306 Trace FileTarget(Name=logfile): Opening C:\Users\chuo1\source\repos\WinWheel\Backend\WinWheel\bin\Debug\net8.0\.\logs\2024-06-19_logfile.txt with allowFileSharedWriting=False

@@ -113,6 +113,9 @@ function closeDialog() {
 
 const userFormSubmit = userForm.handleSubmit((values) => {
 
+    console.log('Form submitted!', values)
+    console.log(store.player, "store.player before login")
+
     const userObject = {
         accessToken: '',
         refreshToken: '',
@@ -122,7 +125,7 @@ const userFormSubmit = userForm.handleSubmit((values) => {
         score: 0
     }
 
-    axios.post('https://localhost:7299/api/authentication/login', values)
+    axios.post('https://localhost:7299/api/authentication/login', values)//login
         .then((response) => {
             toast({
                 title: 'Login successful',
@@ -131,7 +134,7 @@ const userFormSubmit = userForm.handleSubmit((values) => {
             userObject.accessToken = response.data.accessToken;
             userObject.refreshToken = response.data.refreshToken;
 
-            return axios.get('https://localhost:7299/api/players/' + values.username, {
+            return axios.get('https://localhost:7299/api/players/' + values.username, {//get player
                 headers: {
                     'Authorization': `Bearer ${userObject.accessToken}`
                 }
@@ -140,7 +143,7 @@ const userFormSubmit = userForm.handleSubmit((values) => {
         .then((response) => {
             userObject.idUsername = response.data.id;
 
-            return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {
+            return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {//get score stored in database
                 headers: {
                     'Authorization': `Bearer ${userObject.accessToken}`
                 }
@@ -152,8 +155,9 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
             localStorage.setItem('UserObject', JSON.stringify(userObject));
         })
-        .then((response) => {
+        .then(() => {
             stateLogin.isUserLoggedIn = true;
+            store.setPlayer(userObject);
             closeDialog();
 
         })
@@ -165,12 +169,11 @@ const userFormSubmit = userForm.handleSubmit((values) => {
                 variant: "destructive"
             });
             console.log(error);
-
         });
 
     let userResult = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
 
-    store.setPlayer(userResult);
+    console.log(store.player, "store.player")
 
     console.log(localStorage.getItem('UserObject'), "user Object")
 

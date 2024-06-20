@@ -33,3 +33,8 @@ export interface BetResponse {
     winnerColor: string;
     didIWin: boolean;
 }
+
+export interface PlayerWithScore {
+    username: string;
+    score: { points: number };
+}

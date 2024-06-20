@@ -70,18 +70,11 @@ interface UserData {
     score?: number;
 }
 
-const stateLogin = reactive({
-    isUserLoggedIn: false,
-    isLoginDialogOpen: false,
-});
-
 const userDataObj = ref<UserData>({
     username: '',
 });
 
 /* console.log(betDataObj.value, "betDataObj") */
-
-let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null') ?? {};
 
 const store = usePlayerStore()
 
@@ -102,19 +95,8 @@ const userForm = useForm({
     validationSchema: userFormSchema,
 })
 
-const showDialog = ref(false);
-const emit = defineEmits(['close-dialog']);
-
-function closeDialog() {
-    showDialog.value = false;
-    emit('close-dialog');
-}
-
 
 const userFormSubmit = userForm.handleSubmit((values) => {
-
-    console.log('Form submitted!', values)
-    console.log(store.player, "store.player before login")
 
     const userObject = {
         accessToken: '',
@@ -150,45 +132,17 @@ const userFormSubmit = userForm.handleSubmit((values) => {
                     userObject.idScore = response.data.id;
                     userObject.score = response.data.points;
 
-                    localStorage.setItem('UserObject', JSON.stringify(userObject));
+
                 })
 
             })
         }).then(() => {
-            stateLogin.isUserLoggedIn = true;
+
             store.setPlayer(userObject);
-            /* closeDialog(); */
-
-            console.log(store.player, "store.player")
-        })
-        /* .then((response) => {
-            userObject.idUsername = response.data.id;
-            console.log(response.data, "response.data")
-
-            return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {//get score stored in database
-                headers: {
-                    'Authorization': `Bearer ${userObject.accessToken}`
-                }
-            }).then((response) => {
-                userObject.idScore = response.data.id;
-                userObject.score = response.data.points;
-
-                localStorage.setItem('UserObject', JSON.stringify(userObject));
-            })
-        })
-        .then((response) => {
-            userObject.idScore = response.data.id;
-            userObject.score = response.data.points;
 
             localStorage.setItem('UserObject', JSON.stringify(userObject));
-        }) */
-        /* .then(() => {
-            stateLogin.isUserLoggedIn = true;
-            store.setPlayer(userObject);
-            closeDialog();
-
             console.log(store.player, "store.player")
-        }) */
+        })
         .catch((error) => {
             toast({
                 title: "An error login occurred",
@@ -199,65 +153,9 @@ const userFormSubmit = userForm.handleSubmit((values) => {
             console.log(error);
         });
 
-    /*  let userResult = JSON.parse(localStorage.getItem('UserObject') ?? 'null'); */
 
-    /*    console.log(store.player, "store.player")
-   
-       console.log(localStorage.getItem('UserObject'), "user Object")
-    */
 
 })
 
 
-const login = async (values: UserData) => {
-    const response = await axios.post(`https://localhost:7299/api/authentication/login`, values);
-    return response.data;
-};
-
-const getPlayer = async (username: string, accessToken: string) => {
-    const response = await axios.get(`https://localhost:7299/api/players/${username}`, {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    return response.data;
-};
-
-const getScore = async (idUsername: string, accessToken: string) => {
-    const response = await axios.get(`https://localhost:7299/api/players/${idUsername}/scores`, {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    return response.data;
-};
-
-const userFormSubmi = userForm.handleSubmit(async (values) => {
-    try {
-        const { accessToken, refreshToken } = await login(values);
-        console.log(accessToken, refreshToken, "accessToken, refreshToken");
-        const player = await getPlayer(values.username, accessToken);
-        const score = await getScore(player.id, accessToken);
-
-        const userObject = {
-            accessToken,
-            refreshToken,
-            idUsername: player.id,
-            idScore: score.id,
-            score: score.points
-        };
-
-        store.setPlayer(userObject);
-        localStorage.setItem('UserObject', JSON.stringify(userObject));
-
-        stateLogin.isUserLoggedIn = true;
-        /*  closeDialog();
-  */
-        console.log(store.player, "store.player");
-    } catch (error) {
-        console.error(error);
-        // Handle error...
-    }
-});
-
-</script>: { username: any }: any: any: any: any
+</script>

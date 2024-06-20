@@ -175,8 +175,16 @@ namespace Service
 			return await CreateToken(populateExp: false);
 		}
 
-		public async Task<bool> LogOut()
+		public async Task<bool> LogOut(TokenDto tokenDto)
 		{
+			var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
+
+			var user = await _userManager.FindByNameAsync(principal.Identity.Name);
+
+			if (user == null || user.RefreshToken != tokenDto.RefreshToken)
+				throw new RefreshTokenBadRequest();
+
+			_player = user;
 			_player.RefreshToken = null;
 			_player.RefreshTokenExpiryTime = DateTime.Now;
 

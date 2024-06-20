@@ -65,10 +65,17 @@ namespace WinWheel.Presentation.Controllers
 
 		//Log out Player
 		[HttpPost("logout")]
-		public async Task<IActionResult> Logout()
+		public async Task<IActionResult> Logout([FromBody] TokenDto tokenDto)
 		{
-			await _service.AuthenticationService.LogOut();
-			return Ok();
+			if (tokenDto == null)
+				return BadRequest("TokenDto object is null");
+
+			if (!ModelState.IsValid)
+				return UnprocessableEntity(ModelState);
+
+			var tokenDtoReturn = await _service.AuthenticationService.LogOut(tokenDto);
+
+			return Ok(201);
 		}
 	}
 

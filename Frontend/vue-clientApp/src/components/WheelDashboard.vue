@@ -31,6 +31,7 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 
+
 const { toast } = useToast()
 
 const store = usePlayerStore();
@@ -69,24 +70,9 @@ const userDataObj = ref<UserData>({
 });
 
 
-
-console.log(store.player.username, "store")
-
-console.log(betDataObj.value, "betDataObj")
-
 let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
 
-/* let userFormSchema = toTypedSchema(z.object({
-    username: z.string({
-        required_error: 'Username is required',
-        invalid_type_error: 'Username must be a string',
-    }).refine(value => {
-        if (value.includes(' ')) {
-            return 'Username cannot contain spaces';
-        }
-        return true;
-    }),
-})); */
+
 
 const formSchema = reactive(toTypedSchema(z.object({
     category: z.enum(Object.keys(CategoryTypes) as [string, ...string[]], {
@@ -166,10 +152,6 @@ const handleError = (error: any) => {
 const onSubmit = form.handleSubmit((values) => {
     console.log(values, "values")
 
-    /* if (state.isUserLoggedIn) {
-        values.score = userObject.score;
-    }
- */
     if (store.player.score) {
         values.score = store.player.score;
     }
@@ -210,6 +192,44 @@ const UpdateScore = async () => {
         });
 }
 
+const LogOut = () => {
+
+    const token = {
+        accessToken: store.player.accessToken,
+        refreshToken: store.player.refreshToken
+    }
+
+    axios.post('https://localhost:7299/api/authentication/logout', token, {
+        headers: {
+
+        }
+    }).then((response) => {
+        store.player = {
+            accessToken: '',
+            refreshToken: '',
+            idUsername: '',
+            username: '',
+            idScore: '',
+            score: 0
+        }
+        localStorage.removeItem('UserObject');
+        toast({
+            title: 'Logout successful',
+            description: h('div', { class: ' text-wrap' }, 'You have been logged out'),
+            duration: 5000,
+        })
+        console.log(response)
+    }).catch((error) => {
+        console.error(error)
+        toast({
+            title: "An error occurred",
+            description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
+            duration: 6000,
+            variant: "destructive"
+        });
+    });
+
+}
 
 </script>
 
@@ -276,7 +296,6 @@ export default {
     <div class="flex-1 p-8 pt-6 mx-4 space-y-4 border">
         <div class="flex items-center justify-between space-y-2">
             <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
-            {{ store.player.score }}
             <div>
                 <template v-if="store.player.accessToken">
                     <div class="relative flex flex-row justify-center gap-2 text-lg text-center col-span-full">
@@ -288,9 +307,11 @@ export default {
                         <Separator orientation="vertical" class="bg-rose-500" />
                         <TooltipProvider>
                             <Tooltip>
-                                <TooltipTrigger> <Button variant="outline" size="icon">
+                                <TooltipTrigger>
+                                    <Button @click="LogOut" variant="outline" size="icon">
                                         <LogOutIcon class="w-4 h-4" />
-                                    </Button></TooltipTrigger>
+                                    </Button>
+                                </TooltipTrigger>
                                 <TooltipContent>
                                     <p>LogOut</p>
                                 </TooltipContent>

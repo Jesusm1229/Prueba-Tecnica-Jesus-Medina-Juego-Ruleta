@@ -40,7 +40,7 @@ interface UserData {
     score?: number;
 }
 
-const state = reactive({
+const state = ref({
     isUserLoggedIn: false,
     isLoginDialogOpen: false,
     showDialog: false,
@@ -54,15 +54,15 @@ const responseData = ref<BetResponse | null>(null);
 
 const initialBetData = {
     category: null,
-    score: store.player.score ? store.player.score : 0,
+    score: store.player.score ? store.player.score : null,
     betAmount: 0,
     color: null,
     number: '0',
 };
 
-const betDataObj = ref<Bet>({
+const betDataObj = ref(ref<Bet>({
     ...initialBetData
-});
+}));
 
 const userDataObj = ref<UserData>({
     username: '',
@@ -88,18 +88,15 @@ let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
     }),
 })); */
 
-const formSchema = toTypedSchema(z.object({
+const formSchema = reactive(toTypedSchema(z.object({
     category: z.enum(Object.keys(CategoryTypes) as [string, ...string[]], {
         required_error: 'Category is required',
         invalid_type_error: 'Category must be a string',
     }),
 
-    score: store.player.score ? z.number({
+    score: z.number({
         invalid_type_error: 'Score must be a number',
-    }).int().min(1, 'Score must be at least 1').optional() : z.number({
-        required_error: 'Score is required',
-        invalid_type_error: 'Score must be a number',
-    }).int().min(1, 'Score must be at least 1'),
+    }).int().min(1, 'Score must be at least 1').optional(),
 
     betAmount: z.number({
         required_error: 'Bet amount is required',
@@ -119,7 +116,7 @@ const formSchema = toTypedSchema(z.object({
 }).refine(data => (data.category !== CategoryTypes.Straight || data.number !== undefined), {
     message: 'Number is required when category is Straight',
     path: ['number'],
-}))
+})))
 
 
 console.log(betDataObj.value, "betDataObj")
@@ -241,7 +238,36 @@ const onSubmit = form.handleSubmit((values) => {
 
     console.log(localStorage.getItem('UserObject'), "user Object")})
  */
+const UpdateScore = async () => {
+    console.log(store.player.idUsername, store.player.idScore, store.player.score)
 
+    const score = {
+        points: store.player.score
+    }
+
+    axios.put('https://localhost:7299/api/players/' + store.player.idUsername + '/scores/' + store.player.idScore, score, {
+        headers: {
+            'Authorization': `Bearer ${store.player.accessToken}`
+        }
+    })
+        .then((response) => {
+            console.log(response.data)
+            toast({
+                title: 'Score saved',
+                description: h('div', { class: ' text-wrap' }, response.data),
+                duration: 5000,
+            })
+        })
+        .catch((error) => {
+            console.error(error)
+            toast({
+                title: "An error occurred",
+                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
+                duration: 6000,
+                variant: "destructive"
+            });
+        });
+}
 
 
 </script>
@@ -269,41 +295,7 @@ export default {
             }
         },
 
-        updateScore(event: { stopPropagation: () => void }) {
 
-            event.stopPropagation();
-
-            console.log(store.player.idUsername, store.player.idScore, store.player.score)
-
-            const score = {
-                points: store.player.score
-            }
-
-            axios.put('https://localhost:7299/api/players/' + store.player.idUsername + '/scores/' + store.player.idScore, {
-                score
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${store.player.accessToken}`
-                }
-            })
-                .then((response) => {
-                    console.log(response.data)
-                    toast({
-                        title: 'Score saved',
-                        description: h('div', { class: ' text-wrap' }, response.data),
-                        duration: 5000,
-                    })
-                })
-                .catch((error) => {
-                    console.error(error)
-                    toast({
-                        title: "An error occurred",
-                        description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
-                        duration: 6000,
-                        variant: "destructive"
-                    });
-                });
-        },
 
 
 
@@ -324,11 +316,11 @@ export default {
 
 
         closeDialog() {
-            state.showDialog = false
+            state.value.showDialog = false
         },
 
         closeRegisterDialog() {
-            state.showDialog = false
+            state.value.showDialog = false
         }
 
     },
@@ -343,6 +335,7 @@ export default {
     <div class="flex-1 p-8 pt-6 mx-4 space-y-4 border">
         <div class="flex items-center justify-between space-y-2">
             <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
+            {{ store.player.score }}
             <div>
                 <template v-if="store.player.accessToken">
                     <div class="relative flex flex-row justify-center gap-2 text-lg text-center col-span-full">
@@ -666,8 +659,9 @@ export default {
                                             If you don't, you'll lose your
                                             score once window closes
                                         </p>
-                                        <Button @click="updateScore($event)" variant="secondary" class="px-10 ">Save
-                                            Score</Button>
+                                        <Button @click="UpdateScore" variant="secondary" class="px-10 ">
+                                            Save Score
+                                        </Button>
                                     </template>
                                 </template>
                                 <!-- save score  -->

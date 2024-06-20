@@ -1,55 +1,36 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
-import { Button } from './ui/button'
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
-import { Card } from './ui/card'
-import { CardTitle, CardHeader } from './ui/card';
-import CardContent from './ui/card/CardContent.vue';
 import { Input } from '@/components/ui/input'
-import { useForm, defineRule } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
-import { h, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue';
-import { useToast } from '@/components/ui/toast/use-toast'
-import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
-import axios from 'axios'
-import { Label } from '@/components/ui/label'
-import LoginForm from './LoginForm.vue'
-import RegisterForm from './RegisterForm.vue'
-import { usePlayerStore } from '@/stores/player'
-import { CategoryTypes, type Bet, type BetResponse } from '@/lib/types'
-import { LogOutIcon } from 'lucide-vue-next'
+import { useToast } from '@/components/ui/toast/use-toast'
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger
 } from '@/components/ui/tooltip'
-
+import { CategoryTypes, type Bet, type BetResponse } from '@/lib/types'
+import { usePlayerStore } from '@/stores/player'
+import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { toTypedSchema } from '@vee-validate/zod'
+import axios from 'axios'
+import { LogOutIcon } from 'lucide-vue-next'
+import { useForm } from 'vee-validate'
+import { h, onMounted, reactive, ref, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue'
+import * as z from 'zod'
+import LoginForm from './LoginForm.vue'
+import RegisterForm from './RegisterForm.vue'
+import { Button } from './ui/button'
+import { Card, CardHeader, CardTitle } from './ui/card'
+import CardContent from './ui/card/CardContent.vue'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 
 const { toast } = useToast()
 
 const store = usePlayerStore();
-
-interface UserData {
-    username: string;
-    score?: number;
-}
-
-const state = ref({
-    isUserLoggedIn: false,
-    isLoginDialogOpen: false,
-    showDialog: false,
-    showRegisterDialog: false,
-    showSaveScoreDialog: false,
-});
-
-
 
 const responseData = ref<BetResponse | null>(null);
 
@@ -65,13 +46,23 @@ const betDataObj = ref(ref<Bet>({
     ...initialBetData
 }));
 
-const userDataObj = ref<UserData>({
-    username: '',
+const state = ref({
+    localStorageFound: false
+})
+
+
+const userObjectExists = ref(false);
+
+onMounted(() => {
+    const userObject = localStorage.getItem('UserObject');
+    userObjectExists.value = userObject !== null;
+
+    if (userObjectExists.value) {
+        const userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null') ?? {};
+        store.player = userObject;
+    }
+
 });
-
-
-let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
-
 
 
 const formSchema = reactive(toTypedSchema(z.object({
@@ -105,15 +96,9 @@ const formSchema = reactive(toTypedSchema(z.object({
 })))
 
 
-console.log(betDataObj.value, "betDataObj")
-
 const form = useForm({
     validationSchema: formSchema,
 })
-/* 
-const userForm = useForm({
-    validationSchema: userFormSchema,
-}) */
 
 const postBet = async (values: { category: string; betAmount: number; color: "Red" | "Black"; number?: string | undefined; score?: number | undefined }) => {
     try {
@@ -156,7 +141,15 @@ const onSubmit = form.handleSubmit((values) => {
         values.score = store.player.score;
     }
 
-    postBet(values)
+    const betValues = {
+        category: values.category,
+        betAmount: values.betAmount,
+        color: values.color,
+        number: values.number,
+        score: values.score,
+    };
+
+    postBet(betValues)
 })
 
 
@@ -164,6 +157,7 @@ const onSubmit = form.handleSubmit((values) => {
 const UpdateScore = async () => {
     console.log(store.player.idUsername, store.player.idScore, store.player.score)
 
+    console.log(store.player.accessToken, "access token")
     const score = {
         points: store.player.score
     }
@@ -189,7 +183,45 @@ const UpdateScore = async () => {
                 duration: 6000,
                 variant: "destructive"
             });
-        });
+        })
+        .catch((error) => {
+            console.error(error)
+            toast({
+                title: "An error occurred",
+                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
+                duration: 6000,
+                variant: "destructive"
+            });
+        })
+}
+
+/* const isTokenExpired = (token: string) => {
+    try {
+        const decoded = jwtDecode(token);
+        const expirationDate = new Date(decoded.exp ?? 0 * 1000);
+
+        console.log(decoded, expirationDate, "token lock")
+
+        return expirationDate < new Date();
+
+    } catch (error) {
+        console.error('Invalid token', error);
+        return true;
+    }
+} */
+
+const isTokenExpired = (token: string) => {
+    try {
+        const { exp } = JSON.parse(atob(token.split('.')[1]));
+        const expirationDate = new Date(exp * 1000);
+
+
+        return expirationDate < new Date();
+
+    } catch (error) {
+        console.error('Invalid token', error);
+        return true;
+    }
 }
 
 const LogOut = () => {
@@ -198,6 +230,16 @@ const LogOut = () => {
         accessToken: store.player.accessToken,
         refreshToken: store.player.refreshToken
     }
+
+    /*   if (typeof token.accessToken === 'string' && isTokenExpired(token.accessToken)) {
+          toast({
+              title: 'Token expired',
+              description: h('div', { class: ' text-wrap' }, 'You have been logged out'),
+              duration: 5000,
+          })
+          return;
+      } */
+
 
     axios.post('https://localhost:7299/api/authentication/logout', token, {
         headers: {
@@ -221,9 +263,10 @@ const LogOut = () => {
         console.log(response)
     }).catch((error) => {
         console.error(error)
+        console.error(error.response.data.Message)
         toast({
             title: "An error occurred",
-            description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
+            description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data.Message : error),
             duration: 6000,
             variant: "destructive"
         });
@@ -231,14 +274,17 @@ const LogOut = () => {
 
 }
 
+
+
+
+
 </script>
 
 <script lang="ts">
 
+
 export default {
     data() {
-
-
         return {
             numbers: Array.from({ length: 37 }, (_, i) => i),
             players: [],
@@ -254,40 +300,125 @@ export default {
             } catch (error) {
                 console.error(error)
             }
-        },
-
-
-
-
-
-        /* async UpdateScore() {
+        }/* ,
+        isTokenExpired(token: any) {
             try {
-                const response = await axios.put('https://localhost:7299/api/players/' + store.player.idUsername + '/scores' + store.player.idScore, {
-                    points: store.player.score
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${store.player.accessToken}`
-                    }
-                })
-                console.log(response.data)
+                const decoded = jwtDecode(token);
+                const expirationDate = new Date(decoded.exp * 1000);
+                return expirationDate < new Date();
             } catch (error) {
-                console.error(error)
+                console.error('Invalid token', error);
+                return true;
             }
-        } ,*/
+        } */,
+        checkUserObject() {
+            console.log("im mounteed")
+            const userObject = localStorage.getItem('UserObject');
+            /* if (userObject) {
+              alert('UserObject exists in localStorage');
+            } */
+        },
+        /* checkUserObject() {
+            const userObject = localStorage.getItem('UserObject');
+            if (userObject) {
+                state.value.localStorageFound = true;
+            }
+            
+        } */
 
+        refreshToken() {
+            const token = {
+                accessToken: store.player.accessToken,
+                refreshToken: store.player.refreshToken,
+            };
 
-        closeDialog() {
-            state.value.showDialog = false
+            axios
+                .post('https://localhost:7299/api/authentication/refresh', token, {
+                    headers: {},
+                })
+                .then((response) => {
+                    store.player.accessToken = response.data.accessToken;
+                    store.player.refreshToken = response.data.refreshToken;
+
+                    console.log(response.data, "response.data")
+
+                    localStorage.setItem('UserObject', JSON.stringify(store.player));
+                })
+                .catch((error) => {
+                    console.error(error);
+                    /*  this.logOut(); */ // If refreshing the token fails, log out the user
+                });
+
         },
 
-        closeRegisterDialog() {
-            state.value.showDialog = false
-        }
+        isTokenExpired(token: string) {
+            try {
+                const { exp } = JSON.parse(atob(token.split('.')[1]));
+                const expirationDate = new Date(exp * 1000);
+
+                return expirationDate < new Date();
+
+            } catch (error) {
+                console.error('Invalid token', error);
+                return true;
+            }
+        },
+
+
+        /* logOut() {
+          const store = useStore();
+          const token = {
+            accessToken: store.player.accessToken,
+            refreshToken: store.player.refreshToken,
+          };
+    
+          axios
+            .post('https://localhost:7299/api/authentication/logout', token, {
+              headers: {},
+            })
+            .then((response) => {
+              store.player = {
+                accessToken: '',
+                refreshToken: '',
+                idUsername: '',
+                username: '',
+                idScore: '',
+                score: 0,
+              };
+              localStorage.removeItem('UserObject');
+              this.$toast({
+                title: 'Logout successful',
+                description: h('div', { class: ' text-wrap' }, 'You have been logged out'),
+                duration: 5000,
+              });
+              console.log(response);
+            })
+            .catch((error) => {
+              console.error(error);
+              console.error(error.response.data.Message);
+              this.$toast({
+                title: 'An error occurred',
+                description: h(
+                  'div',
+                  { class: ' text-wrap' },
+                  error.response ? error.response.status + ': ' + error.response.data.Message : error
+                ),
+                duration: 6000,
+                variant: 'destructive',
+              });
+            });
+        }, */
+
 
     },
     mounted() {
-        this.fetchPlayers()
+
+        this.fetchPlayers(),
+            this.checkUserObject()
+
+
     },
+
 }
 
 </script>
@@ -324,7 +455,7 @@ export default {
                 <template v-else>
                     <div class="relative flex flex-col self-end justify-end gap-4 text-sm text-right justify-right">
                         <div class="">
-                            <LoginForm @close-dialog="closeDialog" />
+                            <LoginForm />
                         </div>
                         <Separator />
                         <p class="relative flex justify-end w-fit text-muted-foreground">
@@ -613,7 +744,7 @@ export default {
                                             If you don't, you'll lose your
                                             score once window closes
                                         </p>
-                                        <RegisterForm @close-dialog="closeRegisterDialog" />
+                                        <RegisterForm />
                                     </template>
                                     <template v-if="store.player.accessToken">
                                         <p class="py-2">You're logged in, don't forget to save your score.
@@ -644,7 +775,8 @@ export default {
                                     </div>
                                     <div class="text-lg flex-end text-muted-foreground ">
 
-                                        <pre>{{ !responseData ? " " : responseData.winnerNumber + " :Winning Number" }}</pre>
+                                        <pre>{{ !responseData ? " " : responseData.winnerNumber + " :Winning Number" }}
+                                </pre>
                                     </div>
                                     <div class="text-lg flex-end text-muted-foreground ">
                                         <pre>{{ !responseData ? " " : responseData.winnerColor + " :Winning Color" }}</pre>

@@ -136,8 +136,7 @@ namespace Service
 				ValidateAudience = true,
 				ValidateIssuer = true,
 				ValidateIssuerSigningKey = true,
-				IssuerSigningKey = new SymmetricSecurityKey(
-			Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
 				ValidateLifetime = true,
 				ValidIssuer = jwtSettings["validIssuer"],
 				ValidAudience = jwtSettings["validAudience"]
@@ -181,7 +180,7 @@ namespace Service
 
 			var user = await _userManager.FindByNameAsync(principal.Identity.Name);
 
-			if (user == null || user.RefreshToken != tokenDto.RefreshToken)
+			if (user == null)
 				throw new RefreshTokenBadRequest();
 
 			_player = user;

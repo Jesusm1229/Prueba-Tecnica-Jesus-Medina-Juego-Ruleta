@@ -42,28 +42,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive, defineEmits } from 'vue'
-import { Button } from './ui/button'
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
-import { Card } from './ui/card'
-import { CardTitle, CardHeader } from './ui/card';
-import CardContent from './ui/card/CardContent.vue';
-import { Input } from '@/components/ui/input'
-import { useForm, defineRule } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
-import { h, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue';
-import { useToast } from '@/components/ui/toast/use-toast'
-import { vAutoAnimate } from '@formkit/auto-animate/vue'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
-import axios from 'axios'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { usePlayerStore } from '@/stores/player'
-import type { PlayerWithScore } from '@/lib/types'
+import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { toTypedSchema } from '@vee-validate/zod'
+import axios from 'axios'
+import { useForm } from 'vee-validate'
+import { defineEmits, h, ref } from 'vue'
+import * as z from 'zod'
+import { Button } from './ui/button'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 
 
 const { toast } = useToast()
@@ -175,6 +165,10 @@ const userFormSubmit = userForm.handleSubmit((values) => {
                         userObject.score = response.data.points;
 
                         localStorage.setItem('UserObject', JSON.stringify(userObject));
+                        toast({
+                            title: 'Done!',
+                            duration: 5000,
+                        })
                     })
 
             }
@@ -224,9 +218,5 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
 
 
-
-</script>
-
-<script>
 
 </script>

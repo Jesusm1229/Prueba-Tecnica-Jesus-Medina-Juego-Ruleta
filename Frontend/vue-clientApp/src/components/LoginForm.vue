@@ -41,27 +41,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive, defineEmits } from 'vue'
-import { Button } from './ui/button'
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectValue } from './ui/select'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs'
-import { Card } from './ui/card'
-import { CardTitle, CardHeader } from './ui/card';
-import CardContent from './ui/card/CardContent.vue';
-import { Input } from '@/components/ui/input'
-import { useForm, defineRule } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
-import { h, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue';
-import { useToast } from '@/components/ui/toast/use-toast'
-import { vAutoAnimate } from '@formkit/auto-animate/vue'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
-import axios from 'axios'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast/use-toast'
 import { usePlayerStore } from '@/stores/player'
+import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { toTypedSchema } from '@vee-validate/zod'
+import axios from 'axios'
+import { useForm } from 'vee-validate'
+import { h, ref } from 'vue'
+import * as z from 'zod'
+import { Button } from './ui/button'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
+import { jwtDecode } from "jwt-decode";
 
 const { toast } = useToast()
 
@@ -110,7 +102,7 @@ const userFormSubmit = userForm.handleSubmit((values) => {
     axios.post('https://localhost:7299/api/authentication/login', values)//login
         .then((response) => {
             toast({
-                title: 'Login successful',
+                title: 'Login successful. We are retrieving your data.',
                 duration: 5000,
             })
             userObject.accessToken = response.data.accessToken;
@@ -132,7 +124,12 @@ const userFormSubmit = userForm.handleSubmit((values) => {
                     userObject.idScore = response.data.id;
                     userObject.score = response.data.points;
 
+                    toast({
+                        title: 'Data retrieved',
+                        description: h('div', { class: ' text-wrap' }, 'Welcome back ' + userObject.username + '. Your score is ' + userObject.score),
+                        duration: 5000,
 
+                    })
                 })
 
             })
@@ -142,6 +139,7 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
             localStorage.setItem('UserObject', JSON.stringify(userObject));
             console.log(store.player, "store.player")
+            scheduleTokenRefresh();
         })
         .catch((error) => {
             toast({
@@ -156,6 +154,77 @@ const userFormSubmit = userForm.handleSubmit((values) => {
 
 
 })
+
+
+
+const RefreshToken = () => {
+    const token = {
+        AccessToken: store.player.accessToken,
+        RefreshToken: store.player.refreshToken
+    }
+
+    if (typeof token.AccessToken === 'string' && isTokenExpired(token.AccessToken)) {
+        /* LogOut(); */
+        return;
+    }
+
+    axios.post('https://localhost:7299/api/token/refresh', token, {
+        headers: {
+
+        }
+    }).then((response) => {
+        store.player.accessToken = response.data.accessToken;
+        store.player.refreshToken = response.data.refreshToken;
+
+        console.log(response.data, "response.data")
+
+        localStorage.setItem('UserObject', JSON.stringify(store.player));
+
+
+    }).catch((error) => {
+        console.error(error)
+        /* LogOut(); */
+    });
+
+}
+
+const isTokenExpired = (token: string) => {
+    try {
+        const { exp } = JSON.parse(atob(token.split('.')[1]));
+        const expirationDate = new Date(exp * 1000);
+
+        return expirationDate < new Date();
+
+    } catch (error) {
+        console.error('Invalid token', error);
+        return true;
+    }
+}
+
+const scheduleTokenRefresh = () => {
+    if (store.player.accessToken) {
+        const isExpired = isTokenExpired(store.player.accessToken);
+        if (!isExpired) {
+            const { exp } = JSON.parse(atob(store.player.accessToken.split('.')[1]));
+            const expirationDate = new Date(exp * 1000);
+            const refreshTime = expirationDate.getTime() - Date.now() - 2 * 60 * 1000; // 2 minutes before expiration
+
+            console.log('Token will be refreshed in', refreshTime, 'ms')
+            console.log('Token will expire at', expirationDate)
+
+            if (refreshTime > 0) {
+                setTimeout(RefreshToken, refreshTime);
+            } else {
+                RefreshToken(); // If the token is already expired or will expire in less than 2 minutes, refresh it immediately
+            }
+        } else {
+            console.error('Token is already expired.');
+        }
+    } else {
+        console.error('No access token found.');
+    }
+
+}
 
 
 </script>

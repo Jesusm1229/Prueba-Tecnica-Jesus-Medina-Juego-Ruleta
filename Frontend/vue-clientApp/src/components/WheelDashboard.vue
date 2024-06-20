@@ -179,65 +179,6 @@ const onSubmit = form.handleSubmit((values) => {
 
 
 
-
-/* const userFormSubmit = userForm.handleSubmit((values) => {
-
-    const userObject = {
-        accessToken: '',
-        refreshToken: '',
-        idUsername: '',
-        username: values.username,
-        idScore: '',
-        score: 0
-    }
-
-    axios.post('https://localhost:7299/api/authentication/login', values)
-        .then((response) => {
-            toast({
-                title: 'Login successful',
-                duration: 5000,
-            })
-            userObject.accessToken = response.data.accessToken;
-            userObject.refreshToken = response.data.refreshToken;
-
-            return axios.get('https://localhost:7299/api/players/' + values.username, {
-                headers: {
-                    'Authorization': `Bearer ${userObject.accessToken}`
-                }
-            });
-        })
-        .then((response) => {
-            userObject.idUsername = response.data.id;
-
-            return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {
-                headers: {
-                    'Authorization': `Bearer ${userObject.accessToken}`
-                }
-            });
-        })
-        .then((response) => {
-            userObject.idScore = response.data.id;
-            userObject.score = response.data.points;
-
-            localStorage.setItem('UserObject', JSON.stringify(userObject));
-        })
-        .then((response) => {
-            state.isUserLoggedIn = true;
-        })
-        .catch((error) => {
-            toast({
-                title: "An error occurred",
-                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + error.response.data : error),
-                duration: 6000,
-                variant: "destructive"
-            });
-            state.isUserLoggedIn = false;
-        });
-
-
-
-    console.log(localStorage.getItem('UserObject'), "user Object")})
- */
 const UpdateScore = async () => {
     console.log(store.player.idUsername, store.player.idScore, store.player.score)
 

@@ -50,171 +50,96 @@ import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { toTypedSchema } from '@vee-validate/zod'
 import axios from 'axios'
 import { useForm } from 'vee-validate'
-import { defineEmits, h, ref } from 'vue'
+import { h, ref } from 'vue'
 import * as z from 'zod'
 import { Button } from './ui/button'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
+import { toastMessage } from '@/provider/toastProvider'
+import { loginUser, registerUser } from '@/services/authHandler'
+import { scheduleTokenRefresh } from '@/services/tokenHandler'
+import { fetchPlayerById } from '@/services/playerHandler'
+import { fetchScoresById } from '@/services/scoreHandler'
 
+const toast = useToast();
+const store = usePlayerStore();
 
-const { toast } = useToast()
-
-interface UserData {
-    username: string;
-    score?: number;
-}
-
-/* const stateLogin = reactive({
-    isUserLoggedIn: false,
-    isLoginDialogOpen: false,
-}); */
-
-const userDataObj = ref<UserData>({
+const userDataObj = ref({
     username: '',
 });
 
-/* console.log(betDataObj.value, "betDataObj") */
-
-let userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null') ?? {};
-
-const store = usePlayerStore()
-
-
-let userFormSchema = toTypedSchema(z.object({
-    username: z.string({
-        required_error: 'Username is required',
-        invalid_type_error: 'Username must be a string',
-    }).refine(value => {
-        if (value.includes(' ')) {
-            return 'Username cannot contain spaces';
-        }
-        return true;
-    }),
-
+const userFormSchema = toTypedSchema(z.object({
+    username: z.string().refine(value => !value.includes(' '), 'Username cannot contain spaces'),
 }));
 
 const userForm = useForm({
     validationSchema: userFormSchema,
-})
+});
 
-const showDialog = ref(false);
-const emit = defineEmits(['close-dialog']);
+const userFormSubmit = userForm.handleSubmit(async (values) => {
+    try {
+        const newuserObject = {
+            username: values.username,
+            score: { points: store.player?.score ?? 0 },
+        };
 
-function closeRegisterDialog() {
-    showDialog.value = false;
-    emit('close-dialog');
-}
+        const registerResponse = await registerUser(newuserObject);
+        console.log(registerResponse, 'registerResponse');
+        toastMessage(
+            'Register successful.',
+            h('div', { class: 'text-sm' }, 'We are retrieving your data.'),
+            500
+        );
 
+        const loginResponse = await loginUser(values);
+        console.log(loginResponse)
+        const accessToken = loginResponse.accessToken;
 
-const userFormSubmit = userForm.handleSubmit((values) => {
+        const playerResponse = await fetchPlayerById(values.username, accessToken);
+        console.log(playerResponse, 'playerResponse')
+        const scoresResponse = await fetchScoresById(playerResponse.data.id, accessToken);
+        console.log(scoresResponse, 'scoresResponse')
 
-    console.log('Register Form submitted!', values)
+        const userObject = {
+            accessToken: loginResponse.accessToken,
+            refreshToken: loginResponse.refreshToken,
+            idUsername: playerResponse.data.id,
+            username: values.username,
+            idScore: scoresResponse.data.id,
+            score: scoresResponse.data.points,
+        };
 
-    const userObject = {
-        accessToken: '',
-        refreshToken: '',
-        idUsername: '',
-        username: values.username,
-        idScore: '',
-        score: 0
-    }
+        localStorage.setItem('UserObject', JSON.stringify(userObject));
 
-    const newuserObject = {
-        username: values.username,
-        score: {
-            points: store.player?.score ?? 0,
+        toastMessage(
+            'Done!',
+            h('div', { class: 'text-wrap' }, `Welcome ${userObject.username}. Your score is ${userObject.score}`),
+            5000);
+
+        store.setPlayer(userObject);
+        scheduleTokenRefresh();
+
+    } catch (error: unknown) {
+        console.error(error);
+        let errorMessage = 'An unexpected error occurred';
+        // Check if error is an instance of Error
+        if (error instanceof Error) {
+            errorMessage = error.message;
         }
+        // Further type check if error has a 'response' property
+        const axiosError = error as { response?: { status: number; data: any } };
+        if (axiosError.response) {
+            const { status, data } = axiosError.response;
+            errorMessage = `${status}: ${Object.values(data).flat().join()}`;
+        }
+        // Use toastMessage with the determined errorMessage
+        toastMessage(
+            "An error occurred",
+            h('div', { class: 'text-wrap' }, errorMessage),
+            6000,
+            "destructive"
+        );
     }
-
-
-    axios.post('https://localhost:7299/api/authentication', newuserObject)
-        .then(
-            (response) => {
-                toast({
-                    title: 'Register successful. Wait a moment while we do our magic!',
-                    duration: 5000,
-                })
-                userObject.accessToken = response.data.accessToken;
-                userObject.refreshToken = response.data.refreshToken;
-
-                return axios.post('https://localhost:7299/api/authentication/login', values)
-                    .then((response) => {
-                        /* toast({
-                            title: 'Login successful',
-                            duration: 5000,
-                        }) */
-                        userObject.accessToken = response.data.accessToken;
-                        userObject.refreshToken = response.data.refreshToken;
-
-                        return axios.get('https://localhost:7299/api/players/' + values.username, {
-                            headers: {
-                                'Authorization': `Bearer ${userObject.accessToken}`
-                            }
-                        });
-                    })
-                    .then((response) => {
-                        userObject.idUsername = response.data.id;
-
-                        return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {
-                            headers: {
-                                'Authorization': `Bearer ${userObject.accessToken}`
-                            }
-                        });
-                    })
-                    .then((response) => {
-                        userObject.idScore = response.data.id;
-                        userObject.score = response.data.points;
-
-                        localStorage.setItem('UserObject', JSON.stringify(userObject));
-                        toast({
-                            title: 'Done!',
-                            duration: 5000,
-                        })
-                    })
-
-            }
-        ).then(() => {
-            /*    stateLogin.isUserLoggedIn = true; */
-            closeRegisterDialog();
-
-        })
-
-        /* .then((response) => {
-            userObject.idScore = response.data.id;
-            userObject.score = response.data.points;
-
-            localStorage.setItem('UserObject', JSON.stringify(userObject));
-        })
-        .then((response) => {
-            stateLogin.isUserLoggedIn = true;
-            closeDialog();
-
-        }) */
-        .catch((error) => {
-            console.log(error.response.data);
-            console.log(error.response.status);
-            console.log(error.response.headers);
-
-            console.log(Object.values(error.response.data).flat().join());
-            console.log(error.response.data.errors);
-            toast({
-                title: "An error occurred",
-                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": " + Object.values(error.response.data).flat().join() : error),
-                duration: 6000,
-                variant: "destructive"
-            });
-            console.log(error);
-
-        });
-
-    /*  let userResult = JSON.parse(localStorage.getItem('UserObject') ?? 'null'); */
-
-    store.setPlayer(userObject);
-
-    console.log(localStorage.getItem('UserObject'), "user Object")
-
-
-})
-
+});
 
 
 

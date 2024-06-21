@@ -140,6 +140,7 @@ namespace Service
 				ValidateLifetime = true,
 				ValidIssuer = jwtSettings["validIssuer"],
 				ValidAudience = jwtSettings["validAudience"]
+				
 			};
 
 			var tokenHandler = new JwtSecurityTokenHandler();

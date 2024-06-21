@@ -81,7 +81,7 @@ namespace WinWheel.Presentation.Controllers
 		/// <param name="id"></param>
 		/// <param name="score"></param>
 		/// <returns>A newly updated score</returns>
-		/// <response code="201">Returns the newly created item</response>
+		/// <response code="204">NoContent. Update Successful</response>
 		/// <response code="400">If the item is null</response>
 		/// <response code="422">If the model is invalid</response>
 

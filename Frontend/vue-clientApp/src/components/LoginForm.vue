@@ -54,16 +54,18 @@ import * as z from 'zod'
 import { Button } from './ui/button'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { jwtDecode } from "jwt-decode";
+import { scheduleTokenRefresh } from '@/services/tokenHandler'
+import { loginUser } from '@/services/authHandler'
 
 const { toast } = useToast()
 
 interface UserData {
-    username: string;
+    username: string | null;
     score?: number;
 }
 
 const userDataObj = ref<UserData>({
-    username: '',
+    username: null,
 });
 
 /* console.log(betDataObj.value, "betDataObj") */
@@ -88,143 +90,70 @@ const userForm = useForm({
 })
 
 
-const userFormSubmit = userForm.handleSubmit((values) => {
+async function getPlayer(username: string, accessToken: string) {
+    const response = await axios.get(`https://localhost:7299/api/players/${username}`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    return response.data;
+}
 
-    const userObject = {
-        accessToken: '',
-        refreshToken: '',
-        idUsername: '',
-        username: values.username,
-        idScore: '',
-        score: 0
-    }
+async function getPlayerScore(idUsername: string, accessToken: string) {
+    const response = await axios.get(`https://localhost:7299/api/players/${idUsername}/scores`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    return response.data;
+}
 
-    axios.post('https://localhost:7299/api/authentication/login', values)//login
-        .then((response) => {
-            toast({
-                title: 'Login successful. We are retrieving your data.',
-                duration: 5000,
-            })
-            userObject.accessToken = response.data.accessToken;
-            userObject.refreshToken = response.data.refreshToken;
+const userFormSubmit = userForm.handleSubmit(async (values) => {
+    try {
+        const userObject = {
+            accessToken: '',
+            refreshToken: '',
+            idUsername: '',
+            username: values.username,
+            idScore: '',
+            score: 0
+        }
 
-            return axios.get('https://localhost:7299/api/players/' + values.username, {//get player
-                headers: {
-                    'Authorization': `Bearer ${userObject.accessToken}`
-                }
-            }).then((response) => {
-                userObject.idUsername = response.data.id;
-                console.log(response.data, "response.data")
+        const loginData = await loginUser(values);
+        userObject.accessToken = loginData.accessToken;
+        userObject.refreshToken = loginData.refreshToken;
 
-                return axios.get('https://localhost:7299/api/players/' + userObject.idUsername + '/scores', {//get score stored in database
-                    headers: {
-                        'Authorization': `Bearer ${userObject.accessToken}`
-                    }
-                }).then((response) => {
-                    userObject.idScore = response.data.id;
-                    userObject.score = response.data.points;
+        const playerData = await getPlayer(values.username, userObject.accessToken);
+        userObject.idUsername = playerData.id;
 
-                    toast({
-                        title: 'Data retrieved',
-                        description: h('div', { class: ' text-wrap' }, 'Welcome back ' + userObject.username + '. Your score is ' + userObject.score),
-                        duration: 5000,
+        const scoreData = await getPlayerScore(userObject.idUsername, userObject.accessToken);
+        userObject.idScore = scoreData.id;
+        userObject.score = scoreData.points;
 
-                    })
-                })
-
-            })
-        }).then(() => {
-
-            store.setPlayer(userObject);
-
-            localStorage.setItem('UserObject', JSON.stringify(userObject));
-            console.log(store.player, "store.player")
-            scheduleTokenRefresh();
-        })
-        .catch((error) => {
-            toast({
-                title: "An error login occurred",
-                description: h('div', { class: ' text-wrap' }, error.response ? error.response.status + ": Player doesn't exist" : error),
-                duration: 6000,
-                variant: "destructive"
-            });
-            console.log(error);
+        toast({
+            title: 'Data retrieved',
+            description: h('div', { class: ' text-wrap' }, 'Welcome back ' + userObject.username + '. Your score is ' + userObject.score),
+            duration: 5000,
         });
 
+        store.setPlayer(userObject);
+        localStorage.setItem('UserObject', JSON.stringify(userObject));
+        console.log(store.player, "store.player")
+        scheduleTokenRefresh();
+    } catch (error: any) {
+        let errorMessage = error;
 
-
-})
-
-
-
-const RefreshToken = () => {
-    const token = {
-        AccessToken: store.player.accessToken,
-        RefreshToken: store.player.refreshToken
-    }
-
-    if (typeof token.AccessToken === 'string' && isTokenExpired(token.AccessToken)) {
-        /* LogOut(); */
-        return;
-    }
-
-    axios.post('https://localhost:7299/api/token/refresh', token, {
-        headers: {
-
+        if (error.response) {
+            errorMessage = error.response.status + ": Player doesn't exist";
         }
-    }).then((response) => {
-        store.player.accessToken = response.data.accessToken;
-        store.player.refreshToken = response.data.refreshToken;
 
-        console.log(response.data, "response.data")
-
-        localStorage.setItem('UserObject', JSON.stringify(store.player));
-
-
-    }).catch((error) => {
-        console.error(error)
-        /* LogOut(); */
-    });
-
-}
-
-const isTokenExpired = (token: string) => {
-    try {
-        const { exp } = JSON.parse(atob(token.split('.')[1]));
-        const expirationDate = new Date(exp * 1000);
-
-        return expirationDate < new Date();
-
-    } catch (error) {
-        console.error('Invalid token', error);
-        return true;
+        toast({
+            title: "An error login occurred",
+            description: h('div', { class: ' text-wrap' }, errorMessage),
+            duration: 6000,
+            variant: "destructive"
+        });
+        console.log(error);
     }
-}
-
-const scheduleTokenRefresh = () => {
-    if (store.player.accessToken) {
-        const isExpired = isTokenExpired(store.player.accessToken);
-        if (!isExpired) {
-            const { exp } = JSON.parse(atob(store.player.accessToken.split('.')[1]));
-            const expirationDate = new Date(exp * 1000);
-            const refreshTime = expirationDate.getTime() - Date.now() - 2 * 60 * 1000; // 2 minutes before expiration
-
-            console.log('Token will be refreshed in', refreshTime, 'ms')
-            console.log('Token will expire at', expirationDate)
-
-            if (refreshTime > 0) {
-                setTimeout(RefreshToken, refreshTime);
-            } else {
-                RefreshToken(); // If the token is already expired or will expire in less than 2 minutes, refresh it immediately
-            }
-        } else {
-            console.error('Token is already expired.');
-        }
-    } else {
-        console.error('No access token found.');
-    }
-
-}
-
-
+});
 </script>

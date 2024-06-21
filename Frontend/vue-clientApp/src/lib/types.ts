@@ -2,7 +2,7 @@ export enum CategoryTypes {
     Straight = 'Straight',
     Even = 'Even',
     Odd = 'Odd',
-    Color = 'Color',
+    Color = 'Color'
 }
 
 export enum ColorTypes {

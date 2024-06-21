@@ -10,7 +10,8 @@ namespace Shared.DataTransferObjects
 		 int NewScore,
 		 int? WinnerNumber,
 		 string WinnerColor,
-		 bool DidIWin
+		 bool DidIWin,
+		 bool IsGameOver
 		);		
 	
 }

@@ -249,16 +249,14 @@
                         <template v-if="!store.player.accessToken">
                             <p class="py-2">Save your score with an account.
                                 <br>
-                                If you don't, you'll lose your
-                                score once window closes
+                                If you don't, you'll lose it once window closes
                             </p>
                             <RegisterForm />
                         </template>
                         <template v-if="store.player.accessToken">
                             <p class="py-2">You're logged in, don't forget to save your score.
                                 <br>
-                                If you don't, you'll lose your
-                                score once window closes
+                                If you don't, you'll lose your progress once window closes
                             </p>
                             <Button @click="UpdateScore" variant="secondary" class="px-10 ">
                                 Save Score
@@ -273,13 +271,11 @@
                     <div class="flex-col text-right justify-right">
                         <div class="mb-4 text-3xl font-bold tracking-tight ">
                             <div>
-
                                 {{ !responseData ? "Waiting your bet" :
                                     responseData?.didIWin == true ? "You Win!" : "You Lose" }}
                             </div>
                         </div>
                         <div class="text-2xl flex-end text-muted-foreground ">
-
                             <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
                         </div>
                         <div class="text-lg flex-end text-muted-foreground ">
@@ -297,7 +293,10 @@
 
             </CardContent>
         </Card>
+
     </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -322,11 +321,13 @@ import { Card, CardHeader, CardTitle } from './ui/card'
 import CardContent from './ui/card/CardContent.vue'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import { useGameStore } from '@/stores/game'
 
 
 const { toast } = useToast()
 
 const store = usePlayerStore();
+const gameStore = useGameStore();
 
 
 const responseData = ref<BetResponse | null>(null);
@@ -438,8 +439,10 @@ const submitBet = async (values: { category: string; betAmount: number; color: "
         });
 
         responseData.value = response;
-
         store.player.score = response.newScore;
+
+        gameStore.gameOver = response.isGameOver;
+
 
     } catch (error) {
         handleError(error);
@@ -515,8 +518,103 @@ export default {
             numbers: Array.from({ length: 37 }, (_, i) => i),
         }
     },
+    methods: {
+        restartGame() {
+            console.log('restart game')
+
+
+        }
+    }
 
 
 }
 
 </script>
+
+
+<style scoped>
+/* Existing styles */
+
+/* Enhancements for better alignment and readability */
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.justify-right {
+    justify-content: flex-end;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.text-3xl {
+    font-size: 1.75rem;
+    /* Adjusted for better visibility */
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.text-lg {
+    font-size: 1.25rem;
+}
+
+.text-muted-foreground {
+    color: #6b7280;
+    /* Example muted text color */
+}
+
+/* Full-screen dialog styles */
+.Dialog {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Semi-transparent background */
+}
+
+.DialogTitle {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.DialogContent {
+    font-size: 1.5rem;
+    color: #ddd;
+    margin-bottom: 2rem;
+}
+
+.DialogActions {
+    /* Center the button */
+    display: flex;
+    justify-content: center;
+}
+
+.Button {
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    background-color: #4f46e5;
+    /* Example button color */
+    color: #fff;
+    border: none;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s;
+}
+
+.Button:hover {
+    background-color: #4338ca;
+    /* Darker shade on hover */
+}
+</style>

@@ -30,6 +30,7 @@ export interface BetResponse {
     winnerNumber: number;
     winnerColor: string;
     didIWin: boolean;
+    isGameOver: boolean;
 }
 
 export interface PlayerWithScore {

@@ -26,11 +26,16 @@ namespace Service
 					{
 						if (betForCalculationDto.Number == wheelSpinned.number && betForCalculationDto.Color == wheelSpinned.color)
 						{
+							//If the player wins, he gets 3 times the bet amount
+							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount * 3;
+
 							return	new BetForResultDto(
-									betForCalculationDto.Score + betForCalculationDto.BetAmount * 3,
+									score,
 									wheelSpinned.number,
 									wheelSpinned.color,
-									true							
+									true,
+									false
+									
 								);							
 						}
 
@@ -41,11 +46,14 @@ namespace Service
 						//Even number and color
 						if (wheelSpinned.number % 2 == 0 && betForCalculationDto.Color == wheelSpinned.color)
 						{
+							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount;
+
 							return	new BetForResultDto(
-									betForCalculationDto.Score + betForCalculationDto.BetAmount,
+									score,
 									wheelSpinned.number,
 									wheelSpinned.color,
-									true							
+									true,
+									false
 								);							
 						}				
 
@@ -55,11 +63,14 @@ namespace Service
 					{
 						if (wheelSpinned.number % 2 != 0 && betForCalculationDto.Color == wheelSpinned.color)
 						{
+							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount;
+
 							return	new BetForResultDto(
-									betForCalculationDto.Score + betForCalculationDto.BetAmount,
+									score,
 									wheelSpinned.number,
 									wheelSpinned.color,
-									true							
+									true,
+									false
 								);							
 						}
 
@@ -70,11 +81,14 @@ namespace Service
 						//If the color is the same as the color of the wheel, the player wins half of the bet amount
 						if (betForCalculationDto.Color == wheelSpinned.color)
 						{
+							int score = betForCalculationDto.Score + (betForCalculationDto.BetAmount / 2);
+
 							return	new BetForResultDto(
-									betForCalculationDto.Score + (betForCalculationDto.BetAmount / 2),
+									score,
 									wheelSpinned.number,
 									wheelSpinned.color,
-									true							
+									true,
+									false
 								);							
 						}						
 						break;
@@ -87,7 +101,8 @@ namespace Service
 				betForCalculationDto.Score - betForCalculationDto.BetAmount,
 				wheelSpinned.number,
 				wheelSpinned.color,
-				false
+				false,
+				betForCalculationDto.Score - betForCalculationDto.BetAmount <= 0
 				);
 		}
 

@@ -13,6 +13,7 @@ export const usePlayerStore = defineStore('player', () => {
         score: null
     })
 
+
     function setPlayer(newPlayer: Player) {
         player.value = newPlayer
     }

@@ -1,23 +1,11 @@
 <script setup lang="ts">
-import { Separator } from '@/components/ui/separator'
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger
-} from '@/components/ui/tooltip'
-import { logOutUser } from '@/services/authHandler'
 import { resetUser } from '@/services/localStorageHandler'
 import { isTokenExpired, scheduleTokenRefresh } from '@/services/tokenHandler'
 import { usePlayerStore } from '@/stores/player'
-import axios from 'axios'
-import { LogOutIcon } from 'lucide-vue-next'
-import LoginForm from './LoginForm.vue'
+import AuthNav from './AuthNav.vue'
 import TabPlay from './TabPlay.vue'
 import TabTopPlayers from './TabTopPlayers.vue'
-import { Button } from './ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import AuthNav from './AuthNav.vue'
 
 </script>
 

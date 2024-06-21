@@ -116,7 +116,7 @@
                     </CardHeader>
                     <CardContent class="grid grid-cols-2 gap-6">
                         <template v-if="store.player.score">
-                            <div class="flex-col">
+                            <div class="flex-col col-span-full">
                                 <div class="text-lg font-semibold">
                                     Your Score
                                 </div>
@@ -126,7 +126,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div class="grid gap-2">
+                            <div class="grid gap-2 col-span-full">
                                 <FormField v-slot="{ componentField }" name="score">
                                     <FormItem v-auto-animate>
                                         <FormLabel class="text-lg font-semibold">Score</FormLabel>
@@ -142,7 +142,7 @@
                                 </FormField>
                             </div>
                         </template>
-                        <div class="grid gap-2">
+                        <div class="grid gap-2 col-span-full">
                             <FormField v-slot="{ componentField }" name="betAmount">
                                 <FormItem v-auto-animate>
                                     <FormLabel class="text-lg font-semibold">Bet Amount</FormLabel>
@@ -280,7 +280,7 @@
                         </div>
                         <div class="text-2xl flex-end text-muted-foreground ">
 
-                            <pre>{{ !responseData ? " " : responseData.newScore + " :New Score" }}</pre>
+                            <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
                         </div>
                         <div class="text-lg flex-end text-muted-foreground ">
 
@@ -306,37 +306,22 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/components/ui/toast/use-toast'
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger
-} from '@/components/ui/tooltip'
 import { CategoryTypes, type Bet, type BetResponse } from '@/lib/types'
+import { toastMessage } from '@/provider/toastProvider'
+import { postBet } from '@/services/betHandler'
+import { updatePlayerScore } from '@/services/scoreHandler'
 import { usePlayerStore } from '@/stores/player'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import axios from 'axios'
-import { LogOutIcon } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
-import { h, onMounted, reactive, ref, type RendererElement, type RendererNode, type VNode, type VNodeArrayChildren } from 'vue'
+import { h, reactive, ref } from 'vue'
 import * as z from 'zod'
-import LoginForm from './LoginForm.vue'
 import RegisterForm from './RegisterForm.vue'
 import { Button } from './ui/button'
 import { Card, CardHeader, CardTitle } from './ui/card'
 import CardContent from './ui/card/CardContent.vue'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
-import { RefreshToken, scheduleTokenRefresh } from '@/services/tokenHandler'
-import { isTokenExpired } from '@/services/tokenHandler'
-import { resetUser } from '@/services/localStorageHandler'
-import { logOutUser } from '@/services/authHandler'
-import { postBet } from '@/services/betHandler'
-import { updatePlayerScore } from '@/services/scoreHandler'
-import { toastMessage } from '@/provider/toastProvider'
-import { loginUser } from '@/services/authHandler'
 
 
 const { toast } = useToast()
@@ -358,6 +343,7 @@ const betDataObj = ref(ref<Bet>({
     ...initialBetData
 }));
 
+const maxValue = 2147483647 - 1;
 
 const formSchema = reactive(toTypedSchema(z.object({
     category: z.enum(Object.keys(CategoryTypes) as [string, ...string[]], {
@@ -367,12 +353,12 @@ const formSchema = reactive(toTypedSchema(z.object({
 
     score: z.number({
         invalid_type_error: 'Score must be a number',
-    }).int().min(1, 'Score must be at least 1').optional(),
+    }).int().min(1, 'Score must be at least 1').max(maxValue, "Score limit reached").optional(),
 
     betAmount: z.number({
         required_error: 'Bet amount is required',
         invalid_type_error: 'Bet amount must be a number',
-    }).int().min(1, 'Bet amount must be at least 1'),
+    }).int().min(1, 'Bet amount must be at least 1').max(maxValue, "Bet amount limit reached"),
 
     color: z.enum(['Red', 'Black'], {
         required_error: 'Color is required',
@@ -384,10 +370,30 @@ const formSchema = reactive(toTypedSchema(z.object({
         path: ['number'],
     }).optional(),
 
-}).refine(data => (data.category !== CategoryTypes.Straight || data.number !== undefined), {
-    message: 'Number is required when category is Straight',
-    path: ['number'],
-})))
+})
+    .refine(data => (data.category !== CategoryTypes.Straight || data.number !== undefined), {
+        message: 'Number is required when category is Straight',
+        path: ['number'],
+    })
+    .refine(data => {
+
+        if (data.category === CategoryTypes.Straight) {
+            // Ensure betAmount is not greater than maxValue / 3
+            return data.betAmount < Math.floor(maxValue / 3);
+        }
+        // Check if the category is Even or Odd
+        if (data.category === CategoryTypes.Even || data.category === CategoryTypes.Odd) {
+            // Ensure betAmount is not greater than maxValue / 2
+            return data.betAmount < Math.floor(maxValue / 2);
+        }
+
+
+    }, {
+        message: 'You exceeded the maximum bet amount for this category categor',
+        path: ['betAmount'],
+    })
+
+))
 
 
 const form = useForm({

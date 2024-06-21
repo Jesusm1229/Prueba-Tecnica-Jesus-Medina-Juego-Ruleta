@@ -22,7 +22,7 @@ namespace WinWheel.Presentation.ActionFilters
 			{
 				var errors = new List<string>();
 
-				if (betForCalculationDto.BetAmount >= betForCalculationDto.Score)
+				if (betForCalculationDto.BetAmount > betForCalculationDto.Score)
 					errors.Add("Bet amount must be lower than your score.");
 
 				//Check the amount bet and category so the score int doesnt overflow

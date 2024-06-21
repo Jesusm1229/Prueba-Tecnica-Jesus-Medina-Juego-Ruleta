@@ -387,9 +387,18 @@ const formSchema = reactive(toTypedSchema(z.object({
             return data.betAmount < Math.floor(maxValue / 2);
         }
 
-
+        return true;
     }, {
-        message: 'You exceeded the maximum bet amount for this category categor',
+        message: 'You exceeded the maximum bet amount for this category',
+        path: ['betAmount'],
+    })
+    .refine(data => {
+        if (data.score) {
+            return data.score >= data.betAmount;
+        }
+        return true;
+    }, {
+        message: 'You do not have enough score to place this bet',
         path: ['betAmount'],
     })
 

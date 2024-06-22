@@ -19,9 +19,8 @@
                             {{ win.number }}
                         </div>
                     </div>
-                    <Separator orientation="vertical" />
                 </li>
-                <Separator orientation="vertical" />
+
             </ul>
         </div>
     </div>

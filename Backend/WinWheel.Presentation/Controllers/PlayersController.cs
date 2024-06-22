@@ -47,7 +47,7 @@ namespace WinWheel.Presentation.Controllers
 		/// </summary>
 		/// <returns>The top players list</returns>
 		[HttpGet("top", Name = "GetTopPlayers")]
-		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
+		[ResponseCache(Duration = 600)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
 		public async Task<IActionResult> GetTopPlayers()
 		{
 			

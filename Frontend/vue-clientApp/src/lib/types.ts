@@ -41,6 +41,7 @@ export interface WheelResponse {
 }
 
 export interface PlayerWithScore {
-    username: string;
+    id?: string;
+    userName: string;
     score: { points: number };
 }

@@ -181,7 +181,7 @@
                                                 <div>
                                                     <RadioGroupItem id="Red" value="Red" class="sr-only peer" />
                                                     <Label for="Red"
-                                                        class="flex flex-row items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-rose-800 [&:has([data-state=checked])]:border-primary">
+                                                        class="flex flex-row items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-rose-600 [&:has([data-state=checked])]:border-primary">
                                                         <div className='p-3 border rounded-full bg-rose-600'>
                                                         </div>
                                                         Red

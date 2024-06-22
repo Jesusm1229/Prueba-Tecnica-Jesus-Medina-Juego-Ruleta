@@ -14,12 +14,6 @@ const updateComponentKey = (newValue: number) => {
 
 <template>
   <Toaster />
-  <!--   <div class="fixed inset-0 flex items-center justify-center">
-    <button type="button" @click="openModal"
-      class="px-4 py-2 text-sm font-medium text-white rounded-md bg-black/20 hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
-      Open dialog
-    </button>
-  </div> -->
   <GameOverDialog :componentKey="componentKey" @update:componentKey="updateComponentKey" />
   <WheelDashboard :key="componentKey" />
 

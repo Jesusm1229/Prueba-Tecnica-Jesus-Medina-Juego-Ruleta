@@ -8,7 +8,8 @@
                     list!
                 </p>
             </caption>
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+
+            <thead class="p-4 text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3">
                         Username
@@ -18,7 +19,19 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <div v-if="loading" class="flex flex-col w-full space-y-3">
+                <!-- Skeletons for loading state -->
+                <!--  <Skeleton class="w-full h-full rounded-xl " /> -->
+                <div class="w-full p-4 space-y-2">
+                    <Skeleton class="w-full h-8" />
+                    <Skeleton class="w-full h-8" />
+                    <Skeleton class="w-full h-8" />
+                    <Skeleton class="w-full h-8" />
+                    <Skeleton class="w-full h-8" />
+                    <Skeleton class="w-full h-8" />
+                </div>
+            </div>
+            <tbody v-else>
                 <tr v-for="player in players" :key="player.id"
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <td class="px-6 py-4">{{ player.userName }}</td>
@@ -31,30 +44,30 @@
 
 </template>
 
-<script lang="ts">
-import axios from 'axios'
-import { onMounted, ref } from 'vue'
-import type { PlayerWithScore } from '@/lib/types'
+<script setup lang="ts">
+import type { PlayerWithScore } from '@/lib/types';
+import axios from 'axios';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Skeleton } from './ui/skeleton';
+import { onMounted, ref } from 'vue';
+import handleError from '@/provider/handleError';
 
-export default {
-    data() {
-        return {
-            players: [] as PlayerWithScore[],
-        }
-    },
-    methods: {
-        async fetchTopPlayers() {
-            try {
-                const response = await axios.get('https://localhost:7299/api/players/top')
-                this.players = response.data
-            } catch (error) {
-                console.error(error)
-            }
-        }
-    },
-    mounted() {
-        console.log("mounted")
-        this.fetchTopPlayers()
+
+const players = ref<PlayerWithScore[]>([]); // Use ref for reactive variables
+const loading = ref(true); // Use ref for reactive state
+
+async function fetchTopPlayers() {
+    try {
+        const response = await axios.get('https://localhost:7299/api/players/top');
+        players.value = response.data; // Update reactive variables with .value
+
+    } catch (error) {
+        handleError(error);
+    } finally {
+        loading.value = false; // Update reactive state with .value
     }
 }
+
+onMounted(fetchTopPlayers);
+
 </script>

@@ -3,7 +3,11 @@
         <form ref="form" @submit.prevent="onSubmit" class="col-span-2">
             <div class="flex items-center justify-end mb-4 space-y-2">
                 <div class="flex space-x-4 flex-end">
-                    <Button type="submit" class="px-10 bg-green-600">Spin Wheel!</Button>
+                    <Button disabled v-if="loading">
+                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
+                        Please wait
+                    </Button>
+                    <Button v-else type="submit" class="px-10 bg-green-600">Spin Wheel!</Button>
                 </div>
             </div>
             <div class="grid gap-4 col-span-full md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3">
@@ -305,11 +309,14 @@ import CardContent from './ui/card/CardContent.vue'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 import WinningHistory from './WinningHistory.vue'
+import { Loader2 } from 'lucide-vue-next'
 
 const { toast } = useToast()
 
 const store = usePlayerStore();
 const gameStore = useGameStore();
+
+const loading = ref(false); // Use ref for reactive state
 
 
 const responseData = ref<Record<string, any> | undefined>(undefined);
@@ -397,11 +404,10 @@ const form = useForm({
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
-
     try {
-        const spinWheelResponse = await spinWheel();
 
-        wheelData.value = spinWheelResponse;
+        loading.value = true;
+
 
         const betValues: Bet = ({
             category: getCategoryType(values.category),
@@ -409,9 +415,8 @@ const onSubmit = form.handleSubmit(async (values) => {
             color: getColorType(values.color),
             number: values.number,
             score: store.player.score || values.score,
-            spinWheelColor: spinWheelResponse.color,
-            spinWheelNumber: spinWheelResponse.number
-
+            /*   spinWheelColor: spinWheelResponse.color,
+              spinWheelNumber: spinWheelResponse.number */
         });
 
         submitBet(betValues);
@@ -426,15 +431,20 @@ const onSubmit = form.handleSubmit(async (values) => {
 const submitBet = async (values: Bet) => {
     try {
 
-        const response = await postBet(values);
+        const spinWheelResponse = await spinWheel();
 
-        console.log(response);
+        values.spinWheelColor = spinWheelResponse.color;
+        values.spinWheelNumber = spinWheelResponse.number;
+
+        const response = await postBet(values);
 
         toast({
             title: 'Submission successful',
             description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response, null, 2))),
             duration: 5000,
         });
+
+        wheelData.value = spinWheelResponse;
 
         responseData.value = response;
         store.player.score = response.newScore;
@@ -445,6 +455,8 @@ const submitBet = async (values: Bet) => {
     } catch (error) {
         handleError(error);
     }
+
+    loading.value = false;
 }
 
 

@@ -13,35 +13,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 export default {
 
     methods: {
-        //refresh access token if it has not expired yet
-        refresStorageUser() {
+        // Combine both functionalities into one method
+        handleUserSession() {
             const userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
-
-            if (userObject && userObject.accessToken) {
-                if (isTokenExpired(userObject.accessToken)) {
-                    //if token is expired, reset
-                    resetUser();
-                } else {
-                    //if token is not expired, refresh
-                    scheduleTokenRefresh();
-                }
-            }
-        },
-        //check if userObject exists in local storage and store it in the store
-        setStorageUserToState() {
-            const store = usePlayerStore();
-
-            const userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
+            const store = usePlayerStore(); // Assuming usePlayerStore is accessible here
 
             if (userObject) {
-                store.player = userObject;
+                if (userObject.accessToken && !isTokenExpired(userObject.accessToken)) {
+                    // Token is valid, refresh it and set user object to state
+                    scheduleTokenRefresh();
+                    store.player = userObject;
+                } else {
+                    // Token is expired or not present, reset user
+                    resetUser();
+                }
             }
         }
-
     },
     created() {
-        this.setStorageUserToState();
-        this.refresStorageUser();
+        this.handleUserSession();
     }
 
 }
@@ -51,7 +41,7 @@ export default {
 <template>
 
 
-    <div class="flex-1 p-8 pt-6 mx-4 space-y-4 border">
+    <div class="flex-1 p-8 pt-6 mx-4 mt-8 space-y-4 border-4 rounded-2xl">
         <div class="flex items-center justify-between space-y-2">
             <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
             <div>
@@ -80,9 +70,3 @@ export default {
     </div>
 
 </template>
-
-
-
-
-
-<style></style>

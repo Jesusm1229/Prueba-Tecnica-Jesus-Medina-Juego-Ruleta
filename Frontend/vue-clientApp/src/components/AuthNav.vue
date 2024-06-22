@@ -32,6 +32,9 @@
             <p class="relative flex justify-end w-fit text-muted-foreground">
                 Logged players can save their scores to keep track of their progress.
             </p>
+            <p class="relative flex justify-end w-fit text-muted-foreground">
+                Place your first bet and you will be prompted to create an account!.
+            </p>
         </div>
 
     </template>

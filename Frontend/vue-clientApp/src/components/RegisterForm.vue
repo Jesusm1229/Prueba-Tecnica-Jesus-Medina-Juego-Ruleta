@@ -32,7 +32,11 @@
                     </FormField>
                 </div>
                 <DialogFooter>
-                    <Button type="submit">
+                    <Button disabled v-if="loading">
+                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
+                        Please wait
+                    </Button>
+                    <Button v-else type="submit">
                         Register
                     </Button>
                 </DialogFooter>
@@ -44,23 +48,24 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/toast/use-toast'
+import { toastMessage } from '@/provider/toastProvider'
+import { loginUser, registerUser } from '@/services/authHandler'
+import { fetchPlayerById } from '@/services/playerHandler'
+import { fetchScoresById } from '@/services/scoreHandler'
+import { scheduleTokenRefresh } from '@/services/tokenHandler'
 import { usePlayerStore } from '@/stores/player'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import axios from 'axios'
+import { Loader2 } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { h, ref } from 'vue'
 import * as z from 'zod'
 import { Button } from './ui/button'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
-import { toastMessage } from '@/provider/toastProvider'
-import { loginUser, registerUser } from '@/services/authHandler'
-import { scheduleTokenRefresh } from '@/services/tokenHandler'
-import { fetchPlayerById } from '@/services/playerHandler'
-import { fetchScoresById } from '@/services/scoreHandler'
 
-const toast = useToast();
+const loading = ref(false); // Use ref for reactive state
+
+
 const store = usePlayerStore();
 
 const userDataObj = ref({
@@ -77,6 +82,9 @@ const userForm = useForm({
 
 const userFormSubmit = userForm.handleSubmit(async (values) => {
     try {
+
+        loading.value = true;
+
         const newuserObject = {
             username: values.username,
             score: { points: store.player?.score ?? 0 },
@@ -139,6 +147,8 @@ const userFormSubmit = userForm.handleSubmit(async (values) => {
             "destructive"
         );
     }
+
+    loading.value = false;
 });
 
 

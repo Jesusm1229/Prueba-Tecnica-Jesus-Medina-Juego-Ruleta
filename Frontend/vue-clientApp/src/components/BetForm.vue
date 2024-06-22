@@ -420,7 +420,7 @@ export default {
             numbers: Array.from({ length: 37 }, (_, i) => i),
         }
     }
-  
+
 
 
 }

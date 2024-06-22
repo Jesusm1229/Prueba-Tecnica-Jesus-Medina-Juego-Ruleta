@@ -15,6 +15,8 @@ namespace Contracts
 		//Get top players
 		Task<IEnumerable<Player>> GetTopPlayers(bool trackChanges);
 
+		Task<IEnumerable<Player>> GetPlayersWithScore(bool trackChanges);
+
 		//GEt specific player
 		Task<Player> GetPlayer(Guid playerId, bool trackChanges);
 

@@ -31,7 +31,8 @@ namespace WinWheel.Presentation.Controllers
 		/// Gets the list of all players
 		/// </summary>
 		/// <returns>The players list</returns>
-		[HttpGet(Name = "GetPlayers")]		
+		[HttpGet(Name = "GetPlayers")]
+		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
 		public async Task<IActionResult> GetPlayers()
 		{
 			
@@ -46,6 +47,7 @@ namespace WinWheel.Presentation.Controllers
 		/// </summary>
 		/// <returns>The top players list</returns>
 		[HttpGet("top", Name = "GetTopPlayers")]
+		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
 		public async Task<IActionResult> GetTopPlayers()
 		{
 			
@@ -55,7 +57,30 @@ namespace WinWheel.Presentation.Controllers
 			
 		}
 
+		/// <summary>
+		/// Gets the list of players with their scores
+		/// </summary>
+		/// <returns>List of players with score</returns>
+		[HttpGet("scores", Name = "GetPlayersWithScore")]
+		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
+		public async Task<IActionResult> GetPlayersWithScore()
+		{
+			
+				var players = await _serviceManager.PlayerService.GetPlayersWithScore(trackChanges: false);
+
+				return Ok(players);
+			
+		}
+
 		//Getting a player by id
+		/// <summary>
+		/// Gets a player by their id
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns>A Player object</returns>
+		/// <response code="201">Returns the player</response>
+		/// <response code="400">If the item is null</response>
+		/// <response code="422">If the model is invalid</response>
 		[HttpGet("{id:guid}", Name = "PlayerById")]
 		[ResponseCache(Duration = 60)] // Caché control for 60 seconds. This is a good practice to avoid overloading the server.
 		public async Task<IActionResult> GetPlayer(Guid id)
@@ -68,6 +93,13 @@ namespace WinWheel.Presentation.Controllers
 		}
 
 		//Getting a player by username
+		/// <summary>
+		/// Get a players by their username
+		/// </summary>
+		/// <param ></param>
+		/// <returns>A newly created player</returns>
+		/// <response code="201">Returns the newly created item</response>		
+		/// <response code="422">If the model is invalid</response>
 		[HttpGet("{username}", Name = "PlayerByUsername")]
 		[Authorize]
 		public async Task<IActionResult> GetPlayer(string username)

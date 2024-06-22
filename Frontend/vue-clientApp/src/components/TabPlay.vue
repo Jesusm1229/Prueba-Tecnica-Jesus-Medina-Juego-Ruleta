@@ -182,7 +182,7 @@
                                                     <RadioGroupItem id="Red" value="Red" class="sr-only peer" />
                                                     <Label for="Red"
                                                         class="flex flex-row items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-rose-800 [&:has([data-state=checked])]:border-primary">
-                                                        <div className='p-3 border rounded-full bg-rose-800'>
+                                                        <div className='p-3 border rounded-full bg-rose-600'>
                                                         </div>
                                                         Red
                                                     </Label>
@@ -244,29 +244,9 @@
                 <CardTitle class="text-2xl font-bold">Results</CardTitle>
             </CardHeader>
             <CardContent class="grid grid-cols-2">
-                <div class="flex-col">
-                    <template v-if="responseData">
-                        <template v-if="!store.player.accessToken">
-                            <p class="py-2">Save your score with an account.
-                                <br>
-                                If you don't, you'll lose it once window closes
-                            </p>
-                            <RegisterForm />
-                        </template>
-                        <template v-if="store.player.accessToken">
-                            <p class="py-2">You're logged in, don't forget to save your score.
-                                <br>
-                                If you don't, you'll lose your progress once window closes
-                            </p>
-                            <Button @click="UpdateScore" variant="secondary" class="px-10 ">
-                                Save Score
-                            </Button>
-                        </template>
-                    </template>
-                    <!-- save score  -->
 
+                <SaveScore :responseData="responseData" />
 
-                </div>
                 <div class="flex-col justify-end col-span-1">
                     <div class="flex-col text-right justify-right">
                         <div class="mb-4 text-3xl font-bold tracking-tight ">
@@ -290,6 +270,8 @@
 
                 <Separator class="my-4 col-span-full" />
 
+                <WinningHistory :wheelData="wheelData" />
+
             </CardContent>
         </Card>
 
@@ -304,26 +286,25 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/components/ui/toast/use-toast'
-import { CategoryTypes, type Bet, type BetResponse, type WheelResponse } from '@/lib/types'
-import { toastMessage } from '@/provider/toastProvider'
+import { CategoryTypes, type Bet, type WheelResponse } from '@/lib/types'
+import handleError from '@/provider/handleError'
 import { postBet } from '@/services/betHandler'
-import { updatePlayerScore } from '@/services/scoreHandler'
+import { getCategoryType, getColorType } from '@/services/categoryHandler'
+import { spinWheel } from '@/services/wheelHandler'
+import { useGameStore } from '@/stores/game'
 import { usePlayerStore } from '@/stores/player'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { h, reactive, ref } from 'vue'
 import * as z from 'zod'
-import RegisterForm from './RegisterForm.vue'
+import SaveScore from './SaveScore.vue'
 import { Button } from './ui/button'
 import { Card, CardHeader, CardTitle } from './ui/card'
 import CardContent from './ui/card/CardContent.vue'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
-import { useGameStore } from '@/stores/game'
-import { spinWheel } from '@/services/wheelHandler'
-import { getCategoryType, getColorType } from '@/services/categoryHandler'
-
+import WinningHistory from './WinningHistory.vue'
 
 const { toast } = useToast()
 
@@ -331,8 +312,8 @@ const store = usePlayerStore();
 const gameStore = useGameStore();
 
 
-const responseData = ref<BetResponse | null>(null);
-const wheelData = ref<WheelResponse | null>(null);
+const responseData = ref<Record<string, any> | undefined>(undefined);
+const wheelData = ref<WheelResponse | null | undefined>(undefined);
 
 const initialBetData = {
     category: null,
@@ -346,6 +327,9 @@ const betDataObj = ref(ref<Bet>({
     ...initialBetData
 }));
 
+
+/* const winningHistory = ref<Array<WheelResponse>>([]);
+ */
 const maxValue = 2147483647 - 1;
 
 const formSchema = reactive(toTypedSchema(z.object({
@@ -463,51 +447,6 @@ const submitBet = async (values: Bet) => {
     }
 }
 
-const UpdateScore = async () => {
-    try {
-        const response = await updatePlayerScore(store.player.idUsername, store.player.idScore, store.player.score, store.player.accessToken);
-        toastMessage('Score Saved successful', response.data, 5000);
-    }
-    catch (error) {
-        console.error(error);
-        handleError(error);
-    }
-}
-
-const handleError = (error: any) => {
-
-    console.error(error);
-    let errorMessage = 'An unexpected error occurred';
-    // Check if error is an instance of Error
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    }
-    // Further type check if error has a 'response' property
-    const axiosError = error as { response?: { status: number; data: any } };
-
-    if (axiosError.response) {
-        const { status, data } = axiosError.response;
-        errorMessage = `${status}: ${data}`;
-    }
-    // Use toastMessage with the determined errorMessage
-    toastMessage(
-        "An error occurred",
-        h('div', { class: 'text-wrap' }, errorMessage),
-        6000,
-        "destructive"
-    );
-
-    /* toastMessage('An error occurred', error.response.status + ": " + error.response.data, 5000, "destructive"); */
-    /*  toast({
-         title: "An error occured",
-         description: h('div', { class: ' text-wrap' }, error.response.status + ": " + error.response.data),
-         duration: 6000,
-         variant: "destructive"
-     }) */
-
-}
-
-
 
 
 
@@ -520,104 +459,9 @@ export default {
         return {
             numbers: Array.from({ length: 37 }, (_, i) => i),
         }
-    },
-    methods: {
-        restartGame() {
-            console.log('restart game')
-
-
-        }
     }
 
 
 }
 
 </script>
-
-
-<style scoped>
-/* Existing styles */
-
-/* Enhancements for better alignment and readability */
-.flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.justify-right {
-    justify-content: flex-end;
-}
-
-.mb-4 {
-    margin-bottom: 1rem;
-}
-
-.text-3xl {
-    font-size: 1.75rem;
-    /* Adjusted for better visibility */
-}
-
-.text-2xl {
-    font-size: 1.5rem;
-}
-
-.text-lg {
-    font-size: 1.25rem;
-}
-
-.text-muted-foreground {
-    color: #6b7280;
-    /* Example muted text color */
-}
-
-/* Full-screen dialog styles */
-.Dialog {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    /* Semi-transparent background */
-}
-
-.DialogTitle {
-    font-size: 2rem;
-    color: #fff;
-    margin-bottom: 1rem;
-}
-
-.DialogContent {
-    font-size: 1.5rem;
-    color: #ddd;
-    margin-bottom: 2rem;
-}
-
-.DialogActions {
-    /* Center the button */
-    display: flex;
-    justify-content: center;
-}
-
-.Button {
-    padding: 0.5rem 1rem;
-    font-size: 1.25rem;
-    cursor: pointer;
-    background-color: #4f46e5;
-    /* Example button color */
-    color: #fff;
-    border: none;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s;
-}
-
-.Button:hover {
-    background-color: #4338ca;
-    /* Darker shade on hover */
-}
-</style>

@@ -38,6 +38,31 @@
             </summary>
             <returns>The top players list</returns>
         </member>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetPlayersWithScore">
+            <summary>
+            Gets the list of players with their scores
+            </summary>
+            <returns>List of players with score</returns>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetPlayer(System.Guid)">
+            <summary>
+            Gets a player by their id
+            </summary>
+            <param name="id"></param>
+            <returns>A Player object</returns>
+            <response code="201">Returns the player</response>
+            <response code="400">If the item is null</response>
+            <response code="422">If the model is invalid</response>
+        </member>
+        <member name="M:WinWheel.Presentation.Controllers.PlayersController.GetPlayer(System.String)">
+            <summary>
+            Get a players by their username
+            </summary>
+            <param ></param>
+            <returns>A newly created player</returns>
+            <response code="201">Returns the newly created item</response>		
+            <response code="422">If the model is invalid</response>
+        </member>
         <member name="M:WinWheel.Presentation.Controllers.PlayersController.CreatePlayer(Shared.DataTransferObjects.PlayerForCreationDto)">
             <summary>
             Creates a new player

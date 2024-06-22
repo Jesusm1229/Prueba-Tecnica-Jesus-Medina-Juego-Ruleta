@@ -11,7 +11,9 @@ namespace Service.Contracts
 	{
 		Task<IEnumerable<PlayerDto>> GetAllPlayers(bool trackChanges);
 
-		Task<IEnumerable<PlayerDto>> GetTopPlayers(bool trackChanges);
+		Task<IEnumerable<PlayerWScoreDto>> GetTopPlayers(bool trackChanges);
+
+		Task<IEnumerable<PlayerWScoreDto>> GetPlayersWithScore(bool trackChanges);
 
 		Task <PlayerDto> GetPlayer(Guid playerId, bool trackChanges);
 

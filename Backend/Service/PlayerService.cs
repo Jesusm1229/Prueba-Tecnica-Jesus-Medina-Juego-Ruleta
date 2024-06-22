@@ -53,12 +53,22 @@ namespace Service
 
 		}
 
-		public async Task<IEnumerable<PlayerDto>> GetTopPlayers(bool trackChanges)
+		public async Task<IEnumerable<PlayerWScoreDto>> GetTopPlayers(bool trackChanges)
 		{
 			var players = await _repository.Player.GetTopPlayers(trackChanges);
 
 			//Mapper
-			var playersDto = _mapper.Map<IEnumerable<PlayerDto>>(players);
+			var playersDto = _mapper.Map<IEnumerable<PlayerWScoreDto>>(players);
+
+			return playersDto;
+		}
+
+		public async Task<IEnumerable<PlayerWScoreDto>> GetPlayersWithScore(bool trackChanges)
+		{
+			var players = await _repository.Player.GetPlayersWithScore(trackChanges);
+
+			//Mapper
+			var playersDto = _mapper.Map<IEnumerable<PlayerWScoreDto>>(players);
 
 			return playersDto;
 		}

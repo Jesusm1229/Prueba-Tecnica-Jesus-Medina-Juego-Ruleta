@@ -20,6 +20,8 @@ namespace WinWheel
 
 			CreateMap<ScoreForUpdateDto, Score>().ReverseMap();//PATCH METHOD
 
+			CreateMap<Player, PlayerWScoreDto>();
+
 
 			
 		}

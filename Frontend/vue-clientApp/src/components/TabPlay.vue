@@ -414,24 +414,28 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(async (values) => {
 
-    const spinWheelResponse = await spinWheel();
+    try {
+        const spinWheelResponse = await spinWheel();
 
-    wheelData.value = spinWheelResponse;
+        wheelData.value = spinWheelResponse;
 
-    console.log(spinWheelResponse)
+        const betValues: Bet = ({
+            category: getCategoryType(values.category),
+            betAmount: values.betAmount,
+            color: getColorType(values.color),
+            number: values.number,
+            score: store.player.score || values.score,
+            spinWheelColor: spinWheelResponse.color,
+            spinWheelNumber: spinWheelResponse.number
 
-    const betValues: Bet = ({
-        category: getCategoryType(values.category),
-        betAmount: values.betAmount,
-        color: getColorType(values.color),
-        number: values.number,
-        score: store.player.score || values.score,
-        spinWheelColor: spinWheelResponse.color,
-        spinWheelNumber: spinWheelResponse.number
+        });
 
-    });
+        submitBet(betValues);
 
-    submitBet(betValues)
+    }
+    catch (error) {
+        handleError(error);
+    }
 
 })
 

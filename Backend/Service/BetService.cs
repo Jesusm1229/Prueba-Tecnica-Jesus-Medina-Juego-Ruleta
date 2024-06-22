@@ -16,112 +16,57 @@ namespace Service
 
 		public BetService(ILoggerManager logger) => _logger = logger;
 
-		public async Task<BetForResultDto> PlaceBet(BetForCalculationDto betForCalculationDto)
-		{			
-			var wheelSpinned = await SpinWheel();			
 
-			switch (betForCalculationDto.Category)
+		public async Task<BetForResultDto> PlaceBet(BetForCalculationDto betForCalculationDto)
+		{
+			int scoreChange = await CalculateScoreChangeAsync(betForCalculationDto); // Now awaiting the async method
+			bool isWin = scoreChange > 0;
+			int finalScore = betForCalculationDto.Score + scoreChange;
+
+			return new BetForResultDto(
+				finalScore,
+				//betForCalculationDto.SpinWheelNumber,
+				//betForCalculationDto.SpinWheelColor,
+				isWin,
+				finalScore <= 0
+			);
+		}
+
+		private async Task<int> CalculateScoreChangeAsync(BetForCalculationDto bet)
+		{
+			// Hypothetical asynchronous operation
+			// var result = await someAsyncDatabaseQuery(bet);
+			switch (bet.Category)
 			{
 				case "Straight":
-					{
-						if (betForCalculationDto.Number == wheelSpinned.number && betForCalculationDto.Color == wheelSpinned.color)
-						{
-							//If the player wins, he gets 3 times the bet amount
-							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount * 3;
-
-							return	new BetForResultDto(
-									score,
-									wheelSpinned.number,
-									wheelSpinned.color,
-									true,
-									false
-									
-								);							
-						}
-
-						break;
-					}
+					return bet.Number == bet.SpinWheelNumber && bet.Color == bet.SpinWheelColor ? bet.BetAmount * 3 : -bet.BetAmount;
 				case "Even":
-					{
-						//Even number and color
-						if (wheelSpinned.number % 2 == 0 && betForCalculationDto.Color == wheelSpinned.color)
-						{
-							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount;
-
-							return	new BetForResultDto(
-									score,
-									wheelSpinned.number,
-									wheelSpinned.color,
-									true,
-									false
-								);							
-						}				
-
-						break;
-					}
+					return bet.SpinWheelNumber % 2 == 0 && bet.Color == bet.SpinWheelColor ? bet.BetAmount : -bet.BetAmount;
 				case "Odd":
-					{
-						if (wheelSpinned.number % 2 != 0 && betForCalculationDto.Color == wheelSpinned.color)
-						{
-							int score = betForCalculationDto.Score + betForCalculationDto.BetAmount;
-
-							return	new BetForResultDto(
-									score,
-									wheelSpinned.number,
-									wheelSpinned.color,
-									true,
-									false
-								);							
-						}
-
-						break;
-					}
+					return bet.SpinWheelNumber % 2 != 0 && bet.Color == bet.SpinWheelColor ? bet.BetAmount : -bet.BetAmount;
 				case "Color":
-					{
-						//If the color is the same as the color of the wheel, the player wins half of the bet amount
-						if (betForCalculationDto.Color == wheelSpinned.color)
-						{
-							int score = betForCalculationDto.Score + (betForCalculationDto.BetAmount / 2);
-
-							return	new BetForResultDto(
-									score,
-									wheelSpinned.number,
-									wheelSpinned.color,
-									true,
-									false
-								);							
-						}						
-						break;
-					}				
-					
+					return bet.Color == bet.SpinWheelColor ? bet.BetAmount / 2 : -bet.BetAmount;
+				default:
+					_logger.LogError($"Unknown betting category: {bet.Category}");
+					return 0;
 			}
-
-			//Player lost
-			return new BetForResultDto(
-				betForCalculationDto.Score - betForCalculationDto.BetAmount,
-				wheelSpinned.number,
-				wheelSpinned.color,
-				false,
-				betForCalculationDto.Score - betForCalculationDto.BetAmount <= 0
-				);
 		}
-
 
 		//Out Roulette
-		private string[] Colors = [ "Red", "Black" ];
+		//private string[] Colors = ["Red", "Black"];
 
-		private async Task<WheelPositionDto> SpinWheel()
-		{
-			//random number, random color
-			Random random = new Random();
-			int number =  random.Next(0, 37);
-			string color = Colors[random.Next(0, 2)];
+		//private async Task<WheelPositionDto> SpinWheel()
+		//{
+		//	//random number, random color
+		//	Random random = new Random();
+		//	int number =  random.Next(0, 37);
+		//	string color = Colors[random.Next(0, 2)];
 
-			return new WheelPositionDto(number, color);
+		//	return new WheelPositionDto(number, color);
 
-		}
+		//}
 
-		
+
 	}
-	
+
 }

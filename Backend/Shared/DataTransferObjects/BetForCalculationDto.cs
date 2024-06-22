@@ -29,6 +29,18 @@ namespace Shared.DataTransferObjects
 		int? Number,
 
 		[Required(ErrorMessage = "Color is a required field.")]
-		string Color
+		string Color,
+		
+		[Required(ErrorMessage = "SpinWheel Number is a required field.")]
+		[Range(0, 36, ErrorMessage = "SpinWheel Number must be between {1} and {2}.")]
+		int SpinWheelNumber,
+
+
+		[Required(ErrorMessage = "SpinWheel Color is a required field.")]
+		string SpinWheelColor
+
 		);
+
+
+
 }

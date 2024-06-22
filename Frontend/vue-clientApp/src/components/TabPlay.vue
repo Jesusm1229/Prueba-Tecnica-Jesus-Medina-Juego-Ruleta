@@ -272,19 +272,18 @@
                         <div class="mb-4 text-3xl font-bold tracking-tight ">
                             <div>
                                 {{ !responseData ? "Waiting your bet" :
-                                    responseData?.didIWin == true ? "You Win!" : "You Lose" }}
+                                    responseData?.isWin == true ? "You Win!" : "You Lose" }}
                             </div>
                         </div>
                         <div class="text-2xl flex-end text-muted-foreground ">
                             <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
                         </div>
                         <div class="text-lg flex-end text-muted-foreground ">
-
-                            <pre>{{ !responseData ? " " : responseData.winnerNumber + " :Winning Number" }}
+                            <pre>{{ !wheelData ? " " : wheelData.number + " :Winning Number" }}
                     </pre>
                         </div>
                         <div class="text-lg flex-end text-muted-foreground ">
-                            <pre>{{ !responseData ? " " : responseData.winnerColor + " :Winning Color" }}</pre>
+                            <pre>{{ !wheelData ? " " : wheelData.color + " :Winning Color" }}</pre>
                         </div>
                     </div>
                 </div>
@@ -305,7 +304,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/components/ui/toast/use-toast'
-import { CategoryTypes, type Bet, type BetResponse } from '@/lib/types'
+import { CategoryTypes, type Bet, type BetResponse, type WheelResponse } from '@/lib/types'
 import { toastMessage } from '@/provider/toastProvider'
 import { postBet } from '@/services/betHandler'
 import { updatePlayerScore } from '@/services/scoreHandler'
@@ -322,6 +321,8 @@ import CardContent from './ui/card/CardContent.vue'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 import { useGameStore } from '@/stores/game'
+import { spinWheel } from '@/services/wheelHandler'
+import { getCategoryType, getColorType } from '@/services/categoryHandler'
 
 
 const { toast } = useToast()
@@ -331,10 +332,11 @@ const gameStore = useGameStore();
 
 
 const responseData = ref<BetResponse | null>(null);
+const wheelData = ref<WheelResponse | null>(null);
 
 const initialBetData = {
     category: null,
-    score: store.player.score ? store.player.score : null,
+    score: store.player.score || null,
     betAmount: 0,
     color: null,
     number: '0',
@@ -410,24 +412,32 @@ const form = useForm({
     validationSchema: formSchema,
 })
 
-/* const postBet = async (values: { category: string; betAmount: number; color: "Red" | "Black"; number?: string | undefined; score?: number | undefined }) => {
-    try {
-        const response = await axios.post('https://localhost:7299/api/bets', values)
-        responseData.value = response.data
-        console.log(response.data)
-        toast({
-            title: 'Submission successful',
-            description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response.data, null, 2))),
-            duration: 5000,
-        })
-        store.player.score = response.data.newScore;
-    } catch (error) {
-        handleError(error)
-    }
-} */
+const onSubmit = form.handleSubmit(async (values) => {
 
-const submitBet = async (values: { category: string; betAmount: number; color: "Red" | "Black"; number?: string | undefined; score?: number | undefined }) => {
+    const spinWheelResponse = await spinWheel();
+
+    wheelData.value = spinWheelResponse;
+
+    console.log(spinWheelResponse)
+
+    const betValues: Bet = ({
+        category: getCategoryType(values.category),
+        betAmount: values.betAmount,
+        color: getColorType(values.color),
+        number: values.number,
+        score: store.player.score || values.score,
+        spinWheelColor: spinWheelResponse.color,
+        spinWheelNumber: spinWheelResponse.number
+
+    });
+
+    submitBet(betValues)
+
+})
+
+const submitBet = async (values: Bet) => {
     try {
+
         const response = await postBet(values);
 
         console.log(response);
@@ -445,6 +455,17 @@ const submitBet = async (values: { category: string; betAmount: number; color: "
 
 
     } catch (error) {
+        handleError(error);
+    }
+}
+
+const UpdateScore = async () => {
+    try {
+        const response = await updatePlayerScore(store.player.idUsername, store.player.idScore, store.player.score, store.player.accessToken);
+        toastMessage('Score Saved successful', response.data, 5000);
+    }
+    catch (error) {
+        console.error(error);
         handleError(error);
     }
 }
@@ -482,31 +503,9 @@ const handleError = (error: any) => {
 
 }
 
-const onSubmit = form.handleSubmit((values,) => {
 
-    //if 
-    const betValues = {
-        category: values.category,
-        betAmount: values.betAmount,
-        color: values.color,
-        number: values.number,
-        score: store.player.score || values.score,
-    };
 
-    submitBet(betValues)
 
-})
-
-const UpdateScore = async () => {
-    try {
-        const response = await updatePlayerScore(store.player.idUsername, store.player.idScore, store.player.score, store.player.accessToken);
-        toastMessage('Score Saved successful', response.data, 5000);
-    }
-    catch (error) {
-        console.error(error);
-        handleError(error);
-    }
-}
 
 </script>
 

@@ -181,7 +181,7 @@ namespace Service
 
 			var user = await _userManager.FindByNameAsync(principal.Identity.Name);
 
-			if (user == null)
+			if (user == null || user.RefreshToken != tokenDto.RefreshToken)
 				throw new RefreshTokenBadRequest();
 
 			_player = user;

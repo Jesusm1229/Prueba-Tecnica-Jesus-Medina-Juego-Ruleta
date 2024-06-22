@@ -8,9 +8,9 @@ namespace Shared.DataTransferObjects
 {
 	public record BetForResultDto (			
 		 int NewScore,
-		 int? WinnerNumber,
-		 string WinnerColor,
-		 bool DidIWin,
+		 //int? WinnerNumber,
+		 //string WinnerColor,
+		 bool IsWin,
 		 bool IsGameOver
 		);		
 	

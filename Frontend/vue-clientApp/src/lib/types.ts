@@ -19,18 +19,25 @@ export interface Player {
 }
 export interface Bet {
     category: CategoryTypes | null;
-    score: number | null;
+    score: number | null | undefined;
     betAmount: number | null;
     color: ColorTypes | null;
     number?: string;
+    spinWheelColor?: string;
+    spinWheelNumber?: number;
 }
 
 export interface BetResponse {
     newScore: number;
-    winnerNumber: number;
-    winnerColor: string;
-    didIWin: boolean;
+    /*  winnerNumber: number;
+     winnerColor: string; */
+    isWin: boolean;
     isGameOver: boolean;
+}
+
+export interface WheelResponse {
+    number: number;
+    color: string;
 }
 
 export interface PlayerWithScore {

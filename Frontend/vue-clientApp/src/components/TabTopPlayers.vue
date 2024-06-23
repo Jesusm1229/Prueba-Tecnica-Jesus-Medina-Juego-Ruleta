@@ -20,15 +20,10 @@
                 </tr>
             </thead>
             <div v-if="loading" class="flex flex-col w-full space-y-3">
-                <!-- Skeletons for loading state -->
-                <!--  <Skeleton class="w-full h-full rounded-xl " /> -->
                 <div class="w-full p-4 space-y-2">
-                    <Skeleton class="w-full h-8" />
-                    <Skeleton class="w-full h-8" />
-                    <Skeleton class="w-full h-8" />
-                    <Skeleton class="w-full h-8" />
-                    <Skeleton class="w-full h-8" />
-                    <Skeleton class="w-full h-8" />
+                    <div v-for="i in 5" :key="i" class="flex items>center space-x-2">
+                        <Skeleton class="w-full h-8" />
+                    </div>
                 </div>
             </div>
             <tbody v-else>

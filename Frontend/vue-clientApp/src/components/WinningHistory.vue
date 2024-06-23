@@ -9,16 +9,16 @@
             </p>
         </div>
 
-        <div v-if="loading" class="flex flex-row w-full space-y-3">
-            <div class="flex flex-row w-full p-4 space-x-2">
+        <div v-if="loading" class="flex flex-row flex-wrap w-full space-y-3">
+            <div class="flex flex-row flex-wrap w-full p-4 md:space-x-2">
                 <Skeleton v-for="n in 10" :key="n"
                     class="relative flex justify-center w-10 h-10 my-auto rounded-full" />
             </div>
         </div>
-        <div v-else class="flex items-center my-4 space-x-4 text-sm">
-            <ul class="flex-row w-full gap-2">
+        <div v-else class="flex flex-wrap items-center my-4 space-x-4 text-sm">
+            <ul class="flex-row flex-wrap w-full gap-2">
                 <li v-for="(win, index) in winningHistory" :key="index"
-                    class="relative flex-row justify-center inline-block h-10 mx-2 my-2 space-x-2">
+                    class="relative flex-row flex-wrap justify-center inline-block h-10 mx-2 my-2 space-x-2">
                     <div class="relative flex justify-center w-10 h-10 text-lg font-bold text-white align-middle rounded-full"
                         :class="{ 'bg-rose-600': win.color === 'Red', 'bg-black': win.color === 'Black' }">
                         <div class="relative flex justify-center my-auto">

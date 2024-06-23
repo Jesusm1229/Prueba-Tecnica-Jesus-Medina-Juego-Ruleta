@@ -1,19 +1,22 @@
 <template>
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <form ref="form" @submit.prevent="onSubmit" class="col-span-2">
+    <div class="grid grid-cols-1 mt-20 md:gap-4 md:grid-cols-2 lg:grid-cols-4 md:mt-0">
+        <form ref="form" @submit.prevent="onSubmit"
+            class="flex flex-col-reverse md:flex-col cols-span-full md:col-span-2">
             <div class="flex items-center justify-end mb-4 space-y-2">
                 <div class="flex space-x-4 flex-end">
                     <Button disabled v-if="loading">
                         <Loader2 class="w-4 h-4 mr-2 animate-spin" />
                         Please wait
                     </Button>
-                    <Button v-else type="submit" class="px-10 bg-green-600">Spin Wheel!</Button>
+                    <Button v-else type="submit" class="px-10 bg-green-600">
+                        Spin Wheel!
+                    </Button>
                 </div>
             </div>
-            <div class="grid gap-4 col-span-full md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3">
+            <div class="grid-cols-1 gap-4 md:grid col-span-full md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3">
 
                 <!-- Category -->
-                <Card>
+                <Card class="col-span-full md:col-span-1">
                     <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                         <CardTitle class="text-2xl font-bold">Set yout game!</CardTitle>
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" version="1" id="casino">
@@ -179,7 +182,7 @@
                             <FormItem class="space-y-3">
                                 <FormLabel class="text-lg font-semibold">Color</FormLabel>
                                 <FormControl>
-                                    <RadioGroup v-bind="componentField" class="grid grid-cols-4 gap-4">
+                                    <RadioGroup v-bind="componentField" class="grid grid-cols-2 gap-4 md:grid-cols-4">
                                         <FormItem>
                                             <FormControl>
                                                 <div>
@@ -216,7 +219,7 @@
                             <FormItem class="space-y-3">
                                 <FormLabel class="text-lg font-semibold">Number</FormLabel>
                                 <FormControl>
-                                    <RadioGroup v-bind="componentField" class="grid grid-cols-8">
+                                    <RadioGroup v-bind="componentField" class="grid grid-cols-4 md:grid-cols-8">
                                         <FormItem v-for="(number, index) in numbers" :key="index">
                                             <FormControl>
                                                 <div>
@@ -247,7 +250,7 @@
             <CardHeader>
                 <CardTitle class="text-2xl font-bold">Results</CardTitle>
             </CardHeader>
-            <CardContent class="grid grid-cols-2">
+            <CardContent class="flex flex-col md:grid md:grid-cols-2">
 
                 <SaveScore :responseData="responseData" />
 

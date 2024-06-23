@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { usePlayerStore } from '@/stores/player'
 import { jwtDecode } from 'jwt-decode';
+import { resetUser } from './localStorageHandler';
+import { handleError } from 'vue';
+import { toastMessage } from '@/provider/toastProvider';
 
 
 
@@ -13,14 +16,12 @@ export const RefreshToken = () => {
         RefreshToken: store.player.refreshToken
     }
 
-    console.log(token, "token")
-
     if (typeof token.AccessToken === 'string' && isTokenExpired(token.AccessToken)) {
-        /* LogOut(); */
+        resetUser();
         return Promise.resolve();
     }
 
-    return axios.post('https://localhost:7299/api/token/refresh', token, {
+    return axios.post('token/refresh', token, {
     }).then((response) => {
         store.player.accessToken = response.data.accessToken;
         store.player.refreshToken = response.data.refreshToken;
@@ -28,11 +29,9 @@ export const RefreshToken = () => {
         console.log(response.data, "response.data")
 
         localStorage.setItem('UserObject', JSON.stringify(store.player));
-
-
     }).catch((error) => {
-        console.error(error)
-        /* LogOut(); */
+        toastMessage('Error refreshing token', 'We will reset everything ' + error, 5000, "destructive");
+        resetUser();
     });
 
 }
@@ -46,7 +45,7 @@ export const isTokenExpired = (token: string) => {
         return expirationDate < currentDate;
 
     } catch (error) {
-        console.error('Invalid token', error);
+        toastMessage('Error parsing token', 'error ' + error, 5000, "destructive");
         return true;
     }
 }

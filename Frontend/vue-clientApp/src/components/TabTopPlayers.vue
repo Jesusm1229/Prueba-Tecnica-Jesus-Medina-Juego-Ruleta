@@ -53,7 +53,7 @@ const loading = ref(true); // Use ref for reactive state
 
 const fetchTopPlayers = async () => {
     try {
-        const response = await axios.get('https://localhost:7299/api/players/top');
+        const response = await axios.get('players/top');
         players.value = response.data; // Update reactive variables with .value
 
     } catch (error) {

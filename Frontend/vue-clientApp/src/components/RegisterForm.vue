@@ -62,6 +62,7 @@ import { h, ref } from 'vue'
 import * as z from 'zod'
 import { Button } from './ui/button'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
+import handleError from '@/provider/handleError'
 
 const loading = ref(false); // Use ref for reactive state
 
@@ -127,25 +128,7 @@ const userFormSubmit = userForm.handleSubmit(async (values) => {
         scheduleTokenRefresh();
 
     } catch (error: unknown) {
-        console.error(error);
-        let errorMessage = 'An unexpected error occurred';
-        // Check if error is an instance of Error
-        if (error instanceof Error) {
-            errorMessage = error.message;
-        }
-        // Further type check if error has a 'response' property
-        const axiosError = error as { response?: { status: number; data: any } };
-        if (axiosError.response) {
-            const { status, data } = axiosError.response;
-            errorMessage = `${status}: ${Object.values(data).flat().join()}`;
-        }
-        // Use toastMessage with the determined errorMessage
-        toastMessage(
-            "An error occurred",
-            h('div', { class: 'text-wrap' }, errorMessage),
-            6000,
-            "destructive"
-        );
+        handleError(error);
     }
 
     loading.value = false;

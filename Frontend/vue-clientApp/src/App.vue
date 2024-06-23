@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { RouterView } from 'vue-router'
 /* import HelloWorld from './components/HelloWorld.vue' */
+
+axios.defaults.baseURL = 'https://localhost:7299/api/';
+
 </script>
 
 <template>

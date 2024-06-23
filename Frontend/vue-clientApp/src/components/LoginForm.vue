@@ -90,7 +90,7 @@ const userForm = useForm({
 
 
 const getPlayer = async (username: string, accessToken: string) => {
-    const response = await axios.get(`https://localhost:7299/api/players/${username}`, {
+    const response = await axios.get(`players/${username}`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
@@ -99,7 +99,7 @@ const getPlayer = async (username: string, accessToken: string) => {
 }
 
 const getPlayerScore = async (idUsername: string, accessToken: string) => {
-    const response = await axios.get(`https://localhost:7299/api/players/${idUsername}/scores`, {
+    const response = await axios.get(`players/${idUsername}/scores`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }

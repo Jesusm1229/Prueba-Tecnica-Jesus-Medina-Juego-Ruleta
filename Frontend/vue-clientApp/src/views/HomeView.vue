@@ -15,6 +15,6 @@ const updateComponentKey = (newValue: number) => {
   <main>
     <Toaster />
     <GameOverDialog :componentKey="componentKey" @update:componentKey="updateComponentKey" />
-    <WheelDashboard />
+    <WheelDashboard :key="componentKey" />
   </main>
 </template>

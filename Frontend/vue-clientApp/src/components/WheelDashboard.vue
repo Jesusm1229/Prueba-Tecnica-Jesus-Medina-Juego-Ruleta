@@ -42,7 +42,7 @@ export default {
 
 
     <div class="flex-1 p-2 pt-6 mx-4 mt-8 space-y-4 md:border-4 md:p-8 rounded-2xl">
-        <div class="flex-col items-center justify-between space-y-2 md:flex">
+        <div class="flex-col md:flex-row items-center justify-between space-y-2 md:flex">
             <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
             <div>
                 <AuthNav />

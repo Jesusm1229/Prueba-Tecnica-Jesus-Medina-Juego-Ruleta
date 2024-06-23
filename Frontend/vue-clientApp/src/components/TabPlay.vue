@@ -274,11 +274,11 @@
                 <CardHeader>
                     <CardTitle class="text-2xl font-bold">Results</CardTitle>
                 </CardHeader>
-                <CardContent class="flex flex-col md:grid md:grid-cols-2">
+                <CardContent class="flex flex-col md:grid md:grid-cols-4">
 
                     <SaveScoreButton :responseData="responseData" />
 
-                    <div class="flex-col justify-end col-span-1">
+                    <div class="flex-col justify-end col-span-3">
                         <div class="flex-col text-right justify-right">
                             <div class="mb-4 text-3xl font-bold tracking-tight ">
                                 <div>

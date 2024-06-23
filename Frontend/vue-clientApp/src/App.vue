@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { Toaster } from '@/components/ui/toast';
-import WheelDashboard from './components/WheelDashboard.vue';
-import GameOverDialog from './components/GameOverDialog.vue';
-import { ref } from 'vue';
-
-const componentKey = ref(0);
-
-const updateComponentKey = (newValue: number) => {
-  componentKey.value = newValue;
-};
-
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <Toaster />
-  <GameOverDialog :componentKey="componentKey" @update:componentKey="updateComponentKey" />
-  <WheelDashboard :key="componentKey" />
+  <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
+    </div>
+  </header>
+
+  <RouterView />
 </template>

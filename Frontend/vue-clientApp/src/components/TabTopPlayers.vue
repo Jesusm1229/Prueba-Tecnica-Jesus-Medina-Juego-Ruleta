@@ -51,7 +51,7 @@ import handleError from '@/provider/handleError';
 const players = ref<PlayerWithScore[]>([]); // Use ref for reactive variables
 const loading = ref(true); // Use ref for reactive state
 
-async function fetchTopPlayers() {
+const fetchTopPlayers = async () => {
     try {
         const response = await axios.get('https://localhost:7299/api/players/top');
         players.value = response.data; // Update reactive variables with .value

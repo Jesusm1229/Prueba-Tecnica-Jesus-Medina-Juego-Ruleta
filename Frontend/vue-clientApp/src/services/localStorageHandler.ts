@@ -2,7 +2,7 @@ import { usePlayerStore } from "@/stores/player";
 
 
 
-export async function resetUser() {
+export const resetUser = async () => {
     const store = usePlayerStore()
 
     store.player = {

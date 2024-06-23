@@ -7,42 +7,31 @@ import TabPlay from './TabPlay.vue'
 import TabTopPlayers from './TabTopPlayers.vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 
-</script>
+const store = usePlayerStore();
 
-<script lang="ts">
-export default {
+function handleUserSession() {
+    const userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
 
-    methods: {
-        // Combine both functionalities into one method
-        handleUserSession() {
-            const userObject = JSON.parse(localStorage.getItem('UserObject') ?? 'null');
-            const store = usePlayerStore(); // Assuming usePlayerStore is accessible here
-
-            if (userObject) {
-                if (userObject.accessToken && !isTokenExpired(userObject.accessToken)) {
-                    // Token is valid, refresh it and set user object to state
-                    scheduleTokenRefresh();
-                    store.player = userObject;
-                } else {
-                    // Token is expired or not present, reset user
-                    resetUser();
-                }
-            }
+    if (userObject) {
+        if (userObject.accessToken && !isTokenExpired(userObject.accessToken)) {
+            // Token is valid, refresh it and set user object to state
+            scheduleTokenRefresh();
+            store.player = userObject;
+        } else {
+            // Token is expired or not present, reset user
+            resetUser();
         }
-    },
-    created() {
-        this.handleUserSession();
     }
-
 }
 
+
+handleUserSession();
 </script>
 
+
 <template>
-
-
     <div class="flex-1 p-2 pt-6 mx-4 mt-8 space-y-4 md:border-4 md:p-8 rounded-2xl">
-        <div class="flex-col md:flex-row items-center justify-between space-y-2 md:flex">
+        <div class="flex-col items-center justify-between space-y-2 md:flex-row md:flex">
             <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
             <div>
                 <AuthNav />

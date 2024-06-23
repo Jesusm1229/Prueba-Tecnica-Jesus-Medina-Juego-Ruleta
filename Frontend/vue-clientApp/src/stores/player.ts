@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
 import type { Player } from '@/lib/types'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const usePlayerStore = defineStore('player', () => {
 

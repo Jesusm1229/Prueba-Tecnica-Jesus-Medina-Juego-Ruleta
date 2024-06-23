@@ -1,7 +1,7 @@
 import { CategoryTypes } from "@/lib/types";
 import { ColorTypes } from "@/lib/types";
 
-export function getCategoryType(category: string) {
+export const getCategoryType = (category: string) => {
     switch (category) {
         case 'Straight':
             return CategoryTypes.Straight;
@@ -14,9 +14,9 @@ export function getCategoryType(category: string) {
         default:
             return null; // Or a default value
     }
-}
+};
 
-export function getColorType(color: string) {
+export const getColorType = (color: string) => {
     switch (color) {
         case 'Red':
             return ColorTypes.Red;
@@ -25,4 +25,4 @@ export function getColorType(color: string) {
         default:
             return null; // Or a default value
     }
-}
+};

@@ -7,7 +7,7 @@ import {
     DialogTitle,
 } from '@headlessui/vue'
 import { ref, watch } from 'vue';
-import { useGameStore } from '@/stores/game';
+import { useGameStore } from '../stores/game';
 import { defineProps, defineEmits } from 'vue';
 
 const gameStore = useGameStore();
@@ -31,13 +31,12 @@ watch(() => gameStore.gameOver, (newVal) => {
 });
 
 
-
-function closeModal() {
+const closeModal = () => {
     isOpen.value = false;
     // Also update the store if necessary
     gameStore.setGame(false);
     forceRerender();
-}
+};
 
 </script>
 

@@ -51,7 +51,7 @@ export const isTokenExpired = (token: string) => {
     }
 }
 
-let refreshTimeoutId: number | null | undefined = null;
+let refreshTimeoutId: any | null | undefined = null;
 
 
 export const scheduleTokenRefresh = () => {

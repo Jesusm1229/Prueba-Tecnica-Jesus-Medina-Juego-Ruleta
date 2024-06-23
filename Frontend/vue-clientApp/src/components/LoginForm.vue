@@ -44,6 +44,8 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { loginUser } from '@/services/authHandler'
+import { scheduleTokenRefresh } from '@/services/tokenHandler'
 import { usePlayerStore } from '@/stores/player'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -53,9 +55,6 @@ import { h, ref } from 'vue'
 import * as z from 'zod'
 import { Button } from './ui/button'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form'
-import { jwtDecode } from "jwt-decode";
-import { scheduleTokenRefresh } from '@/services/tokenHandler'
-import { loginUser } from '@/services/authHandler'
 
 const { toast } = useToast()
 
@@ -90,7 +89,7 @@ const userForm = useForm({
 })
 
 
-async function getPlayer(username: string, accessToken: string) {
+const getPlayer = async (username: string, accessToken: string) => {
     const response = await axios.get(`https://localhost:7299/api/players/${username}`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -99,7 +98,7 @@ async function getPlayer(username: string, accessToken: string) {
     return response.data;
 }
 
-async function getPlayerScore(idUsername: string, accessToken: string) {
+const getPlayerScore = async (idUsername: string, accessToken: string) => {
     const response = await axios.get(`https://localhost:7299/api/players/${idUsername}/scores`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`

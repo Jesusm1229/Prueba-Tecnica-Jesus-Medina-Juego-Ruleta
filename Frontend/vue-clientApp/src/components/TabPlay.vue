@@ -1,7 +1,6 @@
 <template>
     <div class="grid grid-cols-1 mt-20 md:gap-4 md:grid-cols-2 lg:grid-cols-4 md:mt-0">
-        <form ref="form" @submit.prevent="onSubmit"
-            class="flex flex-col-reverse md:flex-col cols-span-full md:col-span-2">
+        <form @submit="onSubmit" class="flex flex-col-reverse md:flex-col cols-span-full md:col-span-2">
             <div class="flex items-center justify-end mb-4 space-y-2">
                 <div class="flex space-x-4 flex-end">
                     <Button disabled v-if="loading">
@@ -14,6 +13,7 @@
                 </div>
             </div>
             <div class="grid-cols-1 gap-4 md:grid col-span-full md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3">
+
 
                 <!-- Category -->
                 <Card class="col-span-full md:col-span-1">
@@ -43,9 +43,6 @@
                         </svg>
                     </CardHeader>
                     <CardContent>
-                        <!-- <div class="text-lg font-semibold">
-                                    Category
-                                </div> -->
                         <FormField v-slot="{ componentField }" name="category">
                             <FormItem>
                                 <FormLabel class="text-lg font-semibold">Category</FormLabel>
@@ -111,7 +108,7 @@
                 </Card>
 
 
-                <!-- Bet configuration -->
+                <!-- Bet -->
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                         <CardTitle class="text-2xl font-bold">Place yout Bet</CardTitle>
@@ -168,11 +165,7 @@
                     </CardContent>
                 </Card>
 
-
-
-
-                <!-- Choose your position -->
-
+                <!-- Posittion -->
                 <Card class="col-span-2 col-start-1 row-span-2 row-start-2">
                     <CardHeader>
                         <CardTitle class="text-2xl font-bold">Choose your position</CardTitle>
@@ -245,14 +238,14 @@
 
             </div>
         </form>
-        <!--  Result -->
+
         <Card class="col-span-2">
             <CardHeader>
                 <CardTitle class="text-2xl font-bold">Results</CardTitle>
             </CardHeader>
             <CardContent class="flex flex-col md:grid md:grid-cols-2">
 
-                <SaveScore :responseData="responseData" />
+                <SaveScoreButton :responseData="responseData" />
 
                 <div class="flex-col justify-end col-span-1">
                     <div class="flex-col text-right justify-right">
@@ -305,7 +298,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import { h, reactive, ref } from 'vue'
 import * as z from 'zod'
-import SaveScore from './SaveScore.vue'
+import SaveScoreButton from './SaveScoreButton.vue'
 import { Button } from './ui/button'
 import { Card, CardHeader, CardTitle } from './ui/card'
 import CardContent from './ui/card/CardContent.vue'
@@ -313,6 +306,8 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 import WinningHistory from './WinningHistory.vue'
 import { Loader2 } from 'lucide-vue-next'
+
+const numbers = Array.from({ length: 37 }, (_, i) => i);
 
 const { toast } = useToast()
 
@@ -464,19 +459,5 @@ const submitBet = async (values: Bet) => {
 
 
 
-
-</script>
-
-<script lang="ts">
-export default {
-
-    data() {
-        return {
-            numbers: Array.from({ length: 37 }, (_, i) => i),
-        }
-    }
-
-
-}
 
 </script>

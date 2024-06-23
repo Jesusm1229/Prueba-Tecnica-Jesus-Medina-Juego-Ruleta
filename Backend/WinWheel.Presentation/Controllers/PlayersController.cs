@@ -96,7 +96,7 @@ namespace WinWheel.Presentation.Controllers
 		/// <summary>
 		/// Get a players by their username
 		/// </summary>
-		/// <param ></param>
+		/// <param name="username"></param>
 		/// <returns>A newly created player</returns>
 		/// <response code="201">Returns the newly created item</response>		
 		/// <response code="422">If the model is invalid</response>

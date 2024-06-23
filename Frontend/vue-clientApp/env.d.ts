@@ -1,3 +1,3 @@
 /// <reference types="vite/client" />
 
-PUBLIC_API_URL = 'https://localhost:7299/api'
+PUBLIC_API_URL = 'http://www.winwheel.unilink:44308/api'

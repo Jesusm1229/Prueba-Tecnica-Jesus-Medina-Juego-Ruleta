@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RouterView } from 'vue-router'
 /* import HelloWorld from './components/HelloWorld.vue' */
 
-axios.defaults.baseURL = 'https://localhost:7299/api/';
+axios.defaults.baseURL = 'http://www.winwheel.unilink:44308/api/';
 
 </script>
 

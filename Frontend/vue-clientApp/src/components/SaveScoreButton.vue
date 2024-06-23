@@ -54,6 +54,7 @@ const responseData = ref(props.responseData);
 
 watch(() => props.responseData, (newValue) => {
     responseData.value = newValue;
+    enableSave.value = true;
 }, { deep: true });
 
 

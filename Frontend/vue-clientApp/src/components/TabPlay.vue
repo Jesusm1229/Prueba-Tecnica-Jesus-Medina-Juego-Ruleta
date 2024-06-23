@@ -3,13 +3,17 @@
         <form @submit="onSubmit" class="flex flex-col-reverse md:flex-col cols-span-full md:col-span-2">
             <div class="flex items-center justify-end mb-4 space-y-2">
                 <div class="flex space-x-4 flex-end">
-                    <Button disabled v-if="loading">
-                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
-                        Please wait
-                    </Button>
-                    <Button v-else type="submit" class="px-10 bg-green-600">
-                        Spin Wheel!
-                    </Button>
+                    <ButtonSpin disabled v-if="loading" class="w-24 h-24 animate-spin">
+                        <Loader2 class="w-8 h-8 animate-spin" variant="destructive" />
+                        <!-- <span class="text-xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);">
+                            Wait
+                        </span> -->
+                    </ButtonSpin>
+                    <ButtonSpin v-else type="submit" class="w-24 h-24">
+                        <span class="text-xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);">
+                            Spin!
+                        </span>
+                    </ButtonSpin>
                 </div>
             </div>
             <div class="grid-cols-1 gap-4 md:grid col-span-full md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-3">
@@ -112,10 +116,34 @@
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between pb-2 space-y-0">
                         <CardTitle class="text-2xl font-bold">Place yout Bet</CardTitle>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            class="w-4 h-4 text-muted-foreground">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" id="money">
+                            <defs>
+                                <linearGradient id="a" x1="32" x2="32" y1="3" y2="37" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0" stop-color="#ffc033"></stop>
+                                    <stop offset="1" stop-color="#ef8e2e"></stop>
+                                </linearGradient>
+                                <linearGradient id="b" x1="36" x2="36" y1="44" y2="52" xlink:href="#a"></linearGradient>
+                                <linearGradient id="c" x1="29" x2="29" y1="36" y2="44" xlink:href="#a"></linearGradient>
+                                <linearGradient id="d" x1="30" x2="30" y1="52" y2="60" xlink:href="#a"></linearGradient>
+                            </defs>
+                            <g>
+                                <circle cx="32" cy="20" r="17" fill="url(#a)"></circle>
+                                <rect width="34" height="8" x="19" y="44" fill="url(#b)" rx="1"></rect>
+                                <rect width="34" height="8" x="12" y="36" fill="url(#c)" rx="1"></rect>
+                                <rect width="34" height="8" x="13" y="52" fill="url(#d)" rx="1"></rect>
+                            </g>
+                            <g>
+                                <path
+                                    d="M33.29,15a2,2,0,0,1,2,2h2a4,4,0,0,0-4-4H33V10.57H31V13h-.29a4,4,0,0,0,0,8H31v4h-.29a2,2,0,0,1-2-2h-2a4,4,0,0,0,4,4H31v2.43h2V27h.29a4,4,0,0,0,0-8H33V15Zm0,6a2,2,0,0,1,0,4H33V21ZM31,19h-.29a2,2,0,0,1,0-4H31Z">
+                                </path>
+                                <path
+                                    d="M32,7A13,13,0,1,0,45,20,13,13,0,0,0,32,7Zm0,24A11,11,0,1,1,43,20,11,11,0,0,1,32,31Z">
+                                </path>
+                                <path
+                                    d="M11,36v8a1,1,0,0,0,1,1h6v6H13a1,1,0,0,0-1,1v8a1,1,0,0,0,1,1H47a1,1,0,0,0,1-1V53h5a1,1,0,0,0,1-1V44a1,1,0,0,0-1-1H47V36a1,1,0,0,0-1-1H40a17,17,0,1,0-16,0H12A1,1,0,0,0,11,36ZM46,59H39V56H37v3H31V56H29v3H23V56H21v3H14V53h3v3h2V53h6v3h2V53h6v3h2V53h6v3h2V53h3Zm6-8H45V48H43v3H37V48H35v3H29V48H27v3H20V45h3v3h2V45h6v3h2V45h6v3h2V45h6v3h2V45h3ZM17,20A15,15,0,1,1,32,35,15,15,0,0,1,17,20ZM13,37h3v3h2V37h6v3h2V37h6v3h2V37h6v3h2V37h3v6H38V40H36v3H30V40H28v3H22V40H20v3H13Z">
+                                </path>
+                            </g>
                         </svg>
                     </CardHeader>
                     <CardContent class="grid grid-cols-2 gap-6">
@@ -239,42 +267,49 @@
             </div>
         </form>
 
-        <Card class="col-span-2">
-            <CardHeader>
-                <CardTitle class="text-2xl font-bold">Results</CardTitle>
-            </CardHeader>
-            <CardContent class="flex flex-col md:grid md:grid-cols-2">
+        <div class="flex flex-col col-span-2 gap-4">
 
-                <SaveScoreButton :responseData="responseData" />
 
-                <div class="flex-col justify-end col-span-1">
-                    <div class="flex-col text-right justify-right">
-                        <div class="mb-4 text-3xl font-bold tracking-tight ">
-                            <div>
-                                {{ !responseData ? "Waiting your bet" :
-                                    responseData?.isWin == true ? "You Win!" : "You Lose" }}
+            <Card class=" h-fit">
+                <CardHeader>
+                    <CardTitle class="text-2xl font-bold">Results</CardTitle>
+                </CardHeader>
+                <CardContent class="flex flex-col md:grid md:grid-cols-2">
+
+                    <SaveScoreButton :responseData="responseData" />
+
+                    <div class="flex-col justify-end col-span-1">
+                        <div class="flex-col text-right justify-right">
+                            <div class="mb-4 text-3xl font-bold tracking-tight ">
+                                <div>
+                                    {{ !responseData ? "Waiting your bet" :
+                                        responseData?.isWin == true ? "You Win!" : "You Lose" }}
+                                </div>
+                            </div>
+                            <div class="text-2xl flex-end text-muted-foreground ">
+                                <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
+                            </div>
+                            <div class="text-lg flex-end text-muted-foreground ">
+                                <pre>{{ !wheelData ? " " : wheelData.number + " :Winning Number" }}
+                        </pre>
+                            </div>
+                            <div class="text-lg flex-end text-muted-foreground ">
+                                <pre>{{ !wheelData ? " " : wheelData.color + " :Winning Color" }}</pre>
                             </div>
                         </div>
-                        <div class="text-2xl flex-end text-muted-foreground ">
-                            <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
-                        </div>
-                        <div class="text-lg flex-end text-muted-foreground ">
-                            <pre>{{ !wheelData ? " " : wheelData.number + " :Winning Number" }}
-                    </pre>
-                        </div>
-                        <div class="text-lg flex-end text-muted-foreground ">
-                            <pre>{{ !wheelData ? " " : wheelData.color + " :Winning Color" }}</pre>
-                        </div>
                     </div>
-                </div>
 
-                <Separator class="my-4 col-span-full" />
+                    <Separator class="my-4 col-span-full" />
 
-                <WinningHistory :wheelData="wheelData" />
+                    <WinningHistory :wheelData="wheelData" />
 
-            </CardContent>
-        </Card>
 
+                </CardContent>
+            </Card>
+
+            <Card class="col-span-2 h-96">
+            </Card>
+        </div>
     </div>
 
 
@@ -306,6 +341,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
 import WinningHistory from './WinningHistory.vue'
 import { Loader2 } from 'lucide-vue-next'
+import { ButtonSpin } from './ui/buttonSpin'
 
 const numbers = Array.from({ length: 37 }, (_, i) => i);
 

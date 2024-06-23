@@ -28,7 +28,7 @@
                 </li>
             </ul>
         </div>
-        <Separator class="my-4" />
+
     </div>
 </template>
 

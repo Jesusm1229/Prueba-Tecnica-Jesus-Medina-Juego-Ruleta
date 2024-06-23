@@ -30,9 +30,14 @@ handleUserSession();
 
 
 <template>
-    <div class="flex-1 p-2 pt-6 mx-4 mt-8 space-y-4 md:border-4 md:p-8 rounded-2xl">
+    <div class="flex-1 p-2 pt-6 mx-4 mt-8 space-y-4 md:border-2 md:p-8 rounded-2xl">
         <div class="flex-col items-center justify-between space-y-2 md:flex-row md:flex">
-            <h2 class="text-3xl font-bold">Unilink Win Wheel</h2>
+            <h2 class="flex flex-row justify-center text-3xl font-bold">
+                <img alt="Unilink logo" class="w-20 h-full md:w-60 logo" src="@/assets/unilink_logo.png" />
+                <div class="relative flex justify-center m-auto tracking-tighter text-[#00308F]">
+                    Win Wheel
+                </div>
+            </h2>
             <div>
                 <AuthNav />
             </div>

@@ -20,7 +20,7 @@ namespace Service
 		public async Task<BetForResultDto> PlaceBet(BetForCalculationDto betForCalculationDto)
 		{
 			int scoreChange = await CalculateScoreChangeAsync(betForCalculationDto); // Now awaiting the async method
-			bool isWin = scoreChange > 0;
+			bool isWin = scoreChange > 0 || (betForCalculationDto.BetAmount == 1 && scoreChange >= 0);
 			int finalScore = betForCalculationDto.Score + scoreChange;
 
 			return new BetForResultDto(

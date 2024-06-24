@@ -35,7 +35,6 @@
 <script setup lang="ts">
 import type { WheelResponse } from '@/lib/types';
 import { ref, watch, type Ref } from 'vue';
-import Separator from './ui/separator/Separator.vue';
 import { Skeleton } from './ui/skeleton';
 
 const loading = ref(true);

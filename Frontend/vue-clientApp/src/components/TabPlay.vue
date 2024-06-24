@@ -278,24 +278,36 @@
 
                     <SaveScoreButton :responseData="responseData" />
 
-                    <div class="flex-col justify-end col-span-3">
-                        <div class="flex-col text-right justify-right">
-                            <div class="mb-4 text-3xl font-bold tracking-tight ">
-                                <div>
-                                    {{ !responseData ? "Waiting your bet" :
-                                        responseData?.isWin == true ? "You Win!" : "You Lose" }}
+                    <div class="relative flex-col justify-end col-span-3">
+                        <div class="relative flex-col text-right justify-right">
+                            <template v-if="responseData">
+                                <div class="mb-4 text-xl font-bold tracking-tight md:text-3xl ">
+                                    <div>
+                                        {{ responseData?.isWin == true ? "You Win!" : "You Loose" }}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-2xl flex-end text-muted-foreground ">
-                                <pre>{{ !responseData ? " " : responseData.newScore ?? 0 + " :New Score" }}</pre>
-                            </div>
-                            <div class="text-lg flex-end text-muted-foreground ">
-                                <pre>{{ !wheelData ? " " : wheelData.number + " :Winning Number" }}
-                        </pre>
-                            </div>
-                            <div class="text-lg flex-end text-muted-foreground ">
-                                <pre>{{ !wheelData ? " " : wheelData.color + " :Winning Color" }}</pre>
-                            </div>
+                                <div
+                                    class="flex-row-reverse h-10 mb-2 overflow-hidden text-xl font-bold text-green-600 md:text-4xl text-muted-foreground">
+                                    {{ !responseData ? " " : (responseData.newScore) }}
+
+
+                                </div>
+                                <div
+                                    class="relative flex justify-end h-10 text-lg font-bold text-white align-middle rounded-full flex-reverse text-muted-foreground">
+                                    <div class="relative flex justify-center w-20 h-10 my-auto text-lg font-bold text-white align-middle bg-black rounded-full flex-end"
+                                        :class="{ 'bg-rose-600': wheelData.color === 'Red', 'bg-black': wheelData.color === 'Black' }">
+                                        <pre
+                                            class="justify-center my-auto">{{ !wheelData ? " " : wheelData.number }}</pre>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="mb-4 text-3xl font-bold tracking-tight ">
+                                    <div>
+                                        {{ "Waiting for your bet" }}
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
@@ -473,7 +485,7 @@ const submitBet = async (values: Bet) => {
         const response = await postBet(values);
 
         toast({
-            title: 'Submission successful',
+            title: 'Submission successful. Good luck',
             description: h('pre', { class: 'mt-2 w-[340px] rounded-md bg-slate-950 p-4' }, h('code', { class: 'text-white' }, JSON.stringify(response, null, 2))),
             duration: 5000,
         });

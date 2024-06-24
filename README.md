@@ -5,7 +5,7 @@
 
 ## Win Wheel Prueba técnica para Unilink Jesús Medina
 
-##Acceso:
+## Acceso
 https://unilinkwinwheel.netlify.app/
 
 ## Overview
@@ -18,6 +18,8 @@ Este juego permite disfrutar de una partida del juego de la ruleta asignando un 
 - **Winning History**: El usuario podrá consultar los últimos resultados arrojados por la ruleta
 - **Guardar Score**: Una vez hecha una apuesta, el usuario podrá guardar su score resultante con una cuenta
 - **Sistema de usuarios**: Los usuarios registrados disfrutan de un almacenamiento de score, así como también la posibilidad de aparecer en el ranking mundial
+- **Sistema de Tokens**: Para garantizar la integridad de los usuarios registrados, se utiliza un accessToken otorgado mediante JWT para los aquellos que inicien sesión. El token ajustará un refrescamiento automático menor a 5min para garantizar la protección del mismo.
+- **Local Storage**: El proyecto aprovecha la funcionalidad del localStorage para almacenar datos relevantes del usuario mientras se desarrollad la partida y ha iniciado sesión.
 
 ##Estructura
 -**Base de Datos**: SQL Server. Aprovechando la integración entre ASP NET CORE y SQL Server, el sistema aloja a los jugadores y scores en tablas únicas con relación Uno a Uno basado en sus identificadores

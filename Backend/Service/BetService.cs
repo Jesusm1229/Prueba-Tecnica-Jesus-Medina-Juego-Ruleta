@@ -45,6 +45,10 @@ namespace Service
 				case "Odd":
 					return bet.SpinWheelNumber % 2 != 0 && bet.Color == bet.SpinWheelColor ? bet.BetAmount : -bet.BetAmount;
 				case "Color":
+					if (bet.BetAmount == 1 && bet.Color == bet.SpinWheelColor)
+					{
+						return 1; // User wins 1 when betAmount is 1 and colors match
+					}
 					return bet.Color == bet.SpinWheelColor ? bet.BetAmount / 2 : -bet.BetAmount;
 				default:
 					_logger.LogError($"Unknown betting category: {bet.Category}");

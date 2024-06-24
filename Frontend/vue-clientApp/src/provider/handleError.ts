@@ -15,8 +15,6 @@ const handleError = (error: any) => {
     if (axiosError.response) {
         const { status, data } = axiosError.response;
 
-        console.log(data, "data")
-
         if (data.DuplicateUserName) {
             errorMessage = "Username already exists. Please choose a different username.";
         } else {

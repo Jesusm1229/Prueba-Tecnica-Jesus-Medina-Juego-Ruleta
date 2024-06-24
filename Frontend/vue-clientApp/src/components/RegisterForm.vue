@@ -127,7 +127,8 @@ const userFormSubmit = userForm.handleSubmit(async (values) => {
         store.setPlayer(userObject);
         scheduleTokenRefresh();
 
-    } catch (error: unknown) {
+    } catch (error) {
+        console.log(error, 'error')
         handleError(error);
     }
 

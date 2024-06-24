@@ -14,7 +14,14 @@ const handleError = (error: any) => {
 
     if (axiosError.response) {
         const { status, data } = axiosError.response;
-        errorMessage = `${status}: ${data}`;
+
+        console.log(data, "data")
+
+        if (data.DuplicateUserName) {
+            errorMessage = "Username already exists. Please choose a different username.";
+        } else {
+            errorMessage = `${status}: ${data}`;
+        }
     }
     // Use toastMessage with the determined errorMessage
     toastMessage(

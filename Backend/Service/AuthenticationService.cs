@@ -79,7 +79,9 @@ namespace Service
 
 		private SigningCredentials GetSigningCredentials()
 		{
-			var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"));
+			var key =  Encoding.UTF8.GetBytes("fPv9KNJ7IZE7T4Yk1EVYaQGCSwLsUT6A");
+
+			//var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"));
 			var secret = new SymmetricSecurityKey(key);
 			return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
 		}
@@ -131,12 +133,16 @@ namespace Service
 		private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
 		{
 			var jwtSettings = _configuration.GetSection("JwtSettings");
+			var simpleKey = Encoding.UTF8.GetBytes("fPv9KNJ7IZE7T4Yk1EVYaQGCSwLsUT6A");
+
+
 			var tokenValidationParameters = new TokenValidationParameters
 			{
 				ValidateAudience = true,
 				ValidateIssuer = true,
 				ValidateIssuerSigningKey = true,
-				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
+				IssuerSigningKey = new SymmetricSecurityKey(simpleKey),
+				//IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
 				ValidateLifetime = true,
 				ValidIssuer = jwtSettings["validIssuer"],
 				ValidAudience = jwtSettings["validAudience"]

@@ -66,7 +66,8 @@ namespace WinWheel.Extensions
 		public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
 		{
 			var jwtSettings = configuration.GetSection("JwtSettings");
-			var secretKey = Environment.GetEnvironmentVariable("SECRET");
+			//var secretKey = Environment.GetEnvironmentVariable("SECRET");
+			var secretKey = "fPv9KNJ7IZE7T4Yk1EVYaQGCSwLsUT6A";
 
 			services.AddAuthentication(opt =>
 			{

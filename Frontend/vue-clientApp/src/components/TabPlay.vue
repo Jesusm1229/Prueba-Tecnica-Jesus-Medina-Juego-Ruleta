@@ -186,9 +186,31 @@
                                         The amount you want to bet.
                                     </FormDescription>
                                     <FormMessage />
+                                    <FormDescription>
+                                        <ul class="pt-4">
+                                            <li>
+                                                <p class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                    <strong>Straight: </strong>Win 3 times your bet
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                    <strong>Even - Odd: </strong>Win your bet
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p class="mb-2 text-sm font-normal leading-none text-muted-foreground">
+                                                    <strong>Color: </strong>Win half your bet
+                                                </p>
+                                            </li>
+
+                                        </ul>
+
+                                    </FormDescription>
                                 </FormItem>
                             </FormField>
                         </div>
+
 
                     </CardContent>
                 </Card>

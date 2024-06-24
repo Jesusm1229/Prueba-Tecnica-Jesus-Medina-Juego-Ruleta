@@ -305,7 +305,7 @@
                             <template v-if="responseData">
                                 <div class="mb-4 text-xl font-bold tracking-tight md:text-3xl ">
                                     <div>
-                                        {{ responseData?.isWin == true ? "You Win!" : "You Loose" }}
+                                        {{ responseData?.isWin == true ? "You Win!" : "You Lose" }}
                                     </div>
                                 </div>
                                 <div
